@@ -1,0 +1,543 @@
+<title>Jam-or-Fold: The Phase Diagram</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #0A0D13; --panel: #10141D; --panel2: #141926;
+    --ink: #E6E2D8; --muted: #8A92A4; --line: #222937;
+    --heat: #F0A44E; --ice: #6FD3E8;
+  }
+  html { background: var(--bg); }
+  body {
+    color: var(--ink);
+    font-family: Charter, Georgia, 'Times New Roman', serif;
+    line-height: 1.55; margin: 0; padding: 0 0 6rem;
+  }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 1.25rem; }
+  .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+  header { padding: 3.2rem 0 1.6rem; border-bottom: 1px solid var(--line); }
+  .eyebrow {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 .9rem;
+  }
+  h1 { font-size: 2.5rem; font-weight: 500; margin: 0 0 .6rem; text-wrap: balance; }
+  h1 .thin { color: var(--muted); font-style: italic; }
+  .lede { max-width: 62ch; color: var(--muted); font-size: 1.02rem; margin: 0; }
+  .lede b { color: var(--ink); font-weight: 500; }
+  h2 { font-size: 1.35rem; font-weight: 500; margin: 0 0 .2rem; }
+  h2 .sub { display: block; font-size: .8rem; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+            color: var(--muted); letter-spacing: .06em; margin-top: .35rem; font-style: normal; }
+  section { margin-top: 3rem; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.4rem 1.5rem; }
+
+  /* ---- explorer ---- */
+  .readouts { display: flex; gap: 2.2rem; flex-wrap: wrap; align-items: baseline; margin: 1rem 0 .4rem; }
+  .readout .k { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .68rem;
+                letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .readout .v { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 1.55rem;
+                font-variant-numeric: tabular-nums; }
+  .readout .v small { font-size: .8rem; color: var(--muted); }
+  #stackVal { color: var(--heat); }
+  input[type=range] { width: 100%; accent-color: var(--heat); margin: .8rem 0 .2rem; cursor: pointer; }
+  input[type=range]:focus-visible { outline: 2px solid var(--heat); outline-offset: 4px; }
+  .slider-scale { display: flex; justify-content: space-between; font-size: .68rem; color: var(--muted); }
+  .jumpbtns { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .9rem; }
+  .jumpbtns button {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .72rem;
+    background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 4px; padding: .3rem .6rem; cursor: pointer;
+  }
+  .jumpbtns button:hover { border-color: var(--heat); color: var(--heat); }
+  .jumpbtns button:focus-visible { outline: 2px solid var(--heat); outline-offset: 2px; }
+  .grids { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; margin-top: 1.4rem; }
+  .gridbox { flex: 0 1 480px; min-width: 320px; }
+  .gridbox h3 { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-weight: 400;
+                font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+                color: var(--muted); margin: 0 0 .6rem; }
+  .gridbox h3 b { font-weight: 600; }
+  .hgrid { display: grid; grid-template-columns: repeat(13, 1fr); gap: 2px; }
+  .cell {
+    aspect-ratio: 1.18; display: flex; align-items: center; justify-content: center;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: clamp(6px, .8vw, 9.5px);
+    color: #56607555; background: #0D111A; border-radius: 2px; position: relative; cursor: default;
+  }
+  .cell.on { color: #000000CC; font-weight: 600; }
+  .gridpct { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .75rem;
+             color: var(--muted); margin-top: .55rem; }
+  .gridpct b { font-size: .95rem; }
+  .gridpct .heat { color: var(--heat); } .gridpct .ice { color: var(--ice); }
+
+  /* ---- phase diagram ---- */
+  .tabs { display: flex; gap: .5rem; margin: .9rem 0 .8rem; }
+  .tabs button {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .75rem; letter-spacing: .08em;
+    background: none; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 4px; padding: .35rem .9rem; cursor: pointer;
+  }
+  .tabs button[aria-pressed=true] { color: var(--ink); background: var(--panel2); border-color: var(--muted); }
+  .tabs button:focus-visible { outline: 2px solid var(--heat); outline-offset: 2px; }
+  .canvasbox { position: relative; overflow-x: auto; }
+  canvas { display: block; }
+  #tip {
+    position: fixed; pointer-events: none; z-index: 10; display: none;
+    background: #1A2030F2; border: 1px solid var(--line); border-radius: 4px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .72rem;
+    padding: .35rem .55rem; color: var(--ink); white-space: pre;
+  }
+  .caption { font-size: .85rem; color: var(--muted); max-width: 74ch; margin-top: .8rem; }
+  .caption b { color: var(--ink); font-weight: 500; }
+
+  /* ---- curves ---- */
+  .curves { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .curvebox { flex: 1 1 440px; min-width: 320px; }
+
+  /* ---- catalog ---- */
+  .tablebox { overflow-x: auto; margin-top: 1rem; }
+  table { border-collapse: collapse; width: 100%; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+          font-size: .78rem; font-variant-numeric: tabular-nums; }
+  th { text-align: left; font-weight: 400; color: var(--muted); font-size: .68rem;
+       letter-spacing: .12em; text-transform: uppercase; padding: .45rem .8rem .45rem 0;
+       border-bottom: 1px solid var(--line); }
+  td { padding: .38rem .8rem .38rem 0; border-bottom: 1px solid #1A202D; }
+  td.hand { font-weight: 600; }
+  .enter { color: var(--heat); } .exit { color: var(--ice); }
+  .oddcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+  .odd { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1rem 1.2rem; }
+  .odd h4 { margin: 0 0 .4rem; font-size: .95rem; font-weight: 600; }
+  .odd p { margin: 0; font-size: .86rem; color: var(--muted); }
+  .odd p b { color: var(--ink); font-weight: 500; }
+  .note { font-size: .9rem; color: var(--muted); max-width: 72ch; }
+  .note b { color: var(--ink); font-weight: 500; }
+  code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .85em;
+         background: var(--panel2); padding: .08em .35em; border-radius: 3px; }
+  a { color: var(--ice); }
+  @media (prefers-reduced-motion: no-preference) {
+    .cell { transition: background-color 120ms linear; }
+  }
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">The Mathematics of Poker &middot; Chapter 12 &middot; Example 12.3</p>
+  <h1>Jam-or-Fold <span class="thin">at every temperature</span></h1>
+  <p class="lede">An exhaustive equilibrium analysis of Chen &amp; Ankenman's shove/fold no-limit
+  hold'em game, from <b>1 big blind</b> to the frozen depths of <b>2,500</b>. Exact enumerated
+  equities (1,712,304 boards per matchup), exact card removal, and a linear-program equilibrium
+  at every stack size &mdash; the &ldquo;exhaustive analysis of this game&rdquo; that the book
+  alludes to but never prints.</p>
+</header>
+
+<section>
+  <h2>Range explorer
+    <span class="sub">drag the stack size &mdash; watch the system melt</span></h2>
+  <div class="panel">
+    <div class="readouts">
+      <div class="readout"><div class="k">Stack size</div>
+        <div class="v" id="stackVal">&mdash;</div></div>
+      <div class="readout"><div class="k">Game value (attacker)</div>
+        <div class="v" id="gameVal">&mdash;</div></div>
+      <div class="readout"><div class="k">Attacker jams</div>
+        <div class="v" id="jamPctVal">&mdash;</div></div>
+      <div class="readout"><div class="k">Defender calls</div>
+        <div class="v" id="callPctVal">&mdash;</div></div>
+    </div>
+    <input type="range" id="slider" min="0" max="1000" value="500"
+           aria-label="stack size (log scale)">
+    <div class="slider-scale mono"><span>1&nbsp;bb</span><span>10</span><span>100</span><span>1,000&nbsp;bb</span></div>
+    <div class="jumpbtns" id="jumpbtns"></div>
+    <div class="grids">
+      <div class="gridbox">
+        <h3><b>Attacker</b> &mdash; jam frequency</h3>
+        <div class="hgrid" id="jamGrid"></div>
+        <div class="gridpct">jams <b class="heat" id="jamPct2">&mdash;</b> of hands</div>
+      </div>
+      <div class="gridbox">
+        <h3><b>Defender</b> &mdash; call frequency</h3>
+        <div class="hgrid" id="callGrid"></div>
+        <div class="gridpct">calls <b class="ice" id="callPct2">&mdash;</b> of hands</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>The phase diagram
+    <span class="sub">169 hands &times; stack size &mdash; every band edge is a phase transition</span></h2>
+  <div class="tabs" role="group" aria-label="strategy side">
+    <button id="tabJam" aria-pressed="true">ATTACKER &middot; JAM</button>
+    <button id="tabCall" aria-pressed="false">DEFENDER &middot; CALL</button>
+  </div>
+  <div class="panel canvasbox">
+    <canvas id="phase" role="img" aria-label="phase diagram of hand ranges by stack size"></canvas>
+  </div>
+  <p class="caption">Each row is one starting hand, ordered by the stack size at which it first
+  enters the range; brightness is its equilibrium frequency. Reading right to left is cooling:
+  ranges freeze out hand by hand until only <b>AA</b> survives. Broken or re-ignited bands are
+  Chen's &ldquo;oddities&rdquo; &mdash; hands that are jammed at one stack size, abandoned at
+  another, and sometimes recalled later. Hover for details.</p>
+</section>
+
+<section>
+  <h2>Temperature curves
+    <span class="sub">what the whole system is doing as it cools</span></h2>
+  <div class="curves">
+    <div class="curvebox panel"><canvas id="curveV"></canvas></div>
+    <div class="curvebox panel"><canvas id="curvePct"></canvas></div>
+  </div>
+  <p class="caption" id="curveCaption"></p>
+</section>
+
+<section>
+  <h2>Catalog of oddities
+    <span class="sub">selected phase transitions, auto-mined from the sweep</span></h2>
+  <div class="oddcards" id="oddcards"></div>
+  <div class="tablebox">
+    <table id="thTable" aria-label="deep-stack transitions">
+      <thead><tr><th>Stack S</th><th>Hand</th><th>Side</th><th>Event (as stacks shrink)</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="caption">All range-membership transitions with S &gt; <span id="thCut"></span> bb,
+  refined by bisection. The full list continues to shallow stacks inside the data payload.</p>
+</section>
+
+<section>
+  <h2>Method &amp; fidelity to the book <span class="sub">how this was computed</span></h2>
+  <p class="note">Equities are exact: every one of the 812,175 distinct hand-vs-hand matchups was
+  reduced by suit isomorphism to 50,258 classes and enumerated over all
+  <code>C(48,5)&nbsp;=&nbsp;1,712,304</code> boards (the 7-card evaluator was verified against the
+  known frequency counts of all 133,784,560 seven-card hands). Equilibria are exact linear
+  programs over behavioral strategies with full card-removal accounting, solved independently for
+  both players at every stack size; the two LP values agree to &lt;10<sup>-6</sup> at every point.</p>
+  <p class="note" id="validationNote"></p>
+</section>
+</div>
+<div id="tip"></div>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+/* ---------- helpers ---------- */
+const S = DATA.S, n = S.length, labels = DATA.labels, W = DATA.w;
+const logMin = Math.log10(S[0]), logMax = Math.log10(S[n-1]);
+const fmtS = s => s >= 100 ? s.toFixed(1) : s.toFixed(2);
+function denseRow(sparse) {
+  const r = new Float32Array(169);
+  for (let i = 0; i < sparse.length; i += 2) r[sparse[i]] = sparse[i+1] / 1000;
+  return r;
+}
+const JAM = DATA.jam.map(denseRow), CALL = DATA.call.map(denseRow);
+
+/* colormaps: t in [0,1] */
+function lerp(a,b,t){ return a + (b-a)*t; }
+function ramp(stops, t) {
+  const k = Math.min(stops.length-2, Math.floor(t*(stops.length-1)));
+  const u = t*(stops.length-1) - k;
+  const c0 = stops[k], c1 = stops[k+1];
+  return `rgb(${lerp(c0[0],c1[0],u)|0},${lerp(c0[1],c1[1],u)|0},${lerp(c0[2],c1[2],u)|0})`;
+}
+const HEAT = [[26,20,32],[122,46,77],[201,86,74],[240,164,78],[255,232,160]];
+const ICE  = [[14,22,32],[20,72,94],[46,143,174],[127,212,230],[226,251,255]];
+const heat = t => ramp(HEAT, t), ice = t => ramp(ICE, t);
+
+/* ---------- explorer grids ---------- */
+function buildGrid(el) {
+  const cells = [];
+  for (let i = 0; i < 169; i++) {
+    const d = document.createElement('div');
+    d.className = 'cell'; d.textContent = labels[i];
+    el.appendChild(d); cells.push(d);
+  }
+  return cells;
+}
+const jamCells = buildGrid(document.getElementById('jamGrid'));
+const callCells = buildGrid(document.getElementById('callGrid'));
+
+const tip = document.getElementById('tip');
+function showTip(ev, text) {
+  tip.style.display = 'block'; tip.textContent = text;
+  tip.style.left = Math.min(ev.clientX + 14, innerWidth - 180) + 'px';
+  tip.style.top = (ev.clientY + 14) + 'px';
+}
+function hideTip(){ tip.style.display = 'none'; }
+
+let idx = n - 1;
+function setIdx(k) {
+  idx = Math.max(0, Math.min(n-1, k));
+  const jr = JAM[idx], cr = CALL[idx];
+  document.getElementById('stackVal').innerHTML = fmtS(S[idx]) + ' <small>bb</small>';
+  const v = DATA.value[idx];
+  document.getElementById('gameVal').innerHTML =
+    (v>=0?'+':'') + v.toFixed(4) + ' <small>bb/hand</small>';
+  document.getElementById('jamPctVal').innerHTML = DATA.jamPct[idx].toFixed(2) + '<small>%</small>';
+  document.getElementById('callPctVal').innerHTML = DATA.callPct[idx].toFixed(2) + '<small>%</small>';
+  document.getElementById('jamPct2').textContent = DATA.jamPct[idx].toFixed(2) + '%';
+  document.getElementById('callPct2').textContent = DATA.callPct[idx].toFixed(2) + '%';
+  for (let i = 0; i < 169; i++) {
+    const a = jr[i], b = cr[i];
+    jamCells[i].style.backgroundColor = a > 0 ? heat(0.25 + 0.75*a) : '';
+    jamCells[i].className = 'cell' + (a > 0.45 ? ' on' : '');
+    callCells[i].style.backgroundColor = b > 0 ? ice(0.25 + 0.75*b) : '';
+    callCells[i].className = 'cell' + (b > 0.45 ? ' on' : '');
+  }
+  slider.value = Math.round(1000 * (Math.log10(S[idx]) - logMin) / (logMax - logMin));
+  drawCursor();
+}
+[[jamCells, JAM, 'jam'], [callCells, CALL, 'call']].forEach(([cells, X, name]) => {
+  cells.forEach((d, i) => {
+    d.addEventListener('mousemove', ev =>
+      showTip(ev, `${labels[i]}  ${name} ${(X[idx][i]*100).toFixed(1)}%  @ S=${fmtS(S[idx])}`));
+    d.addEventListener('mouseleave', hideTip);
+  });
+});
+
+const slider = document.getElementById('slider');
+slider.addEventListener('input', () => {
+  const target = Math.pow(10, logMin + (slider.value/1000)*(logMax-logMin));
+  let best = 0, bd = 1e18;
+  for (let k = 0; k < n; k++) {
+    const d = Math.abs(Math.log(S[k]) - Math.log(target));
+    if (d < bd) { bd = d; best = k; }
+  }
+  setIdx(best);
+});
+
+/* jump buttons from notable thresholds */
+const jb = document.getElementById('jumpbtns');
+function addJump(label, s) {
+  const b = document.createElement('button');
+  b.textContent = label;
+  b.addEventListener('click', () => {
+    let best = 0, bd = 1e18;
+    for (let k = 0; k < n; k++) { const d = Math.abs(S[k]-s); if (d < bd){bd=d;best=k;} }
+    setIdx(best);
+  });
+  jb.appendChild(b);
+}
+
+/* ---------- phase diagram ---------- */
+let phaseSide = 'jam';
+const phaseCv = document.getElementById('phase');
+const PW = 1100, LPAD = 46, RPAD = 10, TPAD = 18, BPAD = 30, ROWH = 6;
+function entryS(X, h) {  /* highest S at which hand is in range */
+  for (let k = n-1; k >= 0; k--) if (X[k][h] > 0) return S[k];
+  return 0;
+}
+let order = [], rowOf = new Array(169);
+function computeOrder() {
+  const X = phaseSide === 'jam' ? JAM : CALL;
+  order = [...Array(169).keys()].sort((a,b) => {
+    const ea = entryS(X, a), eb = entryS(X, b);
+    if (eb !== ea) return eb - ea;
+    return W[b] - W[a];
+  });
+  order.forEach((h, r) => rowOf[h] = r);
+}
+const xOfS = s => LPAD + (Math.log10(s) - logMin) / (logMax - logMin) * (PW - LPAD - RPAD);
+
+function drawPhase() {
+  computeOrder();
+  const X = phaseSide === 'jam' ? JAM : CALL;
+  const cmap = phaseSide === 'jam' ? heat : ice;
+  const H = TPAD + 169*ROWH + BPAD;
+  const dpr = window.devicePixelRatio || 1;
+  phaseCv.width = PW*dpr; phaseCv.height = H*dpr;
+  phaseCv.style.width = PW+'px'; phaseCv.style.height = H+'px';
+  const g = phaseCv.getContext('2d');
+  g.scale(dpr, dpr);
+  g.fillStyle = '#10141D'; g.fillRect(0,0,PW,H);
+  /* decade gridlines */
+  g.font = '10px ui-monospace, Menlo, monospace';
+  for (const dec of [1,2,5,10,20,50,100,200,500,1000,2000]) {
+    const x = xOfS(dec);
+    g.strokeStyle = '#1B2231'; g.beginPath();
+    g.moveTo(x, TPAD); g.lineTo(x, TPAD+169*ROWH); g.stroke();
+    g.fillStyle = '#5A6478';
+    g.fillText(String(dec), x-8, TPAD + 169*ROWH + 16);
+  }
+  /* cells */
+  for (let k = 0; k < n; k++) {
+    const x0 = k === 0 ? xOfS(S[0]) : (xOfS(S[k-1]) + xOfS(S[k]))/2;
+    const x1 = k === n-1 ? xOfS(S[n-1]) : (xOfS(S[k]) + xOfS(S[k+1]))/2;
+    const row = X[k];
+    for (let h = 0; h < 169; h++) {
+      const f = row[h];
+      if (f <= 0) continue;
+      g.fillStyle = cmap(0.3 + 0.7*f);
+      g.fillRect(x0, TPAD + rowOf[h]*ROWH, Math.max(x1-x0, 0.6), ROWH-0.8);
+    }
+  }
+  /* labels for notable hands */
+  g.font = '9px ui-monospace, Menlo, monospace';
+  const shown = new Set();
+  ['AA','KK','QQ','JJ','TT','ATs','A5s','AKs','AKo','99','66','22','65s','T2s','32o','72o','J2o','K2o','Q2o']
+    .forEach(l => { const h = labels.indexOf(l); if (h >= 0) shown.add(h); });
+  for (let r = 0; r < 169; r += 1) {
+    const h = order[r];
+    if (shown.has(h)) {
+      g.fillStyle = '#B9C0CE';
+      g.fillText(labels[h], 8, TPAD + r*ROWH + ROWH - 0.5);
+    }
+  }
+  g.fillStyle = '#5A6478';
+  g.fillText('stack size (bb, log scale) →', PW-190, TPAD + 169*ROWH + 16);
+  drawCursor();
+}
+let cursorDrawn = false;
+function drawCursor() {
+  /* redraw cursor line by re-rendering top overlay cheaply: use CSS overlay div instead */
+  let cur = document.getElementById('phaseCursor');
+  if (!cur) {
+    cur = document.createElement('div');
+    cur.id = 'phaseCursor';
+    cur.style.cssText = 'position:absolute;top:0;width:1px;background:#E6E2D866;pointer-events:none;';
+    phaseCv.parentElement.appendChild(cur);
+  }
+  cur.style.left = (phaseCv.offsetLeft + xOfS(S[idx])) + 'px';
+  cur.style.height = phaseCv.offsetHeight + 'px';
+}
+phaseCv.addEventListener('mousemove', ev => {
+  const r = phaseCv.getBoundingClientRect();
+  const x = ev.clientX - r.left, y = ev.clientY - r.top;
+  const row = Math.floor((y - TPAD) / ROWH);
+  if (row < 0 || row > 168 || x < LPAD) { hideTip(); return; }
+  const h = order[row];
+  const s = Math.pow(10, logMin + (x - LPAD)/(PW - LPAD - RPAD)*(logMax - logMin));
+  let best = 0, bd = 1e18;
+  for (let k = 0; k < n; k++) { const d = Math.abs(Math.log(S[k]) - Math.log(s)); if (d<bd){bd=d;best=k;} }
+  const X = phaseSide === 'jam' ? JAM : CALL;
+  showTip(ev, `${labels[h]}  ${phaseSide} ${(X[best][h]*100).toFixed(1)}%  @ S=${fmtS(S[best])}`);
+});
+phaseCv.addEventListener('mouseleave', hideTip);
+phaseCv.addEventListener('click', ev => {
+  const r = phaseCv.getBoundingClientRect();
+  const x = ev.clientX - r.left;
+  if (x < LPAD) return;
+  const s = Math.pow(10, logMin + (x - LPAD)/(PW - LPAD - RPAD)*(logMax - logMin));
+  let best = 0, bd = 1e18;
+  for (let k = 0; k < n; k++) { const d = Math.abs(Math.log(S[k]) - Math.log(s)); if (d<bd){bd=d;best=k;} }
+  setIdx(best);
+});
+document.getElementById('tabJam').addEventListener('click', () => setSide('jam'));
+document.getElementById('tabCall').addEventListener('click', () => setSide('call'));
+function setSide(s) {
+  phaseSide = s;
+  document.getElementById('tabJam').setAttribute('aria-pressed', s === 'jam');
+  document.getElementById('tabCall').setAttribute('aria-pressed', s === 'call');
+  drawPhase();
+}
+
+/* ---------- curves ---------- */
+function drawCurve(cv, series, colors, names, title, yFmt) {
+  const Wc = cv.parentElement.clientWidth - 48 || 480, Hc = 240;
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = Wc*dpr; cv.height = Hc*dpr;
+  cv.style.width = Wc+'px'; cv.style.height = Hc+'px';
+  const g = cv.getContext('2d'); g.scale(dpr,dpr);
+  const lp = 46, rp = 8, tp = 26, bp = 26;
+  let lo = Infinity, hi = -Infinity;
+  series.forEach(ss => ss.forEach(v => { lo = Math.min(lo,v); hi = Math.max(hi,v); }));
+  const pad = (hi-lo)*0.07; lo -= pad; hi += pad;
+  const xs = s => lp + (Math.log10(s)-logMin)/(logMax-logMin)*(Wc-lp-rp);
+  const ys = v => tp + (hi-v)/(hi-lo)*(Hc-tp-bp);
+  g.font = '10px ui-monospace, Menlo, monospace';
+  for (const dec of [1,10,100,1000]) {
+    g.strokeStyle = '#1B2231'; g.beginPath();
+    g.moveTo(xs(dec), tp); g.lineTo(xs(dec), Hc-bp); g.stroke();
+    g.fillStyle = '#5A6478'; g.fillText(String(dec), xs(dec)-6, Hc-8);
+  }
+  for (let i = 0; i <= 4; i++) {
+    const v = lo + (hi-lo)*i/4;
+    g.strokeStyle = '#161C29'; g.beginPath();
+    g.moveTo(lp, ys(v)); g.lineTo(Wc-rp, ys(v)); g.stroke();
+    g.fillStyle = '#5A6478'; g.fillText(yFmt(v), 4, ys(v)+3);
+  }
+  if (series[0].some((_,k)=>false)) {}
+  series.forEach((ss, si) => {
+    g.strokeStyle = colors[si]; g.lineWidth = 1.6; g.beginPath();
+    for (let k = 0; k < n; k++) {
+      const x = xs(S[k]), y = ys(ss[k]);
+      k ? g.lineTo(x,y) : g.moveTo(x,y);
+    }
+    g.stroke();
+    g.fillStyle = colors[si];
+    g.fillText(names[si], lp + 8 + si*120, 14);
+  });
+  g.fillStyle = '#8A92A4'; g.fillText(title, Wc-160, 14);
+}
+function drawCurves() {
+  drawCurve(document.getElementById('curveV'), [DATA.value],
+    ['#F0A44E'], ['game value (attacker, bb/hand)'], '', v => v.toFixed(2));
+  drawCurve(document.getElementById('curvePct'), [DATA.jamPct, DATA.callPct],
+    ['#F0A44E','#6FD3E8'], ['jam %','call %'], '', v => v.toFixed(0)+'%');
+}
+
+/* ---------- catalog ---------- */
+function buildCatalog() {
+  const cut = 25;
+  document.getElementById('thCut').textContent = cut;
+  const tb = document.querySelector('#thTable tbody');
+  DATA.thresholds.filter(t => t.S > cut).forEach(t => {
+    const tr = document.createElement('tr');
+    const entering = t.dir.startsWith('enters');  /* enters as S increases */
+    /* describe as stacks SHRINK (cooling->warming reading): */
+    const ev = entering ? 'leaves the range' : 'enters the range';
+    const cls = entering ? 'exit' : 'enter';
+    tr.innerHTML = `<td>${t.S.toFixed(2)}</td><td class="hand">${t.hand}</td>` +
+      `<td>${t.side}</td><td class="${cls}">${ev}</td>`;
+    tb.appendChild(tr);
+  });
+}
+function buildOddCards() {
+  const box = document.getElementById('oddcards');
+  DATA.cards.forEach(([h, p]) => {
+    const d = document.createElement('div');
+    d.className = 'odd';
+    d.innerHTML = `<h4>${h}</h4><p>${p}</p>`;
+    box.appendChild(d);
+  });
+  /* strict non-monotonic gap summary below the cards */
+  const gaps = DATA.gaps;
+  const names = Object.keys(gaps);
+  if (names.length) {
+    const d = document.createElement('div');
+    d.className = 'odd';
+    const list = names.map(h =>
+      `<b>${h}</b> ${gaps[h].map(([a,b])=>`(${a}–${b})`).join(' ')}`).join(', ');
+    d.innerHTML = `<h4>${names.length} hands with strictly-verified gaps</h4>` +
+      `<p>Stack windows where the hand is out of the jam range with a decisively negative EV ` +
+      `margin, between windows where it jams: ${list}.</p>`;
+    box.appendChild(d);
+  }
+}
+function buildValidation() {
+  const el = document.getElementById('validationNote');
+  el.innerHTML = `<b>Fidelity to the book.</b> All of Chen's printed equities reproduce exactly ` +
+    `(ATs&nbsp;vs&nbsp;AA&nbsp;=&nbsp;0.13336, AKs&nbsp;vs&nbsp;AA&nbsp;=&nbsp;0.12141, ` +
+    `AKs&nbsp;vs&nbsp;ATs&nbsp;=&nbsp;0.70473, AKs&nbsp;vs&nbsp;A5s&nbsp;=&nbsp;0.69817) with one ` +
+    `erratum: A5s&nbsp;vs&nbsp;AA is exactly <b>0.13307</b>, not the 0.13331 printed on p.&nbsp;130. ` +
+    `Chen's 833.25 threshold uses a convention that measures the called jam's EV as 2S&middot;q&nbsp;&minus;&nbsp;S ` +
+    `relative to folding, which drops the attacker's refunded half-blind; under fully consistent ` +
+    `accounting the same equity gives S&nbsp;=&nbsp;611.5&nbsp;/&nbsp;(1&nbsp;&minus;&nbsp;2q). Both numbers are ` +
+    `reported in the catalog card above; the equilibrium sweep on this page uses the consistent version.`;
+}
+
+/* ---------- boot ---------- */
+addJump('S = 2000 (frozen)', 2000);
+addJump('ATs ignition ≈ 833', 833.9);
+addJump('S = 100', 100);
+addJump('S = 10 (classic)', 10);
+addJump('S = 2', 2);
+buildCatalog();
+buildOddCards();
+buildValidation();
+document.getElementById('curveCaption').innerHTML =
+  '<b>Left:</b> the attacker’s expected profit per hand. As S → ∞ it approaches ' +
+  '−0.5 (he folds everything but AA and surrenders the small blind); the defender’s ' +
+  'advantage is the mirror image. <b>Right:</b> total fraction of hands jammed and called — ' +
+  'the “order parameter” of the system, collapsing toward zero as the game freezes.';
+setIdx(n - 1);
+drawPhase();
+drawCurves();
+window.addEventListener('resize', () => { drawCurves(); drawCursor(); });
+</script>
