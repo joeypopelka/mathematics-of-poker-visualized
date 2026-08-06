@@ -7,6 +7,8 @@ this game" the book alludes to on p. 131 but never prints.
 
 **Full writeup and findings: [REPORT.md](REPORT.md)**
 
+**Live interactive explorer: https://joeypopelka.github.io/Chen-ch12-shove-fold/**
+
 Highlights:
 
 - Exact preflop equities (all 812,175 matchups × 1,712,304 boards), exact
