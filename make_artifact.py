@@ -79,6 +79,11 @@ def main():
     with open("shove_fold_explorer.html", "w") as f:
         f.write(out)
     print(f"wrote shove_fold_explorer.html ({len(out)/1e6:.1f} MB)")
+    # GitHub Pages copy: same content, properly wrapped for standards mode
+    with open("index.html", "w") as f:
+        f.write('<!doctype html>\n<html lang="en">\n<meta charset="utf-8">\n'
+                + out + "\n</html>\n")
+    print("wrote index.html (wrapped copy for GitHub Pages)")
 
 if __name__ == "__main__":
     main()
