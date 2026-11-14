@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-Street Games — Mathematics of Poker, Visualized</title>
+<style>
+  :root{
+    --bg:#0A0D13; --panel:#10141D; --panel2:#151B27; --line:#232B3A;
+    --ink:#E8E4DC; --dim:#8B93A3; --faint:#5A6274;
+    --heat:#F0A44E; --ice:#6FD3E8; --green:#8FD694; --red:#E07A6B; --purple:#B48EF0;
+    --serif:Charter,Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.55}
+  .wrap{max-width:940px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+  a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
+  .home{font-size:.85rem;color:var(--dim)}
+  h1{font-size:1.9rem;font-weight:600;margin:.7rem 0 .2rem}
+  .sub{color:var(--dim);font-size:1.02rem;max-width:50rem}
+  h2{font-size:1.25rem;margin:2.6rem 0 .7rem;color:var(--heat);font-weight:600}
+  p{margin:.6rem 0;max-width:50rem}
+  code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;margin:1rem 0}
+  .lbl{font-size:.8rem;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+  input[type=range]{width:100%;accent-color:var(--heat)}
+  .row{display:flex;gap:1.6rem;flex-wrap:wrap}
+  .row>div{flex:1;min-width:230px}
+  .readout{display:flex;flex-wrap:wrap;gap:1.4rem;margin:.7rem 0}
+  .readout .r{min-width:110px}
+  .readout .v{font:600 1.25rem var(--mono)}
+  canvas{width:100%;height:auto;display:block;border-radius:10px;background:var(--panel2)}
+  table{border-collapse:collapse;font-size:.9rem;margin:.8rem 0}
+  td,th{border:1px solid var(--line);padding:.32rem .66rem;text-align:center}
+  th{color:var(--dim);font-weight:600}
+  .note{font-size:.88rem;color:var(--dim)}
+  .good{color:var(--green)} .bad{color:var(--red)}
+  .ladder{display:flex;align-items:flex-end;gap:10px;height:230px;margin:1rem 0 .4rem}
+  .lstep{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}
+  .lbar{width:100%;border-radius:6px 6px 0 0;background:linear-gradient(180deg,var(--heat),#8a5a24);min-height:3px}
+  .lbet{width:100%;border-radius:6px 6px 0 0;background:var(--ice);min-height:2px;opacity:.85}
+  .lcap{font:600 .78rem var(--mono);color:var(--dim);text-align:center;line-height:1.3}
+  @media(max-width:640px){.row{flex-direction:column}}
+</style>
+<body>
+<div class="wrap">
+  <div class="home"><a href="../">← Mathematics of Poker, Visualized</a></div>
+  <h1>Multi-Street Games</h1>
+  <p class="sub">Chapters 14 &amp; 19 of Chen &amp; Ankenman's <i>The Mathematics of Poker</i>:
+  what size to bet when the bet size is yours to choose — on one street, on many,
+  and in the limit of infinitely many. Home of the book's most quoted result,
+  the <b>geometric growth of pot</b>.</p>
+
+  <h2>One street first: the value of a bet size (ch. 14)</h2>
+  <p>Give the bettor a polarized range (nuts or air) and charge him bet <span class="m">s</span>
+  (in pots). His bluffs are priced by <span class="m">α = s/(1+s)</span> and his value function
+  <span class="m">f(s)</span> does the rest:</p>
+  <div class="panel">
+    <canvas id="c14" width="1680" height="700"></canvas>
+    <p class="note"><span style="color:var(--heat)">Clairvoyance game: f(s) = ys/(1+s)</span> rises
+    forever — <b>jam</b>. <span style="color:var(--ice)">The AKQ game: f(s) = s(1−s)/(6(1+s))</span>
+    peaks at <b>s* = √2−1 ≈ 0.414</b> — the "golden mean of poker," r. (A quiet oddity: at s*, X's
+    calling frequency with Kings, (1−r)/(1+r), is <i>also exactly r</i>.) In the
+    <span style="color:var(--purple)">[0,1] version</span> Y bets a different amount with every hand —
+    value function y(s) = 3/(7(1+s)²), call function x(s) = 6/(7(1+s)), bluff mass exactly 1/7.</p>
+  </div>
+
+  <h2>The geometric growth of pot (ch. 19)</h2>
+  <p>Static hands, clairvoyant bettor, M streets, stacks S pots deep. Each street the
+  non-clairvoyant player simply folds α and calls; the bettor stacks bluffs street
+  over street. The optimal sizing grows the pot by the <i>same ratio</i>
+  <span class="m">G = (1+2S)<sup>1/M</sup></span> every street, landing all-in on the river.</p>
+  <div class="panel">
+    <div class="row">
+      <div><div class="lbl">stacks S = <span id="sv" class="m"></span> pots</div>
+        <input id="S" type="range" min="0" max="1000" value="560"></div>
+      <div><div class="lbl">streets M = <span id="mv" class="m"></span></div>
+        <input id="M" type="range" min="1" max="5" value="3"></div>
+    </div>
+    <div class="readout">
+      <div class="r"><div class="lbl">growth ratio G</div><div class="v" id="gv" style="color:var(--heat)"></div></div>
+      <div class="r"><div class="lbl">bet (pot fraction)</div><div class="v" id="bv" style="color:var(--ice)"></div></div>
+      <div class="r"><div class="lbl">X calls / street</div><div class="v" id="cv" style="color:var(--green)"></div></div>
+      <div class="r"><div class="lbl">bluff multiplier / street</div><div class="v" id="rbv" style="color:var(--purple)"></div></div>
+    </div>
+    <div class="ladder" id="ladder"></div>
+    <p class="note">Each column is a street: <span style="color:var(--heat)">pot entering</span> with the
+    <span style="color:var(--ice)">bet</span> stacked on top — the same shape every street, scaled by G.
+    Pot-sized bets (G=3) need stacks of (3<sup>M</sup>−1)/2 pots — <b>13 pots deep for three streets</b>;
+    half-pot bets (G=2) get stacks in at (2<sup>M</sup>−1)/2 — 3.5 pots over three streets.</p>
+  </div>
+
+  <div class="panel">
+    <canvas id="c19" width="1680" height="660"></canvas>
+    <p class="note">The book's Figure 19.1, completed: the per-street growth ratio G against stack
+    depth for M = 2…5 streets. Dashed lines: pot-sized (G=3) and half-pot (G=2) bets.</p>
+  </div>
+
+  <h2>Why it matters: the $185 case study (Example 19.3)</h2>
+  <div class="panel">
+    <p>Stacks $185, antes $5, three streets; Y's card wins a showdown 2/13 of the time
+    (clairvoyant). Betting flat $60 per street vs. betting the geometric growth of pot:</p>
+    <table>
+      <tr><th></th><th>flat $60</th><th>geometric</th></tr>
+      <tr><td>bets</td><td class="m">60 / 60 / 60</td><td class="m">11.66 / 38.86 / 129.48</td></tr>
+      <tr><td>X's call freq per street</td><td class="m">14% · 68% · 81%</td><td class="m">46.2% · 46.2% · 46.2%</td></tr>
+      <tr><td>value extracted per winning hand</td><td class="m">$19.16</td><td class="m">$26.41</td></tr>
+      <tr><td>net EV of the whole game</td><td class="bad">−$0.51</td><td class="good">+$0.60</td></tr>
+    </table>
+    <p class="note">The same stack, bet in the same number of streets — and the sizing scheme alone
+    swings the game from losing to winning. The small first bet is not timidity: it buys a 46%
+    call-through rate at every step of a pot that is growing 3.33× per street.</p>
+  </div>
+
+  <h2>Infinite streets: the auction game (Examples 19.4–19.6)</h2>
+  <p>Let the number of streets go to infinity and betting becomes an <i>auction</i>: each hand
+  silently commits to a total <span class="m">s</span> it is willing to put in. The equilibrium
+  commitment curves are square roots:</p>
+  <div class="panel">
+    <div class="row">
+      <div><div class="lbl">stacks S = <span id="asv" class="m"></span> pots</div>
+        <input id="aS" type="range" min="0" max="1000" value="600"></div>
+      <div><div class="lbl">Y's winning fraction y = <span id="ayv" class="m"></span></div>
+        <input id="ay" type="range" min="5" max="95" value="50"></div>
+    </div>
+    <canvas id="ca" width="1680" height="640"></canvas>
+    <p class="note"><span style="color:var(--ice)">x(s) = 1/√(1+2s)</span> — the caller's hands committing at
+    least s; <span style="color:var(--heat)">y(s) = y·√((1+2S)/(1+2s))</span> (capped at 1) — the clairvoyant's.
+    The M-street geometric game converges to these curves as M→∞ (verified to 2×10⁻³ at M=1000 in
+    <code>solve.py</code>), and position's value goes to zero — the auction is symmetric.</p>
+  </div>
+
+  <h2>Fidelity to the book</h2>
+  <div class="panel">
+    <table>
+      <tr><th>Quantity</th><th>Book</th><th>Exact</th></tr>
+      <tr><td>NL AKQ optimal bet (14.2)</td><td>√2−1 ("≈0.414")</td><td>0.414214 ✓ (numeric max)</td></tr>
+      <tr><td>NL [0,1] never-call threshold x₀ (14.3)</td><td>6/7</td><td>6/7 ✓ (integral + best-response check)</td></tr>
+      <tr><td>Two-street limit: X folds per street (19.1)</td><td>α, then α₂</td><td>✓ (independent LP)</td></tr>
+      <tr><td>Three-street 1/2/2 game: Y bets</td><td>7/8 of hands</td><td>7/8 ✓; game value +1.5 ✓</td></tr>
+      <tr><td>Geometric optimality r₁=r₂ (19.2)</td><td>AM–GM argument</td><td>✓ (grid max)</td></tr>
+      <tr><td>Case study bets (19.3)</td><td>$11.66/$38.86/$129.48</td><td>✓ to the cent</td></tr>
+      <tr><td>Case study values</td><td>$19.16 vs $26.41</td><td>$19.17 / $26.40 ✓ (book rounds per-street)</td></tr>
+      <tr><td>Auction spot checks (19.6)</td><td>y(1)≈1.323→1, y(5)≈0.691</td><td>✓</td></tr>
+      <tr><td>Pot-bet stacks, 3 streets (Fig 19.1)</td><td>13 pots</td><td>(3³−1)/2 = 13 ✓</td></tr>
+    </table>
+  </div>
+</div>
+<script>
+(function(){
+  var W,H,L=74,Rm=26,T=26,B=56;
+  function setup(cv){ W=cv.width; H=cv.height; }
+  function grid(ctx,xmax,ymax,xstep,ystep,xlab){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#232B3A'; ctx.lineWidth=1; ctx.font='21px ui-monospace,monospace';
+    ctx.fillStyle='#5A6274';
+    for(var gx=0;gx<=xmax+1e-9;gx+=xstep){ var X=L+(W-L-Rm)*gx/xmax;
+      ctx.beginPath();ctx.moveTo(X,T);ctx.lineTo(X,H-B);ctx.stroke();
+      ctx.textAlign='center'; ctx.fillText((+gx.toFixed(2)),X,H-B+28); }
+    for(var gy=0;gy<=ymax+1e-9;gy+=ystep){ var Y=T+(H-T-B)*(1-gy/ymax);
+      ctx.beginPath();ctx.moveTo(L,Y);ctx.lineTo(W-Rm,Y);ctx.stroke();
+      ctx.textAlign='right'; ctx.fillText((+gy.toFixed(2)),L-8,Y+7); }
+    ctx.textAlign='center'; ctx.fillText(xlab,(L+W-Rm)/2,H-8);
+  }
+  function px(x,xmax){return L+(W-L-Rm)*x/xmax;}
+  function py(y,ymax){return T+(H-T-B)*(1-y/ymax);}
+  function curve(ctx,f,xmax,ymax,color,n){
+    ctx.strokeStyle=color; ctx.lineWidth=3.5; ctx.beginPath();
+    n=n||600;
+    for(var i=0;i<=n;i++){ var x=i*xmax/n, y=f(x);
+      if(y===null){continue;}
+      if(i===0) ctx.moveTo(px(x,xmax),py(Math.min(y,ymax),ymax));
+      else ctx.lineTo(px(x,xmax),py(Math.min(y,ymax),ymax)); }
+    ctx.stroke();
+  }
+
+  // ---- ch14 chart ----
+  var c14=document.getElementById('c14'),x14=c14.getContext('2d');
+  (function(){
+    setup(c14); grid(x14,2,0.5,0.25,0.1,'bet size s (pots)');
+    curve(x14,function(s){return 0.5*s/(1+s);},2,0.5,'#F0A44E');
+    curve(x14,function(s){return 10*s*(1-s)/(6*(1+s)) < 0 ? 0 : 10*s*(1-s)/(6*(1+s));},2,0.5,'#6FD3E8');
+    curve(x14,function(s){return 3/(7*(1+s)*(1+s));},2,0.5,'#B48EF0');
+    var r=Math.SQRT2-1;
+    x14.strokeStyle='rgba(224,122,107,.6)'; x14.setLineDash([6,5]);
+    x14.beginPath(); x14.moveTo(px(r,2),T); x14.lineTo(px(r,2),H-B); x14.stroke(); x14.setLineDash([]);
+    x14.fillStyle='#E07A6B'; x14.textAlign='center'; x14.font='21px ui-monospace,monospace';
+    x14.fillText('s* = √2−1',px(r,2),T-6);
+    x14.textAlign='left';
+    x14.fillStyle='#F0A44E'; x14.fillText('clairvoyance f(s)=½·s/(1+s) → jam',px(1.05,2),py(0.5*1.05/2.05,0.5)-14);
+    x14.fillStyle='#6FD3E8'; x14.fillText('AKQ 10·f(s) (scaled)',px(0.62,2),py(10*0.62*0.38/(6*1.62),0.5)-14);
+    x14.fillStyle='#B48EF0'; x14.fillText('[0,1] value fn y(s)=3/(7(1+s)²)',px(0.8,2),py(3/(7*1.8*1.8),0.5)+30);
+  })();
+
+  // ---- geometric ladder ----
+  var S=document.getElementById('S'), M=document.getElementById('M');
+  function sFrom(v){ return 0.25*Math.pow(200,v/1000); } // 0.25..50
+  function updG(){
+    var Sv=sFrom(+S.value), Mv=+M.value;
+    var G=Math.pow(1+2*Sv,1/Mv), s=(G-1)/2;
+    document.getElementById('sv').textContent=Sv.toFixed(2);
+    document.getElementById('mv').textContent=Mv;
+    document.getElementById('gv').textContent=G.toFixed(3)+'×';
+    document.getElementById('bv').textContent=s.toFixed(3);
+    document.getElementById('cv').textContent=(100/(1+s)).toFixed(1)+'%';
+    document.getElementById('rbv').textContent=((1+2*s)/(1+s)).toFixed(3)+'×';
+    var lad=document.getElementById('ladder'); lad.innerHTML='';
+    var maxPot=Math.pow(G,Mv);
+    for(var m=0;m<Mv;m++){
+      var p=Math.pow(G,m), bet=p*s;
+      var st=document.createElement('div'); st.className='lstep';
+      var bb=document.createElement('div'); bb.className='lbet';
+      bb.style.height=(bet*2/maxPot*100)+'%';
+      var pb=document.createElement('div'); pb.className='lbar';
+      pb.style.height=(p/maxPot*100)+'%';
+      var cap=document.createElement('div'); cap.className='lcap';
+      cap.innerHTML='pot '+p.toFixed(2)+'<br>bet '+bet.toFixed(2);
+      st.appendChild(bb); st.appendChild(pb); st.appendChild(cap);
+      lad.appendChild(st);
+    }
+    var st=document.createElement('div'); st.className='lstep';
+    var pb=document.createElement('div'); pb.className='lbar';
+    pb.style.height='100%'; pb.style.background='linear-gradient(180deg,#8FD694,#3e7a44)';
+    var cap=document.createElement('div'); cap.className='lcap';
+    cap.innerHTML='river pot<br>'+maxPot.toFixed(2)+' = 1+2S';
+    st.appendChild(pb); st.appendChild(cap); lad.appendChild(st);
+  }
+  S.addEventListener('input',updG); M.addEventListener('input',updG); updG();
+
+  // ---- figure 19.1 ----
+  var c19=document.getElementById('c19'),x19=c19.getContext('2d');
+  (function(){
+    setup(c19); grid(x19,30,6,5,1,'stack size S (pots)');
+    var cols={2:'#F0A44E',3:'#6FD3E8',4:'#8FD694',5:'#B48EF0'};
+    for(var m=2;m<=5;m++){
+      (function(m){ curve(x19,function(Sv){return Math.pow(1+2*Sv,1/m);},30,6,cols[m]); })(m);
+    }
+    x19.setLineDash([6,5]); x19.strokeStyle='rgba(232,228,220,.35)';
+    [[3,'pot-sized (G=3)'],[2,'half-pot (G=2)']].forEach(function(t){
+      x19.beginPath(); x19.moveTo(L,py(t[0],6)); x19.lineTo(W-Rm,py(t[0],6)); x19.stroke();
+      x19.fillStyle='#8B93A3'; x19.textAlign='left'; x19.font='20px ui-monospace,monospace';
+      x19.fillText(t[1],L+10,py(t[0],6)-8);
+    });
+    x19.setLineDash([]);
+    x19.textAlign='left'; x19.font='21px ui-monospace,monospace';
+    for(var m=2;m<=5;m++){ x19.fillStyle=cols[m];
+      x19.fillText('M='+m,px(27,30),py(Math.pow(61,1/m),6)-10); }
+  })();
+
+  // ---- auction ----
+  var aS=document.getElementById('aS'), ay=document.getElementById('ay');
+  var ca=document.getElementById('ca'),xa=ca.getContext('2d');
+  function updA(){
+    var Sv=0.5*Math.pow(80,(+aS.value)/1000), yv=(+ay.value)/100;
+    document.getElementById('asv').textContent=Sv.toFixed(2);
+    document.getElementById('ayv').textContent=yv.toFixed(2);
+    setup(ca); grid(xa,Sv,1,Sv/5,0.25,'commitment s (pots)');
+    curve(xa,function(s){return 1/Math.sqrt(1+2*s);},Sv,1,'#6FD3E8');
+    curve(xa,function(s){return Math.min(1,yv*Math.sqrt((1+2*Sv)/(1+2*s)));},Sv,1,'#F0A44E');
+    xa.font='21px ui-monospace,monospace'; xa.textAlign='left';
+    xa.fillStyle='#6FD3E8'; xa.fillText('x(s) caller',px(Sv*0.55,Sv),py(1/Math.sqrt(1+2*Sv*0.55),1)-12);
+    xa.fillStyle='#F0A44E'; xa.fillText('y(s) clairvoyant',px(Sv*0.25,Sv),py(Math.min(1,yv*Math.sqrt((1+2*Sv)/(1+2*Sv*0.25))),1)-12);
+  }
+  aS.addEventListener('input',updA); ay.addEventListener('input',updA); updA();
+})();
+</script>
+</body>
+</html>

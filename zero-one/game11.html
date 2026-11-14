@@ -114,10 +114,13 @@
     </h1>
     <p class="lede">One full street, <b>two bets left</b>, and now <b>X may check-raise</b>. Hands are
       uniform on <b>[0, 1]</b>, 0 the nuts. This is where the book stops giving a full closed-form
-      solution — so the <b>Y-side here is exact</b> (Eq. 17.13) while the <b>X-side is solved
-      numerically</b> (CFR) and verified at the limits. Two new ideas appear: X check-raises his
-      strongest hands (and adds check-raise bluffs), and Y's value bets split into
-      <b>bet-call</b> vs <b>bet-fold</b> to a check-raise.</p>
+      solution. The <b>Y-side value thresholds are exact</b> (Eq. 17.13); everything else is now
+      solved <b>exactly by sequence-form LP</b> — which settled the old open question: <b>x₁ is not a
+      line.</b> The equilibrium pins X's <i>aggregate</i> frequencies to five decimal places while
+      leaving each individual hand's assignment free; the X-side drawn here is the canonical
+      (monotone, book-style) representative of that optimal set. Two new ideas appear: X
+      check-raises among his strongest hands, and Y's value bets split into <b>bet-call</b> vs
+      <b>bet-fold</b> to a check-raise.</p>
   </header>
 
   <hr class="rule">
@@ -222,18 +225,23 @@
   </div>
 
   <div class="method">
-    <b>How these numbers are computed — and how far to trust each one.</b> The Y-side thresholds
-    (y₂, y₂*, y₁, y₀) are the book's <b>exact closed forms</b> (Eq. 17.13). The remaining thresholds
-    come from a <b>counterfactual-regret (CFR) solve</b> of the full two-bet check-raise game,
-    validated against the exact Game&nbsp;#10 solution and the no-fold Game&nbsp;#7 limit
-    (x₁→5/9, y₁→2/3, y₂→1/3 as P→∞). That validation is honest about what it can and can't pin:
-    <b>x₀ and x₁\* are reliable</b> (they reproduce exact #10 to ~1%), but <b>x₁ (dashed, marked ≈)
-    is only approximate</b> — X's bet-fold and check-call hands are near-indifferent, so the
-    equilibrium genuinely <em>blurs</em> across x₁ and no crisp value exists to read out (the
-    extraction misses exact #10's x₁ = 0.238, and independent runs disagree). Pinning it would need a
-    sequence-form LP, and the true object may be a mixed <em>band</em> rather than a line. The thin
-    check-raise-bluff / raise-bluff bands are likewise approximate. This is the same wall the book
-    hits — it stops giving full solutions exactly here.
+    <b>How these numbers are computed — the sequence-form LP, and what it found.</b> The Y-side
+    value thresholds (y₂, y₂*, y₁, y₀) are the book's <b>exact closed forms</b> (Eq. 17.13). The
+    rest come from an <b>exact sequence-form LP</b> (Koller–Megiddo–von&nbsp;Stengel;
+    <code>seqlp.py</code>), gate-validated by reproducing Games&nbsp;#9 and #10's closed forms
+    (x₁ = 5/21, x₂* = 4/21, x₁* = 68/105 at P=2) and the no-fold #7 limit. The LP settled the
+    question CFR could not: <b>there is no crisp x₁.</b> At P=2 the optimal set pins X's total bet
+    mass to <b>0.28763&nbsp;±&nbsp;0.00001</b> and total aggressive mass (bet + check-raise) to
+    <b>0.37533&nbsp;±&nbsp;0.00001</b>, yet <i>every individual hand's</i> action probability can
+    range over [0,1] — rigorously measured by maximizing/minimizing each hand's bet frequency over
+    the optimal face. The same freedom holds for Y's give-up zone (call/raise-bluff/fold
+    assignment on ≈[0.55,&nbsp;0.85]). The thresholds drawn here are the <b>canonical monotone
+    representative</b> (aggression pushed lexicographically toward stronger hands — the selection
+    that reproduces the book's own #9/#10 thresholds exactly). Under it, x₁* ≈ 0.650 ≠ y₁* ≈ 0.667
+    (the book's predicted split, confirmed), y₁* = y₂# (a representative with <i>no raise-bluffs</i>
+    exists in the optimal face), and the old CFR "blur" at x₁ stands revealed as genuine
+    equilibrium-set structure, not solver noise. The game value is exact:
+    <b>G(Y) = 0.062142 at P=2</b> (N→∞ converged), confirming the region-sum formula.
   </div>
 
   <p class="foot">Model from Bill Chen &amp; Jerrod Ankenman, <em>The Mathematics of Poker</em>,
@@ -244,14 +252,15 @@
 
 <script>
 (function(){
-  // ---- CFR-solved grid (X-side + Y give-up), Y value thresholds computed live from Eq 17.13 ----
+  // ---- exact sequence-form LP grid (monotone-selection X-side + Y give-up);
+  //      Y value thresholds computed live from Eq 17.13 (exact closed forms) ----
   var G={
     P:  [0.4,0.7,1,1.5,2,3,4,6,9,14,25,60,150],
-    x1: [0.0514,0.0806,0.1061,0.1890,0.2633,0.3293,0.3843,0.4286,0.4589,0.4915,0.5186,0.5371,0.5450],
-    x1s:[0.2090,0.2090,0.2090,0.2853,0.3579,0.4271,0.4744,0.5361,0.5729,0.6092,0.7000,0.9000,0.9800],
-    x0: [1.0000,1.0000,1.0000,0.9125,0.9000,0.9000,0.9125,0.9333,0.9500,0.9625,0.9750,0.9940,1.0000],
-    y1s:[0.1793,0.2685,0.3513,0.5667,0.6764,0.7792,0.8331,0.8735,0.9082,0.9372,0.9627,0.9829,0.9924],
-    y2h:[0.1945,0.2904,0.3776,0.5972,0.7086,0.8118,0.8644,0.9010,0.9308,0.9543,0.9737,0.9880,0.9945]
+    x1: [0.0750,0.1333,0.1792,0.2417,0.2917,0.3542,0.3958,0.4458,0.4833,0.5042,0.5292,0.5458,0.5500],
+    x1s:[0.2792,0.4042,0.4917,0.5833,0.6500,0.7292,0.7792,0.8375,0.8833,0.9250,0.9542,0.9792,0.9917],
+    x0: [0.9000,0.8708,0.8625,0.8625,0.8667,0.8833,0.9000,0.9208,0.9417,0.9625,0.9792,0.9917,0.9958],
+    y1s:[0.2875,0.4125,0.5000,0.6000,0.6667,0.7500,0.8000,0.8583,0.9000,0.9333,0.9625,0.9833,0.9917],
+    y2h:[0.2875,0.4125,0.5000,0.6000,0.6667,0.7500,0.8000,0.8583,0.9000,0.9333,0.9625,0.9833,0.9917]
   };
   function interp(arr,P){
     var Ps=G.P;
@@ -305,13 +314,13 @@
   var THRESH=[
     {k:'y2', sym:'y₂',  hue:'var(--value)',src:'exact',mean:'Y: value-raise ↔ call'},
     {k:'y2s',sym:'y₂*', hue:'var(--value)',src:'exact',mean:'Y: bet-call ↔ bet-fold (vs check-raise)'},
-    {k:'x1', sym:'x₁',  hue:'var(--value)',src:'approx',mean:'X: value ↔ check-call (mixed zone — approx.)'},
+    {k:'x1', sym:'x₁',  hue:'var(--value)',src:'exact',mean:'X: value ↔ check-call (monotone selection — assignment is free, aggregate pinned)'},
     {k:'y1', sym:'y₁',  hue:'var(--value)',src:'exact',mean:'Y: value-bet ↔ check (Eq. 17.13)'},
-    {k:'x1s',sym:'x₁*', hue:'var(--call)', src:'cfr',  mean:'X: check-call ↔ check-fold'},
-    {k:'y1s',sym:'y₁*', hue:'var(--call)', src:'cfr',  mean:'Y: call ↔ raise-bluff'},
-    {k:'y2h',sym:'y₂#', hue:'var(--bluff)',src:'cfr',  mean:'Y: raise-bluff ↔ fold'},
+    {k:'x1s',sym:'x₁*', hue:'var(--call)', src:'exact',mean:'X: check-call ↔ check-fold (LP, monotone selection)'},
+    {k:'y1s',sym:'y₁*', hue:'var(--call)', src:'exact',mean:'Y: call ↔ give up (LP; raise-bluff band optional — selection has none)'},
+    {k:'y2h',sym:'y₂#', hue:'var(--bluff)',src:'exact',mean:'Y: give up ↔ fold (= y₁* in the monotone selection)'},
     {k:'y0', sym:'y₀',  hue:'var(--bluff)',src:'exact',mean:'Y: check ↔ bluff'},
-    {k:'x0', sym:'x₀',  hue:'var(--bluff)',src:'cfr',  mean:'X: check-fold ↔ bluff'}
+    {k:'x0', sym:'x₀',  hue:'var(--bluff)',src:'exact',mean:'X: check-fold ↔ bluff (LP, monotone selection)'}
   ];
 
   function gameValue(y1,y2,y0,a,a2){

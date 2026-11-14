@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The [0,1] Games — Mathematics of Poker, Visualized</title>
+<style>
+  :root{
+    --bg:#0A0D13; --panel:#10141D; --panel2:#151B27; --line:#232B3A;
+    --ink:#E8E4DC; --dim:#8B93A3; --faint:#5A6274;
+    --heat:#F0A44E; --ice:#6FD3E8; --green:#8FD694; --red:#E07A6B; --purple:#B48EF0;
+    --serif:Charter,Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.55}
+  .wrap{max-width:940px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+  a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
+  .home{font-size:.85rem;color:var(--dim)}
+  h1{font-size:1.9rem;font-weight:600;margin:.7rem 0 .2rem}
+  .sub{color:var(--dim);font-size:1.02rem;max-width:50rem}
+  h2{font-size:1.25rem;margin:2.4rem 0 .7rem;color:var(--heat);font-weight:600}
+  p{margin:.6rem 0;max-width:50rem}
+  code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;margin:1.2rem 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem;display:block;color:var(--ink)}
+  .card:hover{border-color:var(--heat);text-decoration:none}
+  .card .t{font-weight:600;color:var(--heat);margin-bottom:.3rem}
+  .card .d{font-size:.9rem;color:var(--dim)}
+  .card .badge{display:inline-block;font:600 .7rem var(--mono);letter-spacing:.05em;
+    padding:.12rem .5rem;border-radius:99px;border:1px solid var(--line);color:var(--green);margin-top:.5rem}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;margin:1rem 0}
+  canvas{width:100%;height:auto;display:block;border-radius:10px;background:var(--panel2)}
+  .note{font-size:.88rem;color:var(--dim)}
+  table{border-collapse:collapse;font-size:.9rem;margin:.8rem 0}
+  td,th{border:1px solid var(--line);padding:.32rem .66rem;text-align:center}
+  th{color:var(--dim);font-weight:600}
+</style>
+<body>
+<div class="wrap">
+  <div class="home"><a href="../">← Mathematics of Poker, Visualized</a></div>
+  <h1>The [0,1] Games</h1>
+  <p class="sub">Chapters 11 &amp; 16–18 of Chen &amp; Ankenman's <i>The Mathematics of Poker</i>:
+  hands uniform on [0,1] (0 = the nuts), pot P, limit bets of 1 — poker reduced to pure
+  betting structure. One interactive page per game, from von Neumann's 1944 half-street
+  model to the unlimited-raise ladder, plus an exact sequence-form LP that settles what
+  the book leaves open.</p>
+
+  <h2>The games</h2>
+  <div class="cards">
+    <a class="card" href="game2.html"><div class="t">#2 · Half street <span class="m">(Ex. 11.3)</span></div>
+      <div class="d">Von Neumann's poker model — the first solved poker game. One bet, X checks dark.
+      The birthplace of α = 1/(P+1).</div><span class="badge">EXACT</span></a>
+    <a class="card" href="game9.html"><div class="t">#9 · One full bet <span class="m">(Ex. 17.1)</span></div>
+      <div class="d">X may now bet. Thresholds interleave; x₁* = y₁* = 1−α — one price for
+      bluff-catching on both sides.</div><span class="badge">EXACT</span></a>
+    <a class="card" href="game10.html"><div class="t">#10 · Two bets, no check-raise <span class="m">(Ex. 17.2)</span></div>
+      <div class="d">The raise arrives, with raise-bluffs. The 1−α boundary relocates to y₂#; the
+      R-ratio links Y's raises to X's bets.</div><span class="badge">EXACT</span></a>
+    <a class="card" href="game11.html"><div class="t">#11 · Check-raise <span class="m">(Ex. 17.3)</span></div>
+      <div class="d">Where the book stops publishing solutions. The LP shows why: x₁ is a <i>band</i> —
+      aggregates pinned to 1e-5, assignments free. Canonical selection + exact value inside.</div>
+      <span class="badge">EXACT LP · RESOLVED</span></a>
+    <a class="card" href="game12.html"><div class="t">#12 · Unlimited raises <span class="m">(Ex. 17.4)</span></div>
+      <div class="d">The Rₚ cascade of value thresholds marching to the nuts — and the finite-pot
+      game value the book declined to compute, now exact.</div>
+      <span class="badge">EXACT LP · RESOLVED</span></a>
+    <a class="card" href="REPORT.md"><div class="t">The report</div>
+      <div class="d">Methods, validation gates, the band-structure finding, the #12 value curve,
+      and the full file map. Study notes in Q&amp;A_notes.md.</div><span class="badge">WRITEUP</span></a>
+  </div>
+
+  <h2>One chart: what each strategic option is worth</h2>
+  <div class="panel">
+    <canvas id="cv" width="1680" height="760"></canvas>
+    <p class="note">Exact game value to Y (ex-showdown) by pot size, all four finite-pot games
+    (sequence-form LP; <code>values_fp.json</code>). Dashed: the P→∞ no-fold limits. Note the strict
+    ordering <span style="color:var(--red)">#9</span> &lt; <span style="color:var(--purple)">#11</span>
+    &lt; <span style="color:var(--green)">#12</span> &lt; <span style="color:var(--ice)">#10</span> at
+    every pot beyond the tiny ones: Y's raise option (#9→#10) is worth the most; giving X the
+    check-raise (#10→#11) or the re-raise war (#10→#12) hands part of it back. #9's curve is the odd
+    one — it <i>humps</i> near P ≈ 2.6 and falls to zero, because with one bet and no raises, a huge
+    pot makes the bettor's edge evaporate (its no-fold limit is Game #4's value: zero).</p>
+  </div>
+
+  <h2>The α catalog</h2>
+  <div class="panel">
+    <table>
+      <tr><th>Constant</th><th>Value</th><th>Role</th></tr>
+      <tr><td class="m">α</td><td class="m">1/(P+1)</td><td>bluff : value ratio; caller's fold share — "the golden ratio of poker"</td></tr>
+      <tr><td class="m">αₙ</td><td class="m">1/(P+2n−1)</td><td>the same, for the nth bet into the enlarged pot</td></tr>
+      <tr><td class="m">R</td><td class="m">(1−α₂)/2</td><td>value-raise : value-bet ratio (two-bet games)</td></tr>
+      <tr><td class="m">Rₚ</td><td class="m">recursion → r</td><td>the pot-dependent ladder ratio of game #12</td></tr>
+      <tr><td class="m">r</td><td class="m">√2−1</td><td>the golden mean of poker: #12's P→∞ ladder, the NL AKQ bet, the α at P=√2</td></tr>
+    </table>
+  </div>
+</div>
+<script>
+(function(){
+  var D={
+    P:[0.25,0.5,0.75,1,1.25,1.5,2,2.5,3,4,5,6,8,10,13,17,22,30,45,70,120,200],
+    g9:[0.008878,0.022222,0.033388,0.041667,0.047468,0.051413,0.055556,0.056671,0.056233,0.053333,0.049584,0.045898,0.039467,0.034384,0.028683,0.023385,0.019047,0.014578,0.010145,0.006712,0.003583,0.002156],
+    g10:[0.008931,0.022683,0.034858,0.044694,0.052544,0.058846,0.068231,0.074887,0.079881,0.086997,0.091922,0.095605,0.10083,0.104451,0.108124,0.111382,0.113964,0.1165,0.118989,0.120816,0.122654,0.123244],
+    g11:[0.008061,0.020539,0.03163,0.040615,0.047783,0.053542,0.062122,0.068195,0.072695,0.079078,0.083438,0.086692,0.091192,0.094267,0.097364,0.100082,0.10225,0.104356,0.106389,0.10769,0.109168,0.109627],
+    g12:[0.0089326,0.0226284,0.0347103,0.0443958,0.0520271,0.0580827,0.0669622,0.0730815,0.0775496,0.083712,0.0878309,0.0908315,0.0949871,0.0977787,0.1006737,0.1031318,0.10507,0.1070099,0.1088766,0.1103311,0.1112882,0.1121124]
+  };
+  var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height,L=86,R=30,T=26,B=58;
+  var Pmin=0.25,Pmax=200,Vmax=0.14;
+  function x(P){ return L+(W-L-R)*(Math.log(P/Pmin)/Math.log(Pmax/Pmin)); }
+  function y(v){ return T+(H-T-B)*(1-v/Vmax); }
+  ctx.font='21px ui-monospace,monospace'; ctx.lineWidth=1;
+  [0.25,0.5,1,2,4,8,16,32,64,128].forEach(function(g){
+    ctx.strokeStyle='#232B3A'; ctx.beginPath(); ctx.moveTo(x(g),T); ctx.lineTo(x(g),H-B); ctx.stroke();
+    ctx.fillStyle='#5A6274'; ctx.textAlign='center'; ctx.fillText(g,x(g),H-B+28);
+  });
+  for(var v=0;v<=0.14001;v+=0.02){
+    ctx.strokeStyle='#232B3A'; ctx.beginPath(); ctx.moveTo(L,y(v)); ctx.lineTo(W-R,y(v)); ctx.stroke();
+    ctx.fillStyle='#5A6274'; ctx.textAlign='right'; ctx.fillText(v.toFixed(2),L-8,y(v)+7);
+  }
+  ctx.textAlign='center'; ctx.fillText('pot size P (log)',(L+W-R)/2,H-8);
+  var r=Math.SQRT2-1;
+  var lims=[[0.125,'1/8','#6FD3E8'],[1/16+r/8,'1/16+r/8','#8FD694'],[1/9,'1/9','#B48EF0']];
+  lims.forEach(function(t){
+    ctx.strokeStyle=t[2]; ctx.globalAlpha=0.4; ctx.setLineDash([4,6]);
+    ctx.beginPath(); ctx.moveTo(L,y(t[0])); ctx.lineTo(W-R,y(t[0])); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+    ctx.textAlign='left'; ctx.fillStyle=t[2]; ctx.fillText(t[1],W-R-110,y(t[0])-6);
+  });
+  function curve(key,color){
+    ctx.strokeStyle=color; ctx.lineWidth=3.5; ctx.beginPath();
+    for(var i=0;i<D.P.length;i++){
+      if(i===0) ctx.moveTo(x(D.P[i]),y(D[key][i])); else ctx.lineTo(x(D.P[i]),y(D[key][i]));
+    }
+    ctx.stroke();
+  }
+  curve('g9','#E07A6B'); curve('g11','#B48EF0'); curve('g12','#8FD694'); curve('g10','#6FD3E8');
+  ctx.textAlign='left';
+  ctx.fillStyle='#E07A6B'; ctx.fillText('#9 one bet',x(6),y(0.0459)+30);
+  ctx.fillStyle='#6FD3E8'; ctx.fillText('#10 two bets',x(3.1),y(0.0799)-14);
+  ctx.fillStyle='#B48EF0'; ctx.fillText('#11 check-raise',x(14),y(0.0974)+32);
+  ctx.fillStyle='#8FD694'; ctx.fillText('#12 ∞ raises',x(0.8),y(0.0347)-14);
+})();
+</script>
+</body>
+</html>

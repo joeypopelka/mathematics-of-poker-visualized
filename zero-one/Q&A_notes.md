@@ -10,8 +10,8 @@ Companion notes for *The Mathematics of Poker* (Chen & Ankenman), **Chapter 17: 
 - `game10.html` — Example 17.2 / Figure 17.2 (two bets, no check-raise). Adds the raise.
 - `game11.html` — Example 17.3 (two bets, **check-raise**). Y-side exact + X-side CFR-solved.
 - `game11_cfr_solver.py`, `game11_grid.json` — the numerical solver + precomputed grid behind #11.
-- `game12.html` — Example 17.4 (folding + **unlimited raises**, no check-raise). Rₚ + the infinite value cascade. Game value unresolved at finite P.
-- `PLAN_sequence_form_LP.md` — design doc for the exact LP solve that would settle x₁ (line vs band). Not yet implemented.
+- `game12.html` — Example 17.4 (folding + **unlimited raises**, no check-raise). Rₚ + the infinite value cascade. Game value now **exact** (sequence-form LP).
+- `PLAN_sequence_form_LP.md` — design doc for the exact LP solve. **Implemented**: `seqlp.py` + `exact_run.py` → `game11_exact_grid.json`, `game12_value.json`, `values_fp.json`. Verdict in Q16bis below.
 
 ---
 
@@ -113,7 +113,7 @@ The last finite-pot [0,1] game. Every Game #10 equation survives except the one 
 - **Value cascade** (converges geometrically to the nuts): x₁ → y₂=Rₚx₁ → x₃=Rₚ₊₂y₂ → y₄=Rₚ₊₄x₃ → … These are the "put in the nth bet for value" thresholds.
 - **Lower thresholds unchanged** from #10 (more bets move Rₚ/x₁ but not the low-threshold relationships): y₁=((1−α)+(1+α)x₁)/(2+α−α²), y₀=1−αy₁, x₁\*=2y₁−x₁, x₀=1−αx₁, y₂#=1−α, y₁\*=y₂#−α₂y₂. And **x₁\* = y₁\*** again (no check-raise).
 - **P→∞ = Game #6:** Rₚ→r, x₁→1/(1+2r)≈0.547, y₂→r·x₁ — the r-geometric ladder of the no-fold infinite game. Verified.
-- **Game value: unresolved at finite P.** Limit is Game #6's 1/16+r/8≈0.1143. The finite value needs summing the whole infinite ladder (book declines it). A quick CFR ladder solver **failed validation** (B=2 gave 0.084 vs #10's 0.068; blew up at large P) — not shipped. Would need a correct sequence-form/self-similar solve.
+- **Game value: RESOLVED (exact sequence-form LP).** G₁₂(P=2) = **0.06696**; full curve in `game12_value.json`. Method: raise ladder capped at B bets, B grown until convergence — converges completely by B=6 (the cascade's geometric decay). Gates: B=2 reproduces #10's value to 1e-7; cascade thresholds at P=2 (0.2475/0.085/0.030/0.0125 at N=400) match the closed-form chain; P=1000 gives 0.1128 → limit 0.1143 ✓. **Surprise: G₁₂ < G₁₀ at every finite pot** (0.06696 < 0.06824 at P=2): bet 3 is X's option and costs Y more than Y's bet-4 option recovers.
 
 Spot values (P=2): Rₚ=0.346, x₁=0.248, cascade y₂=0.086, x₃=0.031, y₄=0.012, …; lower y₁=0.449, x₁\*=0.650, y₀=0.850, x₀=0.917.
 
@@ -129,7 +129,7 @@ As P→∞, α=1/(P+1)→0, so all α-driven structure (bluffs ∝ α·value, fo
 | #11 full, 2 bets, c-r (Ex 17.3) | #7 full, 1 raise, c-r (Ex 16.4) | both fold | 1/9 |
 | #12 full, ∞ bets, no c-r (Ex 17.4) | #6 full, ∞ raises, no c-r (Ex 16.3) | both fold | 1/16 + r/8 ≈ 0.114 |
 
-Option-transitions among the no-fold games: #1→#4 (X gains bet), #4→#5 (Y gains raise), #5→#7 (X gains check-raise, value ↓ ⅛→1/9), #5→#6 (X gains re-raise, value ↑ ⅛→0.114). r = √2−1. **All five finite games (#2, #9, #10, #11, #12) now have artifacts.**
+Option-transitions among the no-fold games: #1→#4 (X gains bet), #4→#5 (Y gains raise), #5→#7 (X gains check-raise, value ↓ ⅛→1/9), #5→#6 (X gains re-raise, value **↓** ⅛→0.114 — X's option, so Y's value falls; an earlier version of this line had the arrow backwards). r = √2−1. **All five finite games (#2, #9, #10, #11, #12) now have artifacts.**
 
 ## The role(s) of α
 
@@ -199,6 +199,15 @@ It *can* be set up, but it doesn't unwind into clean closed forms, and this is t
 **Lesson for me (feedback):** don't promise #9/#10-style closed forms for a game before checking whether a mixed-strategy/branch-split degeneracy is present — if it is, the clean-threshold method breaks and a numerical equilibrium solve is the honest tool.
 
 **Follow-up (attempt to "sharpen to exact-numeric"):** even a *numerical* exact answer for x₁ turned out to be out of reach with the CFR solver. Validating the threshold extraction against exact Game #10 (x₁ should = 0.238): every extraction method returned ≈0.13–0.15, and two independent high-precision runs disagreed on #11 (x₁ ≈ 0.16 vs 0.26). By contrast **x₁\*** (≈0.66 vs exact 0.648) and **x₀** (0.921 ✓) *do* validate. Root cause: X's **bet-fold** hands and his **check-call** hands are near-indifferent, so the equilibrium genuinely blurs across x₁ and CFR's average strategy mixes there — there is no crisp threshold to read. A reliable x₁ would require a **sequence-form LP / support-enumeration** solve (bigger separate build), and the true object may be a mixed *band* rather than a single line. Status: Y-side exact; x₀ and x₁\* reliable-numeric; **x₁ is only approximate** and is labeled as such in `game11.html`.
+
+### Q16bis. The sequence-form LP verdict (implemented): x₁ is a *band*, and here is its exact structure
+The LP from the plan doc was built (`seqlp.py`) and gate-validated: it reproduces #9's and #10's closed forms (x₁ = 5/21, x₂\* = 4/21, x₁\* = 68/105 at P=2) and #11's Y-side (Eq. 17.13), with LP duality < 1e-6 everywhere. Findings at P=2 (N up to 400):
+
+- **There is no crisp x₁ — and not because of solver noise.** Over the optimal face, *each individual hand's* bet probability can range over [0,1] (measured by per-bucket max/min LPs holding optimality fixed), across essentially the whole deck. What **is** pinned: the aggregates. Total bet mass = 0.28763 ± 1e-5; total aggressive mass (bet + check-raise) = 0.37533 ± 1e-5. The equilibrium constrains *how much* X does everything, not *which hand* does what. The same freedom holds for Y's give-up zone on ≈[0.55, 0.85] — CFR's old y₂# ≈ 0.709 and the LP selection's 0.667 are both inside it.
+- **The canonical (book-style) representative exists and is computable**: lexicographically push aggression → stronger hands over the optimal face ("monotone selection"). This selection *exactly reproduces the book's #9 and #10 X-side thresholds* — evidence it's the right formalization of what the book means by "the" solution. For #11 at P=2 it gives x₁ ≈ 0.2925 (N→∞), x₁\* = 0.650, x₀ = 0.867, and **y₁\* = y₂# = 0.6675 ≈ 1−α** (a representative with *no raise-bluffs* is optimal — the raise-bluff band is an optional feature of the face, not a requirement).
+- **x₁\* ≈ 0.650 ≠ y₁\* ≈ 0.667 — the Q13/Q15 prediction (check-raise breaks the equality) confirmed exactly.**
+- **Game value exact: G₁₁(P=2) = 0.062142** (N-converged), confirming the region-sum formula's 0.062. Full grid in `game11_exact_grid.json`; #9/#10/#11/#12 value curves in `values_fp.json`.
+- **Retrospective on Q16's CFR saga**: CFR wasn't failing — it was faithfully wandering an optimal face that genuinely has no line to find. The lesson stands, sharpened: before hunting a threshold, check whether the equilibrium *set* pins it.
 
 ### Q17. What is a sequence-form linear program (the exact-solve method for x₁)?
 The standard exact method for a **two-player zero-sum extensive game with imperfect information** — exactly our poker tree (private hands from chance, then bet/check → raise/call/fold …).
