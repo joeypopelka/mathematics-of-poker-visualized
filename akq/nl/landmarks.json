@@ -1,0 +1,99 @@
+{
+ "V_plateau_cap1": 0.027243724326512918,
+ "plateau_flatness": 1.249000902703301e-16,
+ "S_A_jam_only_ends": 0.41421356237309515,
+ "S_A_exact": "sqrt(2)-1",
+ "S_K_blocker_enters": 0.48308792114257804,
+ "S_star_plateau_begins": 0.5254398345947265,
+ "law_checks": [
+  {
+   "S": 0.2,
+   "regime": "I",
+   "resid": 3.5561831257524545e-17
+  },
+  {
+   "S": 0.35,
+   "regime": "I",
+   "resid": 9.540979117872439e-17
+  },
+  {
+   "S": 0.4142,
+   "regime": "I",
+   "resid": 6.938893903907228e-18
+  },
+  {
+   "S": 0.425,
+   "regime": "II",
+   "resid": 1.734723475976807e-17
+  },
+  {
+   "S": 0.45,
+   "regime": "II",
+   "resid": -3.122502256758253e-17
+  },
+  {
+   "S": 0.475,
+   "regime": "II",
+   "resid": -9.367506770274758e-17
+  }
+ ],
+ "law_II_exact": "(S/(1+S) - (3-2*sqrt(2)))/6",
+ "half_bet": 0.41421356237309503,
+ "half_V": 0.02859547920896832,
+ "polar_t": 0.41421356237309503,
+ "polar_s": 0.5087902060906442,
+ "polar_betaA": 0.21657592842464157,
+ "polar_V": 0.027607409263837406,
+ "half_bet_exact": "-1 + sqrt(2)",
+ "half_V_exact": "1/2 - sqrt(2)/3",
+ "polar_s_exact": "-sqrt(2) + sqrt(29 - 20*sqrt(2))/2 + 3/2",
+ "polar_V_exact": "(-786*sqrt(2) - 104*sqrt(2)*sqrt(29 - 20*sqrt(2)) + 147*sqrt(29 - 20*sqrt(2)) + 1111)/(6*(-225 - 31*sqrt(29 - 20*sqrt(2)) + 20*sqrt(2)*sqrt(29 - 20*sqrt(2)) + 158*sqrt(2)))",
+ "short_V_exact": "S**2/(6*(1+S))",
+ "deep_structure": {
+  "X_bet_sizes": {
+   "0.1615370381": 0.7925793367504859
+  },
+  "Y_bet_sizes": {
+   "0.5250733148": 1.221251120645502,
+   "0.5290672383": 0.12319946089188438
+  },
+  "cards": {
+   "X_Q": {
+    "bet_freq": 0.06326784969799522,
+    "bet_mean_size": 0.161537038143,
+    "raise_mass": 0.0,
+    "raise_mean_to": 0.0
+   },
+   "X_K": {
+    "bet_freq": 0.2743820690521994,
+    "bet_mean_size": 0.161537038143,
+    "raise_mass": 0.0,
+    "raise_mean_to": 0.0
+   },
+   "X_A": {
+    "bet_freq": 0.4549294180002912,
+    "bet_mean_size": 0.16153703814299997,
+    "raise_mass": 0.0,
+    "raise_mean_to": 0.0
+   },
+   "Y_Q": {
+    "bet_freq": 0.34445058153738634,
+    "bet_mean_size": 0.5254405284221138,
+    "raise_mass": 3.4334675410993087,
+    "raise_mean_to": 0.46666117442154254
+   },
+   "Y_K": {
+    "bet_freq": 0.0,
+    "bet_mean_size": 0.0,
+    "raise_mass": 0.0,
+    "raise_mean_to": 0.0
+   },
+   "Y_A": {
+    "bet_freq": 1.0,
+    "bet_mean_size": 0.5254388771156949,
+    "raise_mass": 15.429464698192943,
+    "raise_mean_to": 0.4524364986423396
+   }
+  }
+ }
+}

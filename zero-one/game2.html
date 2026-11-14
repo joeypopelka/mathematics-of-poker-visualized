@@ -1,0 +1,330 @@
+<title>[0,1] Game #2 — von Neumann's half-street game</title>
+<style>
+  :root{
+    --ink:#10140f; --panel:#171c16; --panel-2:#1e2620; --line:#2c352b;
+    --text:#e8e9e3; --muted:#9ba396; --faint:#6d7568;
+    --value:#d99a2b;   --value-ink:#1c1300;
+    --bluff:#c14257;   --bluff-ink:#fff1f3;
+    --call:#3f9aad;    --call-ink:#03181c;
+    --fold:#3a424b;    --fold-ink:#cdd5db;
+    --check:#4a5245;   --check-ink:#e7ecdf;
+    --gv:#c9a24a;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --mono:"SF Mono","JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--text);font-family:var(--serif);line-height:1.55;
+    -webkit-font-smoothing:antialiased;background-image:radial-gradient(120% 90% at 50% -10%,#18201a 0%,var(--ink) 55%);}
+  .wrap{max-width:1020px;margin:0 auto;padding:clamp(20px,4vw,52px) clamp(16px,4vw,40px) 80px}
+  .eyebrow{font-family:var(--sans);text-transform:uppercase;letter-spacing:.22em;font-size:11px;color:var(--value);font-weight:600}
+  h1{font-size:clamp(29px,5vw,45px);line-height:1.05;margin:.35em 0 .15em;font-weight:600;text-wrap:balance;letter-spacing:-.01em}
+  h1 .sub{display:block;font-style:italic;font-weight:400;color:var(--muted);font-size:.5em;letter-spacing:0;margin-top:.35em}
+  .lede{color:var(--muted);max-width:64ch;font-size:17px}
+  .lede b{color:var(--text);font-weight:600}
+  .vn{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--value);border-radius:10px;
+    padding:14px 18px;margin-top:18px;font-size:14px;color:var(--muted);max-width:70ch}
+  .vn b{color:var(--text)}
+  .rule{height:1px;background:var(--line);border:0;margin:32px 0}
+  .deck{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px clamp(18px,3vw,26px);box-shadow:0 20px 50px -30px #000}
+  .deck-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:22px 34px}
+  .readout{display:flex;flex-direction:column;gap:2px;min-width:120px}
+  .readout .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint)}
+  .readout .v{font-family:var(--mono);font-size:38px;font-variant-numeric:tabular-nums;line-height:1;color:var(--value)}
+  .readout .v small{font-size:15px;color:var(--muted);margin-left:4px}
+  .readout.gvbox .v{color:var(--gv)}
+  .readout.gvbox .v small{color:var(--muted)}
+  .alpha{font-family:var(--mono);font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .alpha b{color:var(--call);font-weight:600}
+  .sliderbox{flex:1 1 300px;min-width:250px}
+  .sliderbox label{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint);display:block;margin-bottom:10px}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--fold),var(--value));outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--value);cursor:pointer;border:3px solid var(--ink);box-shadow:0 0 0 1px var(--value)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--value);cursor:pointer;border:3px solid var(--ink)}
+  input[type=range]:focus-visible{box-shadow:0 0 0 3px #d99a2b55}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+  .presets .pk{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-right:2px}
+  .chip{font-family:var(--mono);font-size:13px;color:var(--text);cursor:pointer;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:5px 13px;transition:border-color .15s,color .15s,background .15s}
+  .chip:hover{border-color:var(--value);color:var(--value)}
+  .chip.active{background:var(--value);color:var(--value-ink);border-color:var(--value);font-weight:600}
+  .diagram{margin-top:30px}
+  .axishead{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+  .axishead .best{color:var(--value)} .axishead .worst{color:var(--bluff)}
+  .plot{position:relative}
+  .ruler{position:relative;height:46px;margin-bottom:2px}
+  .tick{position:absolute;top:0;bottom:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;transition:left .4s cubic-bezier(.4,0,.2,1)}
+  .tick .stem{width:1px;flex:1;background:var(--line)}
+  .tick .lab{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;padding-bottom:3px}
+  .tick .val{font-family:var(--mono);font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+  .gridlines{position:absolute;left:0;right:0;top:0;bottom:26px;pointer-events:none;z-index:2}
+  .gridlines .gl{position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(var(--line),transparent);opacity:.55;transition:left .4s cubic-bezier(.4,0,.2,1)}
+  .track{position:relative;height:60px;border-radius:9px;overflow:hidden;margin-bottom:9px;background:var(--panel-2);border:1px solid var(--line)}
+  .track .rlabel{position:absolute;z-index:3;left:12px;top:8px;font-family:var(--sans);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#ffffffcc;text-shadow:0 1px 3px #000a;pointer-events:none}
+  .track .cond{font-weight:400;color:#ffffff8c;letter-spacing:.06em;text-transform:none;font-style:italic;font-size:11px}
+  .region{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;padding:8px 9px;overflow:hidden;transition:left .4s cubic-bezier(.4,0,.2,1),width .4s cubic-bezier(.4,0,.2,1);border-right:1px solid #0006}
+  .region:last-child{border-right:0}
+  .region .act{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.02em;white-space:nowrap;line-height:1.1}
+  .region .frq{font-family:var(--mono);font-size:11px;opacity:.85;font-variant-numeric:tabular-nums}
+  .region.narrow .act,.region.narrow .frq{display:none}
+  .r-value{background:var(--value);color:var(--value-ink)}
+  .r-bluff{background:var(--bluff);color:var(--bluff-ink)}
+  .r-call{background:var(--call);color:var(--call-ink)}
+  .r-fold{background:var(--fold);color:var(--fold-ink)}
+  .r-check{background:var(--check);color:var(--check-ink)}
+  .baseline{position:relative;height:24px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .baseline .z{position:absolute;left:0} .baseline .o{position:absolute;right:0}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px}
+  .legend .li{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:12.5px;color:var(--muted)}
+  .legend .sw{width:14px;height:14px;border-radius:4px;flex:none}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:26px}
+  @media(max-width:780px){.grid2{grid-template-columns:1fr;gap:26px}}
+  h2{font-size:13px;font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;color:var(--value);font-weight:600;margin:0 0 14px}
+  h2.gv{color:var(--gv)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:baseline}
+  thead th{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  td.sym{font-family:var(--mono);color:var(--text);white-space:nowrap}
+  td.frm{font-family:var(--mono);color:var(--muted);font-size:12.5px}
+  td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+  tr[data-hue] td.sym::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:8px;vertical-align:middle;background:var(--h)}
+  .gvcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  canvas{width:100%;height:200px;display:block}
+  .gvcaption{font-family:var(--sans);font-size:12px;color:var(--muted);margin-top:8px}
+  .gvcaption b{color:var(--gv)}
+  .notes p{color:var(--muted);font-size:15px;max-width:60ch}
+  .notes p b{color:var(--text)}
+  .notes .mono{font-family:var(--mono);color:var(--call);font-size:.92em}
+  .callout{border-left:2px solid var(--value);padding:2px 0 2px 16px;margin:18px 0;font-style:italic;color:var(--text)}
+  .foot{margin-top:36px;color:var(--faint);font-size:12.5px;font-family:var(--sans);max-width:74ch}
+  .foot code{font-family:var(--mono);color:var(--muted)}
+  @media (prefers-reduced-motion: reduce){ .region,.gl,.tick{transition:none} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">The Mathematics of Poker · Chapter 11 · Example 11.3</div>
+    <h1>[0,1] Game #2
+      <span class="sub">the half-street game with folding — von Neumann's poker model, made live</span>
+    </h1>
+    <p class="lede">Half a street, one bet. <b>X must check in the dark</b>; then <b>Y</b> may bet or
+      check, and if Y bets, X may <b>call or fold</b>. Hands are uniform on <b>[0, 1]</b> (0 = the
+      nuts). Because X can now fold, Y starts to <b>bluff</b> — and the whole betting/bluffing/calling
+      balance is governed by one number, the pot size <b>P</b>. This is the ancestor of Games
+      #9–#11.</p>
+    <div class="vn"><b>Historical note.</b> This is essentially the poker model John von Neumann
+      &amp; Oskar Morgenstern solved in <em>Theory of Games and Economic Behavior</em> (1944) — one
+      of the first games ever solved by game theory. Chen &amp; Ankenman recast it as [0,1] Game&nbsp;#2.</div>
+  </header>
+
+  <hr class="rule">
+
+  <section class="deck" aria-label="Pot control">
+    <div class="deck-top">
+      <div class="readout">
+        <span class="k">Pot size</span>
+        <span class="v"><span id="potVal">2.0</span><small>bets</small></span>
+      </div>
+      <div class="readout gvbox">
+        <span class="k">Value of game to Y</span>
+        <span class="v"><span id="gVal">0.100</span><small>bet</small></span>
+      </div>
+      <div class="sliderbox">
+        <label for="pot">Drag to resize the pot &nbsp;·&nbsp; bet = 1 unit</label>
+        <input id="pot" type="range" min="0.2" max="20" step="0.1" value="2">
+        <div class="presets">
+          <span class="pk">Jump to</span>
+          <button class="chip" data-p="1">P = 1</button>
+          <button class="chip active" data-p="2">P = 2</button>
+          <button class="chip" data-p="4">P = 4</button>
+          <button class="chip" data-p="9">P = 9</button>
+        </div>
+        <div class="alpha" style="margin-top:12px">α = 1/(P+1) = <b id="alphaVal">0.333</b></div>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <div class="axishead">
+        <span class="best">◀ 0 · strongest hands</span>
+        <span>hand strength</span>
+        <span class="worst">weakest hands · 1 ▶</span>
+      </div>
+      <div class="plot">
+        <div class="ruler" id="ruler"></div>
+        <div style="position:relative">
+          <div class="gridlines" id="gridlines"></div>
+          <div class="track" id="trackY"><span class="rlabel">Y &nbsp;<span class="cond">bets or checks</span></span></div>
+          <div class="track" id="trackX"><span class="rlabel">X &nbsp;<span class="cond">checks dark, then calls or folds</span></span></div>
+        </div>
+        <div class="baseline"><span class="z">0.0</span><span class="o">1.0</span></div>
+      </div>
+
+      <div class="legend">
+        <span class="li"><span class="sw" style="background:var(--value)"></span>Value bet</span>
+        <span class="li"><span class="sw" style="background:var(--check)"></span>Check</span>
+        <span class="li"><span class="sw" style="background:var(--bluff)"></span>Bluff</span>
+        <span class="li"><span class="sw" style="background:var(--call)"></span>Call</span>
+        <span class="li"><span class="sw" style="background:var(--fold)"></span>Fold</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section>
+      <h2>Threshold readout</h2>
+      <table>
+        <thead><tr><th>Symbol</th><th>Meaning</th><th>Formula</th><th style="text-align:right">Value</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+
+    <section class="gvcard">
+      <h2 class="gv">Value of the game to Y &nbsp;vs. pot</h2>
+      <canvas id="gvchart" width="800" height="400" aria-label="Game value to Y versus pot size"></canvas>
+      <div class="gvcaption">Ex-showdown expectation to Y: <b>G = (1−α)² / [2(2−α)(1+α)]</b>.
+        It rises from 0 (tiny pot, no betting) toward <b>¼</b> as P→∞ — exactly the no-fold
+        Game&nbsp;#1 value. The dot marks the current pot.</div>
+    </section>
+  </div>
+
+  <section class="notes" style="margin-top:26px">
+    <h2>How to read it</h2>
+    <p>Y bets his best hands for <b>value</b> [0, y₁], <b>checks</b> the middle [y₁, y₀], and
+      <b>bluffs</b> his worst [y₀, 1]. X <b>calls</b> his best [0, x₁*] and <b>folds</b> the rest.
+      The one lever is <b>α = 1/(P+1)</b>.</p>
+    <div class="callout">Bluffs and value bets balance at ratio α (<span class="mono">1−y₀ = α·y₁</span>),
+      and X folds α of the hands that could beat a bluff — each side making the other exactly
+      indifferent. This is the α that runs through every later game.</div>
+    <p><b>Bet half of what gets called.</b> The calling cutoff is <span class="mono">x₁* = 2y₁</span> —
+      Y value-bets exactly half the hands X will call with. And there'd be <em>no</em> bluffing without
+      folding: if Y only value-bet, X would fold everything weak and Y couldn't get paid, so Y must
+      bluff to drag X's calls down to [y₁, x₁*].</p>
+    <p><b>The value of position.</b> Being the player who gets to bet is worth
+      <span class="mono">G</span> per hand — from 0 in a vanishing pot up to <b>¼ of a bet</b> in an
+      enormous one. That ¼ is the pure value of the betting lead when folding no longer matters.</p>
+  </section>
+
+  <p class="foot">Model &amp; solution from Bill Chen &amp; Jerrod Ankenman, <em>The Mathematics of
+    Poker</em>, Example 11.3 (“[0,1] Game #2”), with the game value from Chapter 18 (Eq. 18.1). Exact
+    closed forms: <code>α=1/(P+1)</code>, <code>y₁=(1−α)/[(2−α)(1+α)]</code>, <code>x₁*=2y₁</code>,
+    <code>y₀=1−αy₁</code>, <code>G=y₁(1−α)/2</code>. Originally von Neumann &amp; Morgenstern (1944).
+    Companion to <code>game9.html</code>, <code>game10.html</code>, <code>game11.html</code>.</p>
+</div>
+
+<script>
+(function(){
+  var potEl=document.getElementById('pot'),potVal=document.getElementById('potVal');
+  var gValEl=document.getElementById('gVal'),alphaVal=document.getElementById('alphaVal');
+  var ruler=document.getElementById('ruler'),grid=document.getElementById('gridlines'),tbody=document.getElementById('tbody');
+  var trackY=document.getElementById('trackY'),trackX=document.getElementById('trackX');
+  var chips=document.querySelectorAll('.chip');
+  var cv=document.getElementById('gvchart'),ctx=cv.getContext('2d');
+  var PMAX=20;
+
+  function solve(P){
+    var a=1/(P+1);
+    var y1=(1-a)/((2-a)*(1+a));
+    var x1s=2*y1;
+    var y0=1-a*y1;
+    var G=y1*(1-a)/2;
+    return {a:a,y1:y1,x1s:x1s,y0:y0,G:G};
+  }
+  function pct(v){return (v*100).toFixed(4)+'%';}
+  function region(s){
+    var d=document.createElement('div'); d.className='region '+s.cls;
+    d.style.left=pct(s.a); d.style.width=pct(s.b-s.a);
+    var w=s.b-s.a;
+    d.innerHTML='<div class="act">'+s.act+'</div><div class="frq">'+(w*100).toFixed(1)+'%</div>';
+    if(w<0.09) d.classList.add('narrow');
+    d.title=s.act+' — '+s.a.toFixed(3)+' to '+s.b.toFixed(3)+'  ('+(w*100).toFixed(1)+'%)';
+    return d;
+  }
+  function fill(tr,segs){
+    Array.prototype.slice.call(tr.querySelectorAll('.region')).forEach(function(n){n.remove();});
+    segs.forEach(function(s){tr.appendChild(region(s));});
+  }
+  var THRESH=[
+    {k:'y1', sym:'y₁', hue:'var(--value)', mean:'Y: value-bet ↔ check', frm:'(1−α)/[(2−α)(1+α)]'},
+    {k:'x1s',sym:'x₁*',hue:'var(--call)',  mean:'X: call ↔ fold',        frm:'2·y₁'},
+    {k:'y0', sym:'y₀', hue:'var(--bluff)', mean:'Y: check ↔ bluff',      frm:'1 − α·y₁'}
+  ];
+
+  function drawChart(curP){
+    var dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=cv.clientHeight;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,W,H);
+    var padL=44,padR=14,padT=14,padB=30, gw=W-padL-padR, gh=H-padT-padB;
+    var GMAX=0.26;
+    function X(P){return padL+(P/PMAX)*gw;}
+    function Y(g){return padT+gh-(g/GMAX)*gh;}
+    // grid + axes
+    ctx.strokeStyle='#2c352b'; ctx.fillStyle='#6d7568';
+    ctx.font='11px ui-sans-serif,-apple-system,sans-serif'; ctx.lineWidth=1;
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    [0,0.05,0.10,0.15,0.20,0.25].forEach(function(g){
+      var y=Y(g); ctx.globalAlpha=.5; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke(); ctx.globalAlpha=1;
+      ctx.fillText(g.toFixed(2), padL-6, y);
+    });
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    [0,5,10,15,20].forEach(function(p){ ctx.fillText(p, X(p), H-padB+8); });
+    ctx.textBaseline='alphabetic';
+    // asymptote 1/4
+    ctx.strokeStyle='#9ba396'; ctx.setLineDash([4,4]); ctx.globalAlpha=.7;
+    ctx.beginPath(); ctx.moveTo(padL,Y(0.25)); ctx.lineTo(W-padR,Y(0.25)); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+    ctx.fillStyle='#9ba396'; ctx.textAlign='left'; ctx.font='11px ui-sans-serif,sans-serif';
+    ctx.fillText('¼  (no-fold limit)', padL+6, Y(0.25)-5);
+    // curve
+    ctx.strokeStyle='#c9a24a'; ctx.lineWidth=2.4; ctx.beginPath();
+    for(var i=0;i<=240;i++){ var P=(i/240)*PMAX; if(P<0.01)P=0.01; var g=solve(P).G;
+      var px=X(P),py=Y(g); if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py); }
+    ctx.stroke();
+    // current point
+    var cg=solve(curP).G, cx=X(curP), cy=Y(cg);
+    ctx.strokeStyle='#c9a24a55'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(cx,Y(0)); ctx.lineTo(cx,cy); ctx.stroke();
+    ctx.fillStyle='#c9a24a'; ctx.beginPath(); ctx.arc(cx,cy,4.5,0,7); ctx.fill();
+    ctx.strokeStyle='#10140f'; ctx.lineWidth=2; ctx.stroke();
+    // label
+    ctx.fillStyle='#e8e9e3'; ctx.font='600 12px '+'ui-monospace,SFMono-Regular,Menlo,monospace';
+    var lx=Math.min(cx+9, W-padR-70);
+    ctx.textAlign='left'; ctx.fillText('G = '+cg.toFixed(3), lx, cy-8);
+  }
+
+  function render(){
+    var P=parseFloat(potEl.value), s=solve(P);
+    potVal.textContent=P.toFixed(1);
+    gValEl.textContent=s.G.toFixed(3);
+    alphaVal.textContent=s.a.toFixed(3);
+    fill(trackY,[
+      {a:0,     b:s.y1, cls:'r-value', act:'Value bet'},
+      {a:s.y1,  b:s.y0, cls:'r-check', act:'Check'},
+      {a:s.y0,  b:1,    cls:'r-bluff', act:'Bluff'}
+    ]);
+    fill(trackX,[
+      {a:0,     b:s.x1s,cls:'r-call',  act:'Call'},
+      {a:s.x1s, b:1,    cls:'r-fold',  act:'Fold'}
+    ]);
+    var ticks=THRESH.map(function(t){return {sym:t.sym,val:s[t.k]};}).sort(function(a,b){return a.val-b.val;});
+    ruler.innerHTML=''; grid.innerHTML='';
+    ticks.forEach(function(t,i){
+      var lo=(i%2===1);
+      var d=document.createElement('div'); d.className='tick'; d.style.left=pct(t.val);
+      d.innerHTML= lo ? '<div class="stem"></div><div class="lab">'+t.sym+'</div><div class="val">'+t.val.toFixed(3)+'</div>'
+                      : '<div class="lab">'+t.sym+'</div><div class="val">'+t.val.toFixed(3)+'</div><div class="stem"></div>';
+      ruler.appendChild(d);
+      var g=document.createElement('div'); g.className='gl'; g.style.left=pct(t.val); grid.appendChild(g);
+    });
+    tbody.innerHTML='';
+    THRESH.forEach(function(t){
+      var tr=document.createElement('tr'); tr.setAttribute('data-hue',''); tr.style.setProperty('--h',t.hue);
+      tr.innerHTML='<td class="sym">'+t.sym+'</td><td>'+t.mean+'</td><td class="frm">'+t.frm+'</td><td class="num">'+s[t.k].toFixed(4)+'</td>';
+      tbody.appendChild(tr);
+    });
+    drawChart(P);
+  }
+  function syncChips(){ chips.forEach(function(c){ c.classList.toggle('active', Math.abs(parseFloat(c.dataset.p)-parseFloat(potEl.value))<1e-9); }); }
+  potEl.addEventListener('input',function(){ syncChips(); render(); });
+  chips.forEach(function(c){ c.addEventListener('click',function(){ potEl.value=c.dataset.p; syncChips(); render(); }); });
+  window.addEventListener('resize',function(){ drawChart(parseFloat(potEl.value)); });
+  syncChips(); render();
+})();
+</script>

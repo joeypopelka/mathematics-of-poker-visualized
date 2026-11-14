@@ -1,0 +1,315 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chen ch. 26–28 · Tournaments</title>
+<style>
+  :root{
+    --bg:#0f1216; --panel:#171b21; --ink:#e7ecf2; --dim:#93a1b0; --line:#2a323c;
+    --a:#5cc8ff; --b:#ffb454; --c:#9d7bff; --d:#5be6a6; --warn:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  header{padding:26px 22px 10px;max-width:1080px;margin:0 auto}
+  h1{font-size:21px;margin:0 0 4px}
+  h1 small{color:var(--dim);font-weight:400}
+  .sub{color:var(--dim);max-width:70ch}
+  .tabs{display:flex;gap:6px;padding:14px 22px 0;max-width:1080px;margin:0 auto;
+    flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .tab{padding:9px 15px;border:1px solid var(--line);border-bottom:none;
+    border-radius:8px 8px 0 0;cursor:pointer;color:var(--dim);background:#131820}
+  .tab.on{color:var(--ink);background:var(--panel);border-color:var(--line)}
+  main{max-width:1080px;margin:0 auto;padding:20px 22px 60px}
+  .view{display:none} .view.on{display:block}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:18px;margin:0 0 18px}
+  .panel h2{margin:0 0 4px;font-size:16px}
+  .panel p{color:var(--dim);margin:4px 0 14px;max-width:74ch}
+  canvas{width:100%;max-width:100%;display:block}
+  .row{display:flex;gap:22px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  label{color:var(--dim);font-size:13px;display:flex;gap:8px;align-items:center}
+  input[type=range]{accent-color:var(--a)}
+  .val{color:var(--ink);font-variant-numeric:tabular-nums;
+    background:#0d1117;padding:2px 7px;border-radius:6px;border:1px solid var(--line)}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+  th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right}
+  th:first-child,td:first-child{text-align:left;color:var(--dim)}
+  thead th{color:var(--dim);font-weight:600;border-bottom:1px solid var(--line)}
+  .chip{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;
+    vertical-align:middle}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:13px;margin:8px 0}
+  .note{font-size:13px;color:var(--dim);border-left:3px solid var(--b);
+    padding:6px 0 6px 12px;margin:12px 0;background:#14181e}
+  .warn{border-left-color:var(--warn)}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  .matrix td,.matrix th{text-align:center;border:1px solid var(--line)}
+  .big{font-size:20px;font-variant-numeric:tabular-nums}
+  .k{color:var(--dim);font-size:12px}
+</style>
+
+<header>
+  <h1>Chen ch. 26–28 · Tournaments <small>— a tournament chip is not a dollar</small></h1>
+  <div class="sub">Reproducing the tournament chapters of Chen &amp; Ankenman's
+    <i>The Mathematics of Poker</i>, then charting the continuous structure the
+    book only samples. Skill decouples chips from equity early (ch. 26); the
+    payout structure decouples them near the money (ch. 27); both reshape correct
+    play (ch. 28). <b>46/46</b> of the book's worked numbers reproduced.</div>
+</header>
+
+<div class="tabs" id="tabs">
+  <div class="tab on" data-v="dbl">1 · Doubling Up + Rebuy</div>
+  <div class="tab" data-v="icm">2 · Chips Aren't Cash</div>
+  <div class="tab" data-v="str">3 · Poker's Still Poker</div>
+</div>
+
+<main>
+  <!-- ============================ TAB 1 ============================ -->
+  <section class="view on" id="dbl">
+    <div class="panel">
+      <h2>The chip-value curve <span class="mono">E = S<sup>β</sup></span>,
+        β = −log₂C</h2>
+      <p>A player's equity as a function of his stack fraction <b>S</b>, for a
+        chance-of-doubling <b>C</b>. C = 0.5 is exactly linear (chips = equity).
+        Skilled players (C &gt; 0.5) sit <i>above</i> the line — a skill premium —
+        yet the curve is concave, so each marginal chip is still worth less than
+        the last. Losing players (C &lt; 0.5) sit below and should court variance.</p>
+      <div class="row">
+        <label>skill C <input id="cSlider" type="range" min="0.44" max="0.58"
+          step="0.005" value="0.55"><span class="val" id="cVal">0.550</span></label>
+        <span class="k">β = <span id="betaVal"></span></span>
+      </div>
+      <canvas id="curveCv" height="360"></canvas>
+      <div class="legend">
+        <span><span class="chip" style="background:var(--a)"></span>E = S<sup>β</sup> (selected C)</span>
+        <span><span class="chip" style="background:var(--dim)"></span>linear (C = 0.5)</span>
+        <span><span class="chip" style="background:var(--c)"></span>C-family</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>The decision the theory flips</h2>
+      <p>250-player NLHE, ¾-buy-in edge ⇒ C = 0.5364. A river check-raise all-in:
+        call 2050 to win 4025, 36% equity. Chip-EV says call (+137 chips). The
+        Theory of Doubling Up says fold.</p>
+      <table style="max-width:540px">
+        <thead><tr><th>line</th><th>chips</th><th>win-prob equity</th></tr></thead>
+        <tbody>
+          <tr><td>call &amp; win</td><td>6075</td><td>0.024603</td></tr>
+          <tr><td>call &amp; lose</td><td>0</td><td>0</td></tr>
+          <tr><td>EV(call) = 0.36 × 0.024603</td><td>—</td><td><b>0.008857</b></td></tr>
+          <tr><td>fold</td><td>2050</td><td><b>0.009269</b></td></tr>
+        </tbody>
+      </table>
+      <div class="note">Folding (0.009269) beats calling (0.008857): passing up a
+        thin edge protects the skill you'll deploy over many future doubles.</div>
+    </div>
+
+    <div class="panel">
+      <h2>Rebuy / add-on value <span class="k">(ch. 28, on the doubling-up engine)</span></h2>
+      <p>Case 2: 1,000,000 chips in play, $90,000 pool, a 1500-chip add-on. Its
+        cash value as your stack grows, for three skill levels. The discounted
+        add-on ($100) clears its cost all the way to a huge stack; the at-par
+        rebuy ($150) has a much earlier break-even.</p>
+      <canvas id="rebuyCv" height="340"></canvas>
+      <div class="legend" id="rebuyLeg"></div>
+      <div class="note">Reproduces the book: at 6000 chips E = $953, at 7500
+        chips E = $1,162, so the $100 add-on (worth ≈ $209) is automatic; at-par
+        break-even (C = 0.51) sits near a 8,325 stack.</div>
+    </div>
+  </section>
+
+  <!-- ============================ TAB 2 ============================ -->
+  <section class="view" id="icm">
+    <div class="panel">
+      <h2>Four equity formulas, one final table</h2>
+      <p>Stacks 25k / 20k / 10k / 5k, payouts $2000 / 1400 / 900 / 700. Proportional
+        Chip Count (lower bound) and Landrum-Burns (upper bound) sandwich the two
+        accurate models. Every number here matches the book.</p>
+      <table id="icmTable" style="max-width:640px">
+        <thead><tr><th>model</th><th>P1 (25k)</th><th>P2 (20k)</th>
+          <th>P3 (10k)</th><th>P4 (5k)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="note warn">Book erratum flagged: Landrum-Burns P3 prints as
+        $1,066.67, but the sum-to-pool identity forces $1,166.67 (a typo).</div>
+    </div>
+
+    <div class="panel">
+      <h2>Where the models disagree — the leader's equity</h2>
+      <p>Slide the chip leader from an even 15k up to a dominating 48k (the other
+        three share the rest). The gap between Proportional Chip Count and
+        Landrum-Burns is the band of plausible fair value; a final-table deal
+        lives inside it. Prop-chip crosses <i>above first-place money</i> — its
+        fatal flaw — where the dashed line marks $2,000.</p>
+      <canvas id="spreadCv" height="360"></canvas>
+      <div class="legend">
+        <span><span class="chip" style="background:var(--a)"></span>prop-chip</span>
+        <span><span class="chip" style="background:var(--b)"></span>Landrum-Burns</span>
+        <span><span class="chip" style="background:var(--c)"></span>Malmuth-Harville</span>
+        <span><span class="chip" style="background:var(--d)"></span>Malmuth-Weitzman</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TAB 3 ============================ -->
+  <section class="view" id="str">
+    <div class="panel grid2">
+      <div>
+        <h2>The game of chicken (Example 28.1)</h2>
+        <p>Confrontations aren't constant-sum — every other player gains when two
+          collide — so being <i>first</i> all-in is an edge. Three equilibria; the
+          sequential first-mover claims the favorable one.</p>
+        <table class="matrix" style="max-width:360px">
+          <thead><tr><th></th><th>B: drive on</th><th>B: swerve</th></tr></thead>
+          <tbody>
+            <tr><th>A: drive on</th><td>−10, −10</td><td>1, −1</td></tr>
+            <tr><th>A: swerve</th><td>−1, 1</td><td>0, 0</td></tr>
+          </tbody>
+        </table>
+        <div class="note" id="chickenEq"></div>
+      </div>
+      <div>
+        <h2>Required equity to call, on the bubble</h2>
+        <p>The step into the money forces a risk premium: the equity you need to
+          call off your stack far exceeds the chip-EV break-even.</p>
+        <table id="bubbleTable"><thead><tr><th>situation</th>
+          <th>ICM</th><th>chip-EV</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>The bubble factor <span class="k">— ICM premium as a multiplier on
+        ch. 12 jam/fold ranges</span></h2>
+      <p>A 5-3-2 sit-and-go, hero facing a jam as his own stack varies (others
+        share the rest). The required calling equity ÷ the chip-EV threshold is
+        the factor by which your ch. 12 shove/call ranges must tighten. It peaks
+        for a middling stack and drops below 1 for a dominant leader, who can
+        call <i>lighter</i> than chip-EV.</p>
+      <canvas id="bfCv" height="330"></canvas>
+      <div class="legend">
+        <span><span class="chip" style="background:var(--a)"></span>bubble factor (req ÷ chip-EV)</span>
+        <span><span class="chip" style="background:var(--dim)"></span>1.0 (no adjustment)</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on'); document.getElementById(t.dataset.v).classList.add('on');
+  draw();
+});
+
+/* ---------- tiny canvas line-plotter ---------- */
+function plot(cv, opts){
+  const dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=cv.height;
+  cv.width=W*dpr; cv.height=H*dpr; const g=cv.getContext('2d'); g.scale(dpr,dpr);
+  g.clearRect(0,0,W,H);
+  const m={l:56,r:16,t:14,b:40}, iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const {xmin,xmax,ymin,ymax}=opts;
+  const X=x=>m.l+(x-xmin)/(xmax-xmin)*iw, Y=y=>m.t+ih-(y-ymin)/(ymax-ymin)*ih;
+  g.strokeStyle='#2a323c'; g.fillStyle='#93a1b0'; g.font='12px sans-serif'; g.lineWidth=1;
+  const yt=opts.yticks||5;
+  for(let i=0;i<=yt;i++){const v=ymin+(ymax-ymin)*i/yt;
+    g.beginPath();g.moveTo(m.l,Y(v));g.lineTo(W-m.r,Y(v));g.stroke();
+    g.textAlign='right';g.textBaseline='middle';
+    g.fillText(opts.yfmt?opts.yfmt(v):v.toFixed(2),m.l-8,Y(v));}
+  const xt=opts.xticks||6;
+  for(let i=0;i<=xt;i++){const v=xmin+(xmax-xmin)*i/xt;
+    g.textAlign='center';g.textBaseline='top';
+    g.fillText(opts.xfmt?opts.xfmt(v):v.toFixed(2),X(v),H-m.b+8);}
+  g.fillStyle='#93a1b0';
+  if(opts.xlab){g.textAlign='center';g.fillText(opts.xlab,m.l+iw/2,H-12);}
+  (opts.series||[]).forEach(s=>{
+    g.strokeStyle=s.color; g.lineWidth=s.w||2; g.setLineDash(s.dash||[]);
+    g.beginPath();
+    s.pts.forEach((p,i)=>{const px=X(p[0]),py=Y(p[1]); i?g.lineTo(px,py):g.moveTo(px,py);});
+    g.stroke(); g.setLineDash([]);
+  });
+  return {X,Y};
+}
+
+/* ---------- Tab 1: chip-value curves ---------- */
+function drawCurve(){
+  const S=DATA.doubling.chip_value_curves.S;
+  const C=parseFloat(document.getElementById('cSlider').value);
+  document.getElementById('cVal').textContent=C.toFixed(3);
+  const beta=-Math.log2(C); document.getElementById('betaVal').textContent=beta.toFixed(3);
+  const sel=S.map(s=>[s,Math.pow(s,beta)]);
+  const lin=S.map(s=>[s,s]);
+  const fam=DATA.doubling.chip_value_curves.curves.map(cu=>({
+    color:'#3a3350', w:1, pts:S.map((s,i)=>[s,cu.E[i]])}));
+  plot(document.getElementById('curveCv'),{
+    xmin:0,xmax:1,ymin:0,ymax:1,xlab:'stack fraction  S',
+    series:[...fam,
+      {pts:lin,color:'#93a1b0',w:1,dash:[5,4]},
+      {pts:sel,color:'#5cc8ff',w:2.5}]});
+}
+
+/* ---------- Tab 1: rebuy ---------- */
+function drawRebuy(){
+  const R=DATA.doubling.rebuy, cols=['#5be6a6','#5cc8ff','#ffb454'];
+  const series=R.series.map((s,i)=>({color:cols[i%3],w:2.2,
+    pts:s.stack.map((x,j)=>[x/1000,s.addon_value[j]])}));
+  const ymax=Math.max(...R.series.flatMap(s=>s.addon_value))*1.05;
+  const xmax=R.series[0].stack[R.series[0].stack.length-1]/1000;
+  const {X,Y}=plot(document.getElementById('rebuyCv'),{
+    xmin:0,xmax,ymin:0,ymax,xlab:'current stack (000s of chips)',
+    yfmt:v=>'$'+v.toFixed(0),
+    series:[...series,
+      {pts:[[0,R.discount_cost],[xmax,R.discount_cost]],color:'#93a1b0',w:1,dash:[5,4]},
+      {pts:[[0,R.par_cost],[xmax,R.par_cost]],color:'#ff6b6b',w:1,dash:[5,4]}]});
+  document.getElementById('rebuyLeg').innerHTML=
+    R.series.map((s,i)=>`<span><span class="chip" style="background:${cols[i%3]}"></span>C = ${s.C}</span>`).join('')
+    +`<span><span class="chip" style="background:#93a1b0"></span>$${R.discount_cost} discounted cost</span>`
+    +`<span><span class="chip" style="background:#ff6b6b"></span>$${R.par_cost} at-par cost</span>`;
+}
+
+/* ---------- Tab 2: table + spread ---------- */
+function drawICM(){
+  const ex=DATA.icm.example, models=[['prop-chip','prop'],['Landrum-Burns','lb'],
+    ['Malmuth-Harville','mh'],['Malmuth-Weitzman','mw']];
+  document.querySelector('#icmTable tbody').innerHTML=models.map(([n,k])=>
+    `<tr><td>${n}</td>`+ex[k].map(v=>`<td>$${v.toFixed(2)}</td>`).join('')+`</tr>`).join('');
+  const sw=DATA.icm.sweep, keys=[['prop','#5cc8ff'],['lb','#ffb454'],
+    ['mh','#9d7bff'],['mw','#5be6a6']];
+  const series=keys.map(([k,c])=>({color:c,w:2,
+    pts:sw.map(r=>[r.lead/1000,r[k][0]])}));
+  series.push({pts:[[15,2000],[48,2000]],color:'#ff6b6b',w:1,dash:[5,4]});
+  plot(document.getElementById('spreadCv'),{
+    xmin:15,xmax:48,ymin:1400,ymax:2600,xlab:'chip leader stack (000s)',
+    yfmt:v=>'$'+v.toFixed(0),series});
+}
+
+/* ---------- Tab 3 ---------- */
+function drawStr(){
+  document.getElementById('chickenEq').innerHTML=
+    'Equilibria: '+DATA.strategy.chicken.equilibria.map(e=>`<b>${e}</b>`).join(' · ');
+  document.querySelector('#bubbleTable tbody').innerHTML=DATA.strategy.bubble.map(b=>
+    `<tr><td>${b.name}</td><td class="big">${(b.req_icm*100).toFixed(1)}%</td>`+
+    `<td>${b.req_chipEV!=null?(b.req_chipEV*100).toFixed(0)+'%':'—'}</td></tr>`).join('');
+  const sw=DATA.strategy.bubble_factor_sweep;
+  plot(document.getElementById('bfCv'),{
+    xmin:sw[0].hero_stack/1000,xmax:sw[sw.length-1].hero_stack/1000,
+    ymin:0.8,ymax:1.4,xlab:'hero stack (000s of chips)',
+    series:[
+      {pts:sw.map(r=>[r.hero_stack/1000,r.bubble_factor]),color:'#5cc8ff',w:2.5},
+      {pts:[[sw[0].hero_stack/1000,1],[sw[sw.length-1].hero_stack/1000,1]],
+        color:'#93a1b0',w:1,dash:[5,4]}]});
+}
+
+function draw(){
+  if(document.getElementById('dbl').classList.contains('on')){drawCurve();drawRebuy();}
+  if(document.getElementById('icm').classList.contains('on')){drawICM();}
+  if(document.getElementById('str').classList.contains('on')){drawStr();}
+}
+document.getElementById('cSlider').oninput=drawCurve;
+window.addEventListener('resize',draw);
+draw();
+</script>

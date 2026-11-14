@@ -1,0 +1,515 @@
+<title>The No-Limit AKQ Game: What Position Is Worth at Every Depth</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg:#0B0E12; --panel:#141922; --panel2:#1B2230;
+    --ink:#ECE7DA; --muted:#8A93A4; --line:#27313F; --line2:#1B2431;
+    --gold:#E4B551;                 /* value / money */
+    --A:#EC7A4E; --K:#67B8CE; --Q:#B58BD0;
+    --r1:#3A2E1E; --r2:#1F3330; --r3:#33222E; --r4:#182231;
+  }
+  * { box-sizing:border-box; }
+  html { background:var(--bg); -webkit-text-size-adjust:100%; }
+  body { color:var(--ink); margin:0; padding:0 0 6rem;
+    font-family:Charter,'Iowan Old Style',Georgia,'Times New Roman',serif;
+    line-height:1.55; }
+  .wrap { max-width:1140px; margin:0 auto; padding:0 1.3rem; }
+  .mono { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
+  .tnum { font-variant-numeric:tabular-nums; }
+  a { color:var(--gold); }
+
+  header { padding:3.4rem 0 1.8rem; border-bottom:1px solid var(--line); }
+  .eyebrow { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.71rem; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 1rem; }
+  h1 { font-size:clamp(2rem,4.6vw,2.9rem); font-weight:500; margin:0 0 .7rem;
+    letter-spacing:-.01em; text-wrap:balance; line-height:1.1; }
+  h1 em { color:var(--gold); font-style:italic; }
+  .lede { max-width:64ch; color:var(--muted); font-size:1.05rem; margin:0; }
+  .lede b { color:var(--ink); font-weight:500; }
+
+  section { margin-top:3.2rem; }
+  h2 { font-size:1.35rem; font-weight:500; margin:0 0 .3rem; }
+  h2 .sub { display:block; font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.72rem; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--muted); margin-top:.45rem; }
+  .panel { background:var(--panel); border:1px solid var(--line);
+    border-radius:8px; padding:1.5rem 1.6rem; }
+
+  /* readouts */
+  .readouts { display:flex; gap:2.4rem; flex-wrap:wrap; align-items:baseline; }
+  .readout .k { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.66rem; letter-spacing:.15em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:.2rem; }
+  .readout .v { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:1.7rem; font-variant-numeric:tabular-nums; line-height:1; }
+  .readout .v small { font-size:.72rem; color:var(--muted); }
+  #stackVal { color:var(--gold); }
+  #regimeVal { font-size:1.15rem; }
+  .rpill { display:inline-block; padding:.12em .6em; border-radius:999px;
+    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.9rem;
+    border:1px solid var(--line); }
+
+  /* slider */
+  .sliderrow { margin:1.5rem 0 .3rem; }
+  input[type=range]{ width:100%; accent-color:var(--gold); cursor:pointer;
+    margin:.2rem 0; }
+  input[type=range]:focus-visible{ outline:2px solid var(--gold);
+    outline-offset:4px; }
+  .scale { display:flex; justify-content:space-between; color:var(--muted);
+    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.66rem; }
+  .jumps { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:1rem; }
+  .jumps button { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.71rem; background:var(--panel2); color:var(--ink);
+    border:1px solid var(--line); border-radius:5px; padding:.35rem .7rem;
+    cursor:pointer; }
+  .jumps button:hover { border-color:var(--gold); color:var(--gold); }
+  .jumps button:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* strategy bars */
+  .strat { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;
+    margin-top:1.6rem; }
+  @media (max-width:720px){ .strat { grid-template-columns:1fr; } }
+  .stratcol h3 { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-weight:400; font-size:.74rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted); margin:0 0 .2rem; }
+  .stratcol h3 b { color:var(--ink); font-weight:600; }
+  .substage { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.66rem; letter-spacing:.06em; color:var(--muted);
+    margin:.9rem 0 .5rem; }
+  .row { display:flex; align-items:center; gap:.7rem; margin:.42rem 0; }
+  .rank { width:1.5rem; text-align:center; font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-weight:600; font-size:.92rem; border-radius:4px; padding:.05rem 0; }
+  .rank.A { color:var(--A); } .rank.K { color:var(--K); } .rank.Q { color:var(--Q); }
+  .bar { flex:1; height:1.15rem; border-radius:3px; overflow:hidden;
+    display:flex; background:var(--line2); border:1px solid var(--line); }
+  .seg { height:100%; display:flex; align-items:center; justify-content:center;
+    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.6rem;
+    color:#0B0E12aa; overflow:hidden; white-space:nowrap;
+    transition:width 90ms linear; }
+  .seg.fold { background:#4A5262; color:#0B0E12; }
+  .seg.check{ background:#5C6B7A; color:#0B0E12; }
+  .seg.call { background:var(--K); }
+  .seg.bet  { background:var(--gold); }
+  .seg.raise{ background:var(--A); }
+  .sizetag { width:5.2rem; text-align:right; color:var(--muted);
+    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.68rem; }
+  .sizetag b { color:var(--gold); font-weight:500; }
+  .legend { display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.3rem;
+    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.68rem;
+    color:var(--muted); }
+  .legend span { display:inline-flex; align-items:center; gap:.35rem; }
+  .sw { width:.75rem; height:.75rem; border-radius:2px; display:inline-block; }
+
+  /* charts */
+  .canvasbox { position:relative; overflow-x:auto; }
+  canvas { display:block; width:100%; }
+  .caption { font-size:.9rem; color:var(--muted); max-width:74ch;
+    margin-top:.9rem; }
+  .caption b { color:var(--ink); font-weight:500; }
+  .tabs { display:flex; gap:.5rem; margin:.2rem 0 1rem; }
+  .tabs button { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.72rem; letter-spacing:.06em; background:none; color:var(--muted);
+    border:1px solid var(--line); border-radius:5px; padding:.35rem .8rem;
+    cursor:pointer; }
+  .tabs button[aria-pressed=true]{ color:var(--ink); background:var(--panel2);
+    border-color:var(--muted); }
+  .tabs button:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* regimes */
+  .regimes { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:1rem; margin-top:1.2rem; }
+  .reg { border:1px solid var(--line); border-radius:8px; padding:1.1rem 1.2rem;
+    background:var(--panel); border-top:3px solid var(--line); }
+  .reg.r1 { border-top-color:var(--gold); }
+  .reg.r2 { border-top-color:#5FB98F; }
+  .reg.r3 { border-top-color:var(--A); }
+  .reg.r4 { border-top-color:var(--K); }
+  .reg .tag { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.64rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--muted); }
+  .reg h4 { margin:.25rem 0 .3rem; font-size:1rem; font-weight:600; }
+  .reg .rng { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.75rem; color:var(--gold); margin-bottom:.55rem; }
+  .reg p { margin:0; font-size:.86rem; color:var(--muted); }
+  .reg p b { color:var(--ink); font-weight:500; }
+  .reg .law { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+    font-size:.78rem; color:var(--ink); margin-top:.55rem;
+    padding-top:.5rem; border-top:1px solid var(--line2); }
+
+  .note { font-size:.92rem; color:var(--muted); max-width:74ch; }
+  .note b { color:var(--ink); font-weight:500; }
+  code { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.85em;
+    background:var(--panel2); padding:.08em .4em; border-radius:4px; }
+  #tip { position:fixed; pointer-events:none; z-index:20; display:none;
+    background:#1B2431F5; border:1px solid var(--line); border-radius:5px;
+    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.71rem;
+    padding:.4rem .6rem; color:var(--ink); white-space:pre; }
+  @media (prefers-reduced-motion:reduce){ .seg { transition:none; } }
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Mathematics of Poker &middot; Ch. 15 &middot; No-Limit AKQ</p>
+  <h1>What position is worth &mdash; <em>and how deep it stops mattering</em></h1>
+  <p class="lede">The one-street no-limit AKQ game, solved exactly at 300 stack
+  sizes. The player in position profits at every depth &mdash; but the edge
+  <b>climbs only until the stack is about half a pot</b>, then freezes at
+  <b>+0.0272 pots</b> and never moves again. Drag the stack to watch the
+  equilibrium reorganize.</p>
+</header>
+
+<section>
+  <div class="panel">
+    <div class="readouts">
+      <div class="readout"><div class="k">Stack behind</div>
+        <div class="v tnum" id="stackVal">&mdash;</div></div>
+      <div class="readout"><div class="k">Value to Y (position)</div>
+        <div class="v tnum" id="valVal">&mdash;</div></div>
+      <div class="readout"><div class="k">Regime</div>
+        <div class="v"><span class="rpill" id="regimeVal">&mdash;</span></div></div>
+    </div>
+    <div class="sliderrow">
+      <input type="range" id="slider" min="0" max="0" value="0" step="1"
+        aria-label="stack size in pots">
+      <div class="scale mono">
+        <span>0.02</span><span>0.1</span><span>0.41</span><span>1</span>
+        <span>10</span><span>100 pots</span></div>
+    </div>
+    <div class="jumps" id="jumps"></div>
+
+    <div class="strat">
+      <div class="stratcol">
+        <h3>X opens <b>(out of position)</b></h3>
+        <div class="substage">CHECK / BET &mdash; per card</div>
+        <div id="Xopen"></div>
+      </div>
+      <div class="stratcol">
+        <h3>Y responds <b>(in position)</b></h3>
+        <div class="substage">FACING X&rsquo;S BET &mdash; fold / call / raise</div>
+        <div id="YvsBet"></div>
+        <div class="substage">AFTER X CHECKS &mdash; check / bet</div>
+        <div id="Ycheck"></div>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--gold)"></i>bet</span>
+      <span><i class="sw" style="background:var(--A)"></i>raise</span>
+      <span><i class="sw" style="background:var(--K)"></i>call</span>
+      <span><i class="sw" style="background:#5C6B7A"></i>check</span>
+      <span><i class="sw" style="background:#4A5262"></i>fold</span>
+      <span class="tnum">bet/raise sizes shown in pots</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>The value of position vs. stack depth
+    <span class="sub">Y&rsquo;s equilibrium profit, in pots &mdash; the whole story lives under one pot</span></h2>
+  <div class="panel canvasbox">
+    <canvas id="curveV" height="420" role="img"
+      aria-label="value to Y versus stack size, with four regime bands"></canvas>
+  </div>
+  <p class="caption">Four regimes, shaded. Two have <b>exact closed-form
+  laws</b> (dashed): jam-only <span class="mono">S&sup2;/(6(1+S))</span> and the
+  polar-bet law <span class="mono">(S/(1+S)&minus;(3&minus;2&radic;2))/6</span>,
+  which meet <b>tangent</b> at S = &radic;2&minus;1. The curve rises, corners,
+  and goes perfectly flat at <b>S* = 0.525</b> &mdash; exactly Y&rsquo;s own
+  largest bet size.</p>
+</section>
+
+<section>
+  <h2>How often each line gets played
+    <span class="sub">Betting-line frequencies across stack depth</span></h2>
+  <div class="tabs" role="group" aria-label="chart scale">
+    <button id="tabLog" aria-pressed="true">log stack</button>
+    <button id="tabLin" aria-pressed="false">linear (0&ndash;1.5)</button>
+  </div>
+  <div class="panel canvasbox">
+    <canvas id="curveL" height="360" role="img"
+      aria-label="stacked area of betting line frequencies versus stack size"></canvas>
+  </div>
+  <p class="caption">Deep-stack play is dominated by <b>check&ndash;check</b>
+  (39%) and the <b>check&ndash;bet</b> lines: X often checks its merged range and
+  lets Y drive. The raise lines (<span class="mono">b&ndash;r</span>) &mdash; Y
+  punishing X&rsquo;s blocking bet &mdash; appear only once the stack is deep
+  enough to raise into.</p>
+</section>
+
+<section>
+  <h2>The four regimes<span class="sub">Reading upward from an all-in short stack</span></h2>
+  <div class="regimes">
+    <div class="reg r1">
+      <div class="tag">I &middot; ends at &radic;2&minus;1</div>
+      <h4>Jam-or-fold</h4>
+      <div class="rng">0 &lt; S &le; 0.414</div>
+      <p>Bets are tiny next to the pot, so everything collapses to jam-or-call.
+      X jams every <b>Ace</b> and some <b>Queens</b>; the King never jams.</p>
+      <div class="law">V = S&sup2; / (6(1+S))</div>
+    </div>
+    <div class="reg r2">
+      <div class="tag">II &middot; polar</div>
+      <h4>The classical bet</h4>
+      <div class="rng">0.414 &le; S &le; 0.483</div>
+      <p>The stack covers the optimal bet. X bets <b>&radic;2&minus;1</b> of pot
+      with a polar range (nut Aces + Queen bluffs); Y jams behind. Hands off
+      from regime&nbsp;I with matching value <em>and</em> slope.</p>
+      <div class="law">V = (S/(1+S) &minus; (3&minus;2&radic;2)) / 6</div>
+    </div>
+    <div class="reg r3">
+      <div class="tag">III &middot; Player X strikes back</div>
+      <h4>The King&rsquo;s blocker</h4>
+      <div class="rng">0.483 &le; S &le; 0.525</div>
+      <p>The book&rsquo;s move switches on: X&rsquo;s <b>King makes a small
+      blocking bet</b>. The bet size <em>collapses</em> from 0.41 toward 0.16 as
+      the range merges. Y&rsquo;s raise keeps it honest.</p>
+      <div class="law">no closed form &mdash; fast mixture</div>
+    </div>
+    <div class="reg r4">
+      <div class="tag">IV &middot; plateau</div>
+      <h4>Depth stops mattering</h4>
+      <div class="rng">S &ge; 0.525</div>
+      <p>Value freezes at <b>+0.0272 pots</b> and every strategy locks. Onset =
+      Y&rsquo;s largest bet size: once chips cover that, more stack is dead
+      weight. Flat to 10&#8315;&sup1;&#8310;.</p>
+      <div class="law">V = constant</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Method<span class="sub">How the numbers are made</span></h2>
+  <p class="note">Each stack size is solved exactly by <b>sequence-form linear
+  programming</b> &mdash; both players&rsquo; LPs, with a strong-duality check.
+  No-limit bet and raise sizes are discretized on a grid refined around the
+  equilibrium support until the value stops moving; raises are capped at one and
+  validated against deeper caps (correction &lt; 3&times;10&#8315;&#8309;). The
+  three short-stack regime laws are hand-derived and verified against the LP to
+  ~10&#8315;&sup1;&#8311;. The King&rsquo;s blocking bet and the raises that
+  punish it are Chen &amp; Ankenman&rsquo;s results from ch.&nbsp;15
+  (&ldquo;Player X Strikes Back&rdquo;); the exact bet sizes, ranges, the
+  four-regime structure, and the plateau are this project&rsquo;s extension.
+  Full writeup in <code>REPORT.md</code>.</p>
+</section>
+</div>
+<div id="tip"></div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const $ = s => document.querySelector(s);
+const CARDS = ["A","K","Q"];
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = {A:cssv('--A'),K:cssv('--K'),Q:cssv('--Q'),gold:cssv('--gold'),
+  ink:cssv('--ink'),muted:cssv('--muted'),line:cssv('--line')};
+const fmt = (x,d=4)=> (x>=0?'+':'')+x.toFixed(d);
+const nS = DATA.S.length;
+let idx = 0;
+
+/* ---------- nearest index for a target stack ---------- */
+function idxForS(s){ let best=0,bd=1e9;
+  for(let i=0;i<nS;i++){ const d=Math.abs(Math.log(DATA.S[i])-Math.log(s));
+    if(d<bd){bd=d;best=i;} } return best; }
+
+/* ---------- regime label ---------- */
+function regime(s){ const L=DATA.landmarks;
+  if(s<=L.S_A) return ['I','jam-or-fold',cssv('--gold')];
+  if(s<=L.S_K) return ['II','polar bet','#5FB98F'];
+  if(s<L.S_star-1e-6) return ['III','King blocker',cssv('--A')];
+  return ['IV','plateau',cssv('--K')]; }
+
+/* ---------- strategy bars ---------- */
+function seg(cls,frac,label){
+  const pct=(frac*100);
+  if(pct<0.05) return '';
+  const txt = pct>=11 ? label : '';
+  return `<div class="seg ${cls}" style="width:${pct}%">${txt}</div>`;
+}
+function barRow(card, segs, sizeTxt){
+  return `<div class="row"><div class="rank ${card}">${card}</div>`+
+    `<div class="bar">${segs}</div>`+
+    `<div class="sizetag">${sizeTxt}</div></div>`;
+}
+function renderStrat(){
+  const i=idx;
+  // X opens
+  let h='';
+  for(const c of CARDS){ const b=DATA.Xopen[c];
+    const segs=seg('check',b.k[i],'check')+seg('bet',b.b[i],'bet');
+    const sz = b.b[i]>0.005 ? `<b>${b.size[i].toFixed(3)}</b>` : '&mdash;';
+    h+=barRow(c,segs,sz); }
+  $('#Xopen').innerHTML=h;
+  // Y vs bet
+  h='';
+  for(const c of CARDS){ const b=DATA.YvsBet[c];
+    const segs=seg('fold',b.f[i],'fold')+seg('call',b.c[i],'call')+seg('raise',b.r[i],'raise');
+    const sz = b.r[i]>0.005 ? `<b>${b.size[i].toFixed(3)}</b>` : '&mdash;';
+    h+=barRow(c,segs,sz); }
+  $('#YvsBet').innerHTML=h;
+  // Y after check
+  h='';
+  for(const c of CARDS){ const b=DATA.Ycheck[c];
+    const segs=seg('check',b.k[i],'check')+seg('bet',b.b[i],'bet');
+    const sz = b.b[i]>0.005 ? `<b>${b.size[i].toFixed(3)}</b>` : '&mdash;';
+    h+=barRow(c,segs,sz); }
+  $('#Ycheck').innerHTML=h;
+}
+
+/* ---------- readouts ---------- */
+function renderReadouts(){
+  const s=DATA.S[idx], v=DATA.V[idx], r=regime(s);
+  $('#stackVal').innerHTML = (s<1?s.toFixed(3):s.toFixed(2))+' <small>pots</small>';
+  $('#valVal').textContent = fmt(v,5);
+  const pill=$('#regimeVal'); pill.textContent = r[0]+' · '+r[1];
+  pill.style.color=r[2]; pill.style.borderColor=r[2];
+}
+
+/* ---------- value curve ---------- */
+function setupCanvas(cv,h){
+  const dpr=window.devicePixelRatio||1;
+  const w=cv.parentElement.clientWidth;
+  cv.width=w*dpr; cv.height=h*dpr; cv.style.height=h+'px';
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  return {ctx,w,h};
+}
+const PADX=54, PADT=22, PADB=34;
+const logS = s => Math.log(s);
+function xOf(s,w){ const lo=logS(DATA.S[0]),hi=logS(DATA.S[nS-1]);
+  return PADX+(logS(s)-lo)/(hi-lo)*(w-PADX-14); }
+function drawV(){
+  const cv=$('#curveV'); const {ctx,w,h}=setupCanvas(cv,420);
+  const vmax=0.031, y=v=> PADT+(1-v/vmax)*(h-PADT-PADB);
+  ctx.clearRect(0,0,w,h);
+  // regime bands
+  const L=DATA.landmarks;
+  const bands=[[DATA.S[0],L.S_A,cssv('--r1')],[L.S_A,L.S_K,cssv('--r2')],
+    [L.S_K,L.S_star,cssv('--r3')],[L.S_star,DATA.S[nS-1],cssv('--r4')]];
+  for(const [a,b,col] of bands){ ctx.fillStyle=col+'99';
+    ctx.fillRect(xOf(a,w),PADT,xOf(b,w)-xOf(a,w),h-PADT-PADB); }
+  // grid + y labels
+  ctx.strokeStyle=cssv('--line'); ctx.fillStyle=COL.muted;
+  ctx.font='10px ui-monospace,monospace'; ctx.textAlign='right';
+  for(let gv=0; gv<=0.03; gv+=0.01){ const yy=y(gv);
+    ctx.globalAlpha=.5; ctx.beginPath(); ctx.moveTo(PADX,yy); ctx.lineTo(w-14,yy);
+    ctx.stroke(); ctx.globalAlpha=1;
+    ctx.fillText(gv.toFixed(2),PADX-8,yy+3); }
+  // x ticks
+  ctx.textAlign='center';
+  for(const tk of [0.02,0.1,0.414,1,10,100]){ if(tk<DATA.S[0]||tk>DATA.S[nS-1])continue;
+    const xx=xOf(tk,w); ctx.fillText(tk<1?tk:tk.toString(),xx,h-PADB+16); }
+  // exact-law dashes (only in their regimes)
+  function lawLine(arr,upTo){ ctx.setLineDash([4,3]); ctx.lineWidth=1.4;
+    ctx.strokeStyle=COL.ink; ctx.globalAlpha=.55; ctx.beginPath(); let started=false;
+    for(let i=0;i<nS;i++){ if(DATA.S[i]>upTo)break;
+      const xx=xOf(DATA.S[i],w),yy=y(arr[i]);
+      if(!started){ctx.moveTo(xx,yy);started=true;} else ctx.lineTo(xx,yy);}
+    ctx.stroke(); ctx.globalAlpha=1; ctx.setLineDash([]); }
+  lawLine(DATA.lawI,L.S_A);
+  lawLine(DATA.lawII,L.S_K);
+  // value curve
+  ctx.strokeStyle=COL.gold; ctx.lineWidth=2.4; ctx.beginPath();
+  for(let i=0;i<nS;i++){ const xx=xOf(DATA.S[i],w),yy=y(DATA.V[i]);
+    if(i===0)ctx.moveTo(xx,yy); else ctx.lineTo(xx,yy);} ctx.stroke();
+  // plateau marker
+  ctx.strokeStyle=COL.K; ctx.globalAlpha=.6; ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.moveTo(xOf(L.S_star,w),PADT);
+  ctx.lineTo(xOf(L.S_star,w),h-PADB); ctx.stroke();
+  ctx.setLineDash([]); ctx.globalAlpha=1;
+  ctx.fillStyle=COL.K; ctx.textAlign='left'; ctx.font='10px ui-monospace,monospace';
+  ctx.fillText('S* = 0.525',xOf(L.S_star,w)+5,PADT+12);
+  // cursor
+  const cs=DATA.S[idx];
+  ctx.strokeStyle=COL.ink; ctx.globalAlpha=.9; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(xOf(cs,w),PADT); ctx.lineTo(xOf(cs,w),h-PADB); ctx.stroke();
+  ctx.globalAlpha=1; ctx.fillStyle=COL.gold;
+  ctx.beginPath(); ctx.arc(xOf(cs,w),y(DATA.V[idx]),4,0,7); ctx.fill();
+  // axis title
+  ctx.fillStyle=COL.muted; ctx.textAlign='center';
+  ctx.fillText('stack S (pots, log scale)',w/2,h-4);
+}
+
+/* ---------- line-frequency area ---------- */
+let lineScale='log';
+const LINECOLS=['#5C6B7A',cssv('--gold')+'cc',cssv('--gold'),
+  cssv('--A')+'aa',cssv('--A'),cssv('--K')+'aa',cssv('--K')];
+const LINELABEL=['check-check','bet-fold','bet-call','bet-raise-fold',
+  'bet-raise-call','check-bet-fold','check-bet-call'];
+function drawL(){
+  const cv=$('#curveL'); const {ctx,w,h}=setupCanvas(cv,360);
+  ctx.clearRect(0,0,w,h);
+  const pt=18,pb=30,px=44;
+  const inLin = lineScale==='linear';
+  const smax = inLin?1.5:DATA.S[nS-1];
+  const smin = inLin?0.02:DATA.S[0];
+  const X = s=>{ if(inLin) return px+(s-smin)/(smax-smin)*(w-px-14);
+    const lo=logS(smin),hi=logS(smax); return px+(logS(s)-lo)/(hi-lo)*(w-px-14); };
+  const Y = f=> pt+(1-f)*(h-pt-pb);
+  // stacked areas
+  const idxs=[]; for(let i=0;i<nS;i++){ if(DATA.S[i]>=smin&&DATA.S[i]<=smax) idxs.push(i);}
+  let base=new Array(nS).fill(0);
+  for(let k=0;k<DATA.lineKeys.length;k++){
+    ctx.fillStyle=LINECOLS[k]; ctx.beginPath();
+    let first=true;
+    for(const i of idxs){ const f=base[i]+DATA.lines[i][k];
+      const xx=X(DATA.S[i]),yy=Y(f); if(first){ctx.moveTo(xx,yy);first=false;}else ctx.lineTo(xx,yy);}
+    for(let j=idxs.length-1;j>=0;j--){ const i=idxs[j];
+      ctx.lineTo(X(DATA.S[i]),Y(base[i])); }
+    ctx.closePath(); ctx.fill();
+    for(const i of idxs) base[i]+=DATA.lines[i][k];
+  }
+  // axes
+  ctx.strokeStyle=cssv('--line'); ctx.globalAlpha=.6;
+  ctx.beginPath(); ctx.moveTo(px,pt); ctx.lineTo(px,h-pb); ctx.lineTo(w-14,h-pb);
+  ctx.stroke(); ctx.globalAlpha=1;
+  ctx.fillStyle=COL.muted; ctx.font='10px ui-monospace,monospace';
+  ctx.textAlign='right';
+  for(let f=0;f<=1;f+=.25){ ctx.fillText((f*100).toFixed(0)+'%',px-6,Y(f)+3);}
+  ctx.textAlign='center';
+  const ticks = inLin?[0.02,0.4,0.8,1.2,1.5]:[0.02,0.1,0.414,1,10,100];
+  for(const tk of ticks){ if(tk<smin||tk>smax)continue;
+    ctx.fillText(tk<1?tk:tk.toString(),X(tk),h-pb+15); }
+  // cursor
+  if(DATA.S[idx]>=smin&&DATA.S[idx]<=smax){
+    ctx.strokeStyle=COL.ink; ctx.globalAlpha=.85;
+    ctx.beginPath(); ctx.moveTo(X(DATA.S[idx]),pt); ctx.lineTo(X(DATA.S[idx]),h-pb);
+    ctx.stroke(); ctx.globalAlpha=1; }
+  // legend
+  ctx.textAlign='left'; let lx=px+4, ly=pt+2;
+  for(let k=0;k<LINELABEL.length;k++){
+    ctx.fillStyle=LINECOLS[k]; ctx.fillRect(lx,ly-8,9,9);
+    ctx.fillStyle=COL.muted; ctx.fillText(LINELABEL[k],lx+13,ly);
+    lx += ctx.measureText(LINELABEL[k]).width+34;
+    if(lx>w-120){ lx=px+4; ly+=15; }
+  }
+}
+
+/* ---------- interaction ---------- */
+function setIdx(i){ idx=Math.max(0,Math.min(nS-1,i));
+  $('#slider').value=idx; renderReadouts(); renderStrat(); drawV(); drawL(); }
+$('#slider').addEventListener('input',e=> setIdx(+e.target.value));
+
+function buildJumps(){
+  const L=DATA.landmarks;
+  const marks=[['deep (S=10)',10],['plateau (S=0.6)',0.6],
+    ['King blocker (S=0.50)',0.50],['polar (S=0.45)',0.45],
+    ['jam-only (S=0.2)',0.2]];
+  let h='';
+  marks.forEach((m,k)=> h+=`<button data-s="${m[1]}">${m[0]}</button>`);
+  $('#jumps').innerHTML=h;
+  $('#jumps').querySelectorAll('button').forEach(b=>
+    b.addEventListener('click',()=> setIdx(idxForS(+b.dataset.s))));
+}
+
+$('#tabLog').addEventListener('click',()=>{ lineScale='log';
+  $('#tabLog').setAttribute('aria-pressed','true');
+  $('#tabLin').setAttribute('aria-pressed','false'); drawL(); });
+$('#tabLin').addEventListener('click',()=>{ lineScale='linear';
+  $('#tabLin').setAttribute('aria-pressed','true');
+  $('#tabLog').setAttribute('aria-pressed','false'); drawL(); });
+
+window.addEventListener('resize',()=>{ drawV(); drawL(); });
+
+/* init */
+$('#slider').max=nS-1;
+buildJumps();
+setIdx(idxForS(10));
+</script>

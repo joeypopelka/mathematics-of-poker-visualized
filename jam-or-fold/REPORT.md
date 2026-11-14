@@ -7,7 +7,7 @@ calls or folds. This is the full equilibrium analysis of that game — the
 that the book alludes to on p. 131 — computed exactly for every stack size
 from 1 to 2,500 big blinds.
 
-**Interactive explorer:** https://claude.ai/code/artifact/64b1d953-741c-4b19-8254-3b4459f19ce4
+**Interactive explorer:** https://joeypopelka.github.io/mathematics-of-poker-visualized/jam-or-fold/
 
 ## Method
 

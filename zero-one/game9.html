@@ -1,0 +1,459 @@
+<title>[0,1] Game #9 — Live Figure 17.1</title>
+<style>
+  :root{
+    --ink:#10140f;
+    --panel:#171c16;
+    --panel-2:#1e2620;
+    --line:#2c352b;
+    --text:#e8e9e3;
+    --muted:#9ba396;
+    --faint:#6d7568;
+    /* semantic region hues */
+    --value:#d99a2b;    --value-ink:#1c1300;
+    --bluff:#c14257;    --bluff-ink:#fff1f3;
+    --call:#3f9aad;     --call-ink:#03181c;
+    --fold:#3a424b;     --fold-ink:#cdd5db;
+    --check:#4a5245;    --check-ink:#e7ecdf;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --mono:"SF Mono","JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--ink);color:var(--text);
+    font-family:var(--serif);line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 90% at 50% -10%,#18201a 0%,var(--ink) 55%);
+  }
+  .wrap{max-width:1020px;margin:0 auto;padding:clamp(20px,4vw,52px) clamp(16px,4vw,40px) 80px}
+
+  /* ---- masthead ---- */
+  .eyebrow{font-family:var(--sans);text-transform:uppercase;letter-spacing:.22em;
+    font-size:11px;color:var(--value);font-weight:600}
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.04;margin:.35em 0 .15em;
+    font-weight:600;text-wrap:balance;letter-spacing:-.01em}
+  h1 .sub{display:block;font-style:italic;font-weight:400;color:var(--muted);
+    font-size:.5em;letter-spacing:0;margin-top:.35em}
+  .lede{color:var(--muted);max-width:64ch;font-size:17px}
+  .lede b{color:var(--text);font-weight:600}
+
+  .rule{height:1px;background:var(--line);border:0;margin:34px 0}
+
+  /* ---- control deck ---- */
+  .deck{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:22px clamp(18px,3vw,26px);box-shadow:0 20px 50px -30px #000}
+  .deck-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:26px 34px}
+  .pot-readout{display:flex;flex-direction:column;gap:2px;min-width:150px}
+  .pot-readout .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;
+    font-size:10.5px;color:var(--faint)}
+  .pot-readout .v{font-family:var(--mono);font-size:38px;font-variant-numeric:tabular-nums;
+    line-height:1;color:var(--value)}
+  .pot-readout .v small{font-size:15px;color:var(--muted);margin-left:4px}
+  .alpha{font-family:var(--mono);font-size:14px;color:var(--muted);
+    font-variant-numeric:tabular-nums}
+  .alpha b{color:var(--call);font-weight:600}
+  .sliderbox{flex:1 1 320px;min-width:260px}
+  .sliderbox label{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;
+    font-size:10.5px;color:var(--faint);display:block;margin-bottom:10px}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;
+    border-radius:6px;background:linear-gradient(90deg,var(--fold),var(--value));outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:20px;height:20px;border-radius:50%;background:var(--value);cursor:pointer;
+    border:3px solid var(--ink);box-shadow:0 0 0 1px var(--value)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;
+    background:var(--value);cursor:pointer;border:3px solid var(--ink)}
+  input[type=range]:focus-visible{box-shadow:0 0 0 3px #d99a2b55}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+  .presets .pk{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint);margin-right:2px}
+  .chip{font-family:var(--mono);font-size:13px;color:var(--text);cursor:pointer;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:999px;
+    padding:5px 13px;transition:border-color .15s,color .15s,background .15s}
+  .chip:hover{border-color:var(--value);color:var(--value)}
+  .chip.active{background:var(--value);color:var(--value-ink);border-color:var(--value);font-weight:600}
+
+  /* ---- diagram ---- */
+  .diagram{margin-top:30px}
+  .axishead{display:flex;justify-content:space-between;align-items:baseline;
+    font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:4px}
+  .axishead .best{color:var(--value)}
+  .axishead .worst{color:var(--bluff)}
+
+  .plot{position:relative}
+  /* ruler with threshold ticks */
+  .ruler{position:relative;height:52px;margin-bottom:2px}
+  .tick{position:absolute;top:0;bottom:0;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;transition:left .45s cubic-bezier(.4,0,.2,1)}
+  .tick .stem{width:1px;flex:1;background:var(--line)}
+  .tick .lab{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;
+    padding-bottom:3px}
+  .tick .val{font-family:var(--mono);font-size:10.5px;color:var(--faint);
+    font-variant-numeric:tabular-nums}
+  .tick.hi{margin-top:0}
+  .tick.lo .stem{background:var(--line)}
+
+  /* full-height gridlines behind tracks */
+  .gridlines{position:absolute;left:0;right:0;top:0;bottom:26px;pointer-events:none;z-index:2}
+  .gridlines .gl{position:absolute;top:0;bottom:0;width:1px;
+    background:linear-gradient(var(--line),transparent);opacity:.55;
+    transition:left .45s cubic-bezier(.4,0,.2,1)}
+
+  .track{position:relative;height:60px;border-radius:9px;overflow:hidden;
+    margin-bottom:9px;background:var(--panel-2);border:1px solid var(--line)}
+  .track .rlabel{position:absolute;z-index:3;left:12px;top:8px;font-family:var(--sans);
+    font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#ffffffcc;
+    text-shadow:0 1px 3px #000a;pointer-events:none}
+  .track .cond{font-weight:400;color:#ffffff8c;letter-spacing:.06em;text-transform:none;
+    font-style:italic;font-size:11px}
+  .region{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;
+    justify-content:flex-end;padding:8px 9px;overflow:hidden;
+    transition:left .45s cubic-bezier(.4,0,.2,1),width .45s cubic-bezier(.4,0,.2,1);
+    border-right:1px solid #0006}
+  .region:last-child{border-right:0}
+  .region .act{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.02em;
+    white-space:nowrap;line-height:1.1}
+  .region .frq{font-family:var(--mono);font-size:11px;opacity:.85;font-variant-numeric:tabular-nums}
+  .region.narrow .act,.region.narrow .frq{display:none}
+  .r-value{background:var(--value);color:var(--value-ink)}
+  .r-bluff{background:var(--bluff);color:var(--bluff-ink)}
+  .r-call{background:var(--call);color:var(--call-ink)}
+  .r-fold{background:var(--fold);color:var(--fold-ink)}
+  .r-check{background:var(--check);color:var(--check-ink)}
+
+  .baseline{position:relative;height:24px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .baseline .z{position:absolute;left:0}
+  .baseline .o{position:absolute;right:0}
+
+  /* ---- legend ---- */
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px}
+  .legend .li{display:flex;align-items:center;gap:8px;font-family:var(--sans);
+    font-size:12.5px;color:var(--muted)}
+  .legend .sw{width:14px;height:14px;border-radius:4px;flex:none}
+
+  /* ---- readout table ---- */
+  .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;margin-top:14px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr;gap:26px}}
+  h2{font-size:13px;font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;
+    color:var(--value);font-weight:600;margin:0 0 14px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:baseline}
+  thead th{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--faint);font-weight:600;border-bottom-color:var(--line)}
+  td.sym{font-family:var(--mono);color:var(--text);white-space:nowrap}
+  td.frm{font-family:var(--mono);color:var(--muted);font-size:12.5px}
+  td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+  tr[data-hue] td.sym::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;
+    margin-right:8px;vertical-align:middle;background:var(--h)}
+
+  .notes p{color:var(--muted);font-size:15px;max-width:60ch}
+  .notes p b{color:var(--text)}
+  .notes .mono{font-family:var(--mono);color:var(--call);font-size:.92em}
+  .callout{border-left:2px solid var(--value);padding:2px 0 2px 16px;margin:20px 0;
+    font-style:italic;color:var(--text)}
+
+  .foot{margin-top:40px;color:var(--faint);font-size:12.5px;font-family:var(--sans);max-width:70ch}
+  .foot code{font-family:var(--mono);color:var(--muted)}
+  .pot-readout.gvbox .v{color:#c9a24a}
+  .gvcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:24px}
+  .gvcard h2{color:#c9a24a}
+  .gvcard canvas{width:100%;height:200px;display:block}
+  .gvcaption{font-family:var(--sans);font-size:12px;color:var(--muted);margin-top:8px;max-width:72ch}
+  .gvcaption b{color:#c9a24a}
+  @media (prefers-reduced-motion: reduce){
+    .region,.gl,.tick{transition:none}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">The Mathematics of Poker · Chapter 17 · Example 17.1</div>
+    <h1>[0,1] Game #9
+      <span class="sub">mixing in bluffs — the strategy structure of Figure 17.1, made live</span>
+    </h1>
+    <p class="lede">One full street, one bet left. Both players hold a hand drawn uniformly on
+      the interval <b>[0,&nbsp;1]</b>, where <b>0 is the nuts</b> and <b>1 is the worst hand</b>.
+      X acts first; Y responds. Everything below is driven by a single quantity — the
+      <b>pot size&nbsp;P</b>. Move it and watch the value-betting, bluffing, calling and folding
+      regions breathe.</p>
+  </header>
+
+  <hr class="rule">
+
+  <!-- CONTROL DECK -->
+  <section class="deck" aria-label="Pot control">
+    <div class="deck-top">
+      <div class="pot-readout">
+        <span class="k">Pot size</span>
+        <span class="v"><span id="potVal">4.0</span><small>bets</small></span>
+      </div>
+      <div class="pot-readout gvbox">
+        <span class="k">Value of game to Y</span>
+        <span class="v"><span id="gVal">0.053</span><small>bet</small></span>
+      </div>
+      <div class="sliderbox">
+        <label for="pot">Drag to resize the pot &nbsp;·&nbsp; bet = 1 unit</label>
+        <input id="pot" type="range" min="0" max="30" step="0.1" value="4">
+        <div class="presets">
+          <span class="pk">Jump to</span>
+          <button class="chip" data-p="1">P = 1</button>
+          <button class="chip" data-p="2">P = 2</button>
+          <button class="chip active" data-p="4">P = 4</button>
+          <button class="chip" data-p="9">P = 9</button>
+          <button class="chip" data-p="inf">P → ∞</button>
+        </div>
+      </div>
+      <div class="pot-readout" style="min-width:auto">
+        <span class="k">Golden ratio α = 1/(P+1)</span>
+        <span class="alpha">α = <b id="alphaVal">0.200</b><span id="alphaFrac"></span></span>
+      </div>
+    </div>
+
+    <!-- DIAGRAM -->
+    <div class="diagram">
+      <div class="axishead">
+        <span class="best">◀ 0 · strongest hands</span>
+        <span>hand strength</span>
+        <span class="worst">weakest hands · 1 ▶</span>
+      </div>
+      <div class="plot">
+        <div class="ruler" id="ruler"></div>
+        <div style="position:relative">
+          <div class="gridlines" id="gridlines"></div>
+          <div class="track" id="trackX"><span class="rlabel">X &nbsp;<span class="cond">acts first</span></span></div>
+          <div class="track" id="trackYc"><span class="rlabel">Y &nbsp;<span class="cond">if X checks</span></span></div>
+          <div class="track" id="trackYb"><span class="rlabel">Y &nbsp;<span class="cond">if X bets</span></span></div>
+        </div>
+        <div class="baseline"><span class="z">0.0</span><span class="o">1.0</span></div>
+      </div>
+
+      <div class="legend">
+        <span class="li"><span class="sw" style="background:var(--value)"></span>Value bet</span>
+        <span class="li"><span class="sw" style="background:var(--bluff)"></span>Bluff</span>
+        <span class="li"><span class="sw" style="background:var(--call)"></span>Call / check-call</span>
+        <span class="li"><span class="sw" style="background:var(--check)"></span>Check (give up the lead)</span>
+        <span class="li"><span class="sw" style="background:var(--fold)"></span>Fold / check-fold</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="gvcard">
+    <h2>Value of the game to Y &nbsp;vs. pot</h2>
+    <canvas id="gvchart" width="800" height="400" aria-label="Game value to Y versus pot"></canvas>
+    <div class="gvcaption">Ex-showdown expectation to Y: <b>G = α(1−α)²/[2(1+α)]</b> (Chapter 18).
+      It is <em>humped</em> — rising then falling, peaking near P≈2.6 at ≈0.057 — and → <b>0</b> as
+      P→∞ (the no-fold Game&nbsp;#4 value: with an infinite pot nobody folds, so the one-bet
+      full-street lead is worth nothing). The dot marks the current pot.</div>
+  </section>
+
+  <!-- READOUT + NOTES -->
+  <div class="grid2">
+    <section>
+      <h2>Threshold readout</h2>
+      <table>
+        <thead><tr><th>Symbol</th><th>Meaning</th><th>Formula</th><th style="text-align:right">Value</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+
+    <section class="notes">
+      <h2>How to read it</h2>
+      <p>The one lever is <b>α = 1/(P+1)</b>, the “golden ratio of poker.” It is the fraction of
+        hands the bettor bluffs relative to his value bets, and the fraction the caller must
+        <em>fold</em> to stay unexploitable.</p>
+      <div class="callout">Value bets and bluffs are balanced so the opponent is exactly
+        indifferent to calling — that indifference <em>is</em> the solution.</div>
+      <p><b>Bigger pot → smaller α → more action.</b> With more dead money to win, folding
+        gets expensive, so both players bet, call, and bluff a wider slice of hands. As
+        <span class="mono">P → ∞</span> every threshold marches to 1: it collapses to the
+        no-fold games of Chapter&nbsp;16, where everyone value-bets and calls with everything.</p>
+      <p>As <span class="mono">P → 0</span> the pot isn’t worth fighting for, α → 1, and all the
+        regions vanish into a single check-down.</p>
+      <p>Notice the alignment of the gridlines: <span class="mono">y₁</span> always lands at the
+        midpoint of X’s betting and calling thresholds — Y value-bets everything X would have,
+        plus half the hands X would merely call with.</p>
+    </section>
+  </div>
+
+  <p class="foot">Model &amp; closed-form thresholds from Bill Chen &amp; Jerrod Ankenman,
+    <em>The Mathematics of Poker</em>, Example 17.1 (“[0,1] Game #9”). Solution:
+    <code>x₁=(1−α)²/(1+α)</code>, <code>y₁=(1−α)/(1+α)</code>, <code>x₁*=y₁*=1−α</code>,
+    <code>y₀=(1+α²)/(1+α)</code>, <code>x₀=1−αx₁</code>. Verified against the book’s P=4 worked
+    example (α=1/5 → x₁=8/15, y₁=2/3, x₁*=4/5, y₀=13/15, x₀=67/75).</p>
+</div>
+
+<script>
+(function(){
+  var potEl=document.getElementById('pot');
+  var potVal=document.getElementById('potVal');
+  var alphaVal=document.getElementById('alphaVal');
+  var alphaFrac=document.getElementById('alphaFrac');
+  var ruler=document.getElementById('ruler');
+  var grid=document.getElementById('gridlines');
+  var tbody=document.getElementById('tbody');
+  var chips=document.querySelectorAll('.chip');
+  var gValEl=document.getElementById('gVal');
+  var cv=document.getElementById('gvchart'),ctx=cv.getContext('2d');
+  var INF=false;
+
+  function gcd(a,b){return b?gcd(b,a%b):a;}
+  function fracStr(P){ // P integer -> "= 1/(P+1)"
+    if(!isFinite(P)) return '';
+    if(Math.abs(P-Math.round(P))<1e-9) return ' = 1/'+(Math.round(P)+1);
+    return '';
+  }
+
+  function solve(P){
+    var a = isFinite(P) ? 1/(P+1) : 0;
+    var x1  = (1-a)*(1-a)/(1+a);
+    var y1  = (1-a)/(1+a);
+    var xy1s= 1-a;              // x1* = y1*
+    var y0  = (1+a*a)/(1+a);
+    var x0  = 1 - a*x1;
+    return {a:a,x1:x1,y1:y1,x1s:xy1s,y1s:xy1s,y0:y0,x0:x0};
+  }
+
+  // region definitions per track: [start-key or literal, end-key, class, action]
+  function pct(v){return (v*100).toFixed(4)+'%';}
+
+  function region(s){ // build DOM
+    var d=document.createElement('div');
+    d.className='region '+s.cls;
+    d.style.left=pct(s.a); d.style.width=pct(s.b-s.a);
+    var w=(s.b-s.a);
+    d.innerHTML='<div class="act">'+s.act+'</div><div class="frq">'+(w*100).toFixed(1)+'%</div>';
+    if(w<0.11) d.classList.add('narrow');
+    d.title=s.act+' — hands '+s.a.toFixed(3)+' to '+s.b.toFixed(3)+'  ('+(w*100).toFixed(1)+'% of range)';
+    return d;
+  }
+
+  function fill(track,segs){
+    // remove old regions but keep rlabel
+    Array.prototype.slice.call(track.querySelectorAll('.region')).forEach(function(n){n.remove();});
+    segs.forEach(function(s){track.appendChild(region(s));});
+  }
+
+  var trackX=document.getElementById('trackX');
+  var trackYc=document.getElementById('trackYc');
+  var trackYb=document.getElementById('trackYb');
+
+  var THRESH=[
+    {k:'x1', sym:'x₁',  hue:'var(--value)', mean:'X: value-bet ↔ check-call', frm:'(1−α)²/(1+α)'},
+    {k:'y1', sym:'y₁',  hue:'var(--value)', mean:'Y: value-bet ↔ check (if checked to)', frm:'(1−α)/(1+α)'},
+    {k:'x1s',sym:'x₁*=y₁*',hue:'var(--call)',mean:'X check-call cutoff · Y call cutoff', frm:'1−α'},
+    {k:'y0', sym:'y₀',  hue:'var(--bluff)', mean:'Y: check ↔ bluff (if checked to)', frm:'(1+α²)/(1+α)'},
+    {k:'x0', sym:'x₀',  hue:'var(--bluff)', mean:'X: check-fold ↔ bluff', frm:'1−αx₁'}
+  ];
+
+  function G9(P){var a=1/(P+1);return a*(1-a)*(1-a)/(2*(1+a));}
+  function drawChart(curP){
+    var dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    var padL=44,padR=14,padT=14,padB=30,gw=W-padL-padR,gh=H-padT-padB,PMAX=30,GMAX=0.07;
+    function X(P){return padL+(P/PMAX)*gw;}
+    function Y(g){return padT+gh-(g/GMAX)*gh;}
+    ctx.strokeStyle='#2c352b';ctx.fillStyle='#6d7568';ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    [0,0.02,0.04,0.06].forEach(function(g){var y=Y(g);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();ctx.globalAlpha=1;ctx.fillText(g.toFixed(2),padL-6,y);});
+    ctx.textAlign='center';ctx.textBaseline='top';
+    [0,10,20,30].forEach(function(p){ctx.fillText(p,X(p),H-padB+8);});
+    ctx.textBaseline='alphabetic';
+    ctx.strokeStyle='#c9a24a';ctx.lineWidth=2.4;ctx.beginPath();
+    for(var i=0;i<=240;i++){var P=(i/240)*PMAX;if(P<0.01)P=0.01;var g=G9(P);var px=X(P),py=Y(g);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();
+    var cg=G9(curP),cx=X(curP),cy=Y(cg);
+    ctx.strokeStyle='#c9a24a55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
+    ctx.fillStyle='#c9a24a';ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#10140f';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#e8e9e3';ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
+    var lx=Math.min(cx+9,W-padR-70);ctx.fillText('G = '+cg.toFixed(3),lx,cy-8);
+  }
+
+  function render(){
+    var P = INF ? Infinity : parseFloat(potEl.value);
+    var s = solve(P);
+
+    potVal.textContent = INF ? '∞' : P.toFixed(1);
+    alphaVal.textContent = s.a.toFixed(3);
+    alphaFrac.textContent = INF ? ' (→ 0)' : fracStr(P);
+    var G = s.a*(1-s.a)*(1-s.a)/(2*(1+s.a));
+    gValEl.textContent = G.toFixed(3);
+    drawChart(INF?30:P);
+
+    // X track
+    fill(trackX,[
+      {a:0,     b:s.x1, cls:'r-value', act:'Value bet'},
+      {a:s.x1,  b:s.x1s,cls:'r-call',  act:'Check-call'},
+      {a:s.x1s, b:s.x0, cls:'r-fold',  act:'Check-fold'},
+      {a:s.x0,  b:1,    cls:'r-bluff', act:'Bluff'}
+    ]);
+    // Y | X checks
+    fill(trackYc,[
+      {a:0,     b:s.y1, cls:'r-value', act:'Value bet'},
+      {a:s.y1,  b:s.y0, cls:'r-check', act:'Check'},
+      {a:s.y0,  b:1,    cls:'r-bluff', act:'Bluff'}
+    ]);
+    // Y | X bets
+    fill(trackYb,[
+      {a:0,     b:s.y1s,cls:'r-call',  act:'Call'},
+      {a:s.y1s, b:1,    cls:'r-fold',  act:'Fold'}
+    ]);
+
+    // ruler ticks (unique positions, sorted)
+    var ticks=THRESH.map(function(t){return {sym:t.sym,val:s[t.k]};})
+                    .sort(function(a,b){return a.val-b.val;});
+    ruler.innerHTML='';
+    grid.innerHTML='';
+    ticks.forEach(function(t,i){
+      var lo = (i%2===1);
+      var d=document.createElement('div');
+      d.className='tick '+(lo?'lo':'hi');
+      d.style.left=pct(t.val);
+      d.innerHTML='<div class="lab">'+t.sym+'</div><div class="val">'+t.val.toFixed(3)+'</div><div class="stem"></div>';
+      if(lo){ // push label below by reordering: stem first
+        d.innerHTML='<div class="stem"></div><div class="lab">'+t.sym+'</div><div class="val">'+t.val.toFixed(3)+'</div>';
+      }
+      ruler.appendChild(d);
+      var g=document.createElement('div');
+      g.className='gl'; g.style.left=pct(t.val);
+      grid.appendChild(g);
+    });
+
+    // table
+    tbody.innerHTML='';
+    THRESH.forEach(function(t){
+      var tr=document.createElement('tr');
+      tr.setAttribute('data-hue','');
+      tr.style.setProperty('--h',t.hue);
+      tr.innerHTML='<td class="sym">'+t.sym+'</td><td>'+t.mean+'</td>'+
+        '<td class="frm">'+t.frm+'</td><td class="num">'+s[t.k].toFixed(4)+'</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  potEl.addEventListener('input',function(){
+    INF=false;
+    syncChips();
+    render();
+  });
+
+  function syncChips(){
+    var v=INF?'inf':String(parseFloat(potEl.value));
+    chips.forEach(function(c){
+      var match = INF ? c.dataset.p==='inf' : (c.dataset.p!=='inf' && Math.abs(parseFloat(c.dataset.p)-parseFloat(potEl.value))<1e-9);
+      c.classList.toggle('active',match);
+    });
+  }
+
+  chips.forEach(function(c){
+    c.addEventListener('click',function(){
+      if(c.dataset.p==='inf'){ INF=true; potEl.value=30; }
+      else { INF=false; potEl.value=c.dataset.p; }
+      syncChips(); render();
+    });
+  });
+
+  window.addEventListener('resize',function(){ drawChart(INF?30:parseFloat(potEl.value)); });
+  syncChips();
+  render();
+})();
+</script>
