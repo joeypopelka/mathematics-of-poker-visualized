@@ -4,18 +4,169 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mathematics of Poker, Visualized</title>
 <style>
-  body{background:#0A0D13;color:#E8E4DC;font-family:Charter,Georgia,serif;max-width:720px;margin:4rem auto;padding:0 1.5rem;line-height:1.6}
-  a{color:#6FD3E8}h1{font-weight:600}
+  :root{
+    --bg:#0A0D13; --panel:#10141D; --panel2:#151B27; --line:#232B3A;
+    --ink:#E8E4DC; --dim:#8B93A3; --faint:#5A6274;
+    --heat:#F0A44E; --ice:#6FD3E8; --green:#8FD694; --red:#E07A6B; --purple:#B48EF0;
+    --serif:Charter,Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.55}
+  .wrap{max-width:980px;margin:0 auto;padding:3rem 1.4rem 4rem}
+  a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
+  h1{font-size:2.5rem;font-weight:600;letter-spacing:-.01em}
+  .sub{color:var(--dim);font-size:1.08rem;max-width:52rem;margin:.6rem 0 0}
+  .sub b{color:var(--ink)}
+  h2{font-size:1.05rem;margin:2.8rem 0 .9rem;color:var(--faint);font-weight:600;
+     text-transform:uppercase;letter-spacing:.14em}
+  code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.1rem}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:1.15rem 1.3rem;display:flex;flex-direction:column;gap:.45rem;color:var(--ink);
+    transition:border-color .15s}
+  .card:hover{border-color:var(--heat);text-decoration:none}
+  .card .ch{font:600 .7rem var(--mono);letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+  .card .t{font-size:1.18rem;font-weight:600;color:var(--heat);line-height:1.25}
+  .card .d{font-size:.92rem;color:var(--dim);flex:1}
+  .card .hl{font-size:.88rem;color:var(--ink);border-top:1px solid var(--line);padding-top:.55rem}
+  .card .hl .m{color:var(--green)}
+  .twin{display:flex;gap:.6rem;font-size:.85rem}
+  .twin a{border:1px solid var(--line);border-radius:8px;padding:.25rem .7rem;color:var(--ice)}
+  .twin a:hover{border-color:var(--ice)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem;margin:1rem 0}
+  .panel ul{margin:.4rem 0 .2rem 1.2rem}
+  .panel li{margin:.35rem 0;font-size:.95rem}
+  .note{color:var(--dim);font-size:.9rem}
+  .foot{margin-top:3rem;color:var(--faint);font-size:.85rem;border-top:1px solid var(--line);padding-top:1.2rem}
+  .errlabel{color:var(--red);font-weight:600}
+  .beyond{color:var(--green);font-weight:600}
 </style>
 <body>
-<h1>Mathematics of Poker, Visualized</h1>
-<p>Exact computational explorations of Chen &amp; Ankenman's <em>The Mathematics of
-Poker</em>. Site under reorganization — a full hub is coming; the explorers below
-are live:</p>
-<ul>
-  <li><a href="akq/nl/">The No-Limit AKQ Game (ch. 15)</a></li>
-  <li><a href="jam-or-fold/">The Jam-or-Fold Game (ch. 12)</a></li>
-  <li><a href="tournaments/">Tournaments (ch. 26–28)</a></li>
-</ul>
+<div class="wrap">
+  <h1>Mathematics of Poker, <i>Visualized</i></h1>
+  <p class="sub">Exact computational companions to Bill Chen &amp; Jerrod Ankenman's
+  <i>The Mathematics of Poker</i> — every game family in the book re-solved from scratch
+  (closed forms where they exist, exact enumeration and linear programming where they don't),
+  <b>every printed number reproduced or flagged as an erratum</b>, and the "exhaustive
+  analyses" the book alludes to but never prints, actually carried out. Each page below is a
+  self-contained interactive explorer; each folder in the
+  <a href="https://github.com/joeypopelka/mathematics-of-poker-visualized">repository</a>
+  has the solvers and a full report.</p>
+
+  <h2>The game families</h2>
+  <div class="cards">
+    <a class="card" href="akq/limit/">
+      <div class="ch">ch. 13 · the gateway</div>
+      <div class="t">The AKQ Game, Limit</div>
+      <div class="d">Three cards, one bet: poker's simplest nontrivial form, where
+        α = 1/(P+1) prices every bluff and every call.</div>
+      <div class="hl">Game value <span class="m">(P−1)/6(P+1)</span>, frozen below P=1 —
+        and verified against a saddle-point solve.</div>
+    </a>
+    <a class="card" href="akq/nl/">
+      <div class="ch">ch. 15 + appendix</div>
+      <div class="t">The AKQ Game, No-Limit</div>
+      <div class="d">Free the bet size and solve at 300 stack depths: the King's blocking
+        bet, the merged raising range, and four regimes — three in closed form.</div>
+      <div class="hl">Position's value <span class="m">freezes at S* = 0.5254 pots</span>:
+        a 1-pot and a 100-pot stack are worth exactly the same.</div>
+    </a>
+    <a class="card" href="zero-one/">
+      <div class="ch">ch. 11, 16–18</div>
+      <div class="t">The [0,1] Games</div>
+      <div class="d">Hands as a continuum, from von Neumann's 1944 model through bets,
+        raises, check-raises, and the infinite raising ladder — with an exact
+        sequence-form LP where the book stops.</div>
+      <div class="hl">Game #11's x₁ <span class="m">is a band, not a line</span>; game #12's
+        unpublished value: <span class="m">0.06696 at P=2</span>.</div>
+    </a>
+    <a class="card" href="jam-or-fold/">
+      <div class="ch">ch. 12</div>
+      <div class="t">The Jam-or-Fold Game</div>
+      <div class="d">Preflop NLHE, shove or fold, solved exactly at 1,379 stack sizes
+        from exact equities (812,175 matchups × 1.7M boards) — the book's promised
+        "exhaustive analysis."</div>
+      <div class="hl">ATs joins AA at <span class="m">S = 833.93</span>; one book erratum
+        (A5s vs AA = 0.13307); attacker favored only below <span class="m">S* = 7.797</span>.</div>
+    </a>
+    <a class="card" href="multi-street/">
+      <div class="ch">ch. 14 + 19</div>
+      <div class="t">Multi-Street Games</div>
+      <div class="d">Bet sizing as an optimization: √2−1 on one street, and across many,
+        the book's most famous result — the geometric growth of pot.</div>
+      <div class="hl">The $185 case study: sizing alone swings the game
+        <span class="m">from −$0.51 to +$0.60</span>.</div>
+    </a>
+    <a class="card" href="risk/">
+      <div class="ch">ch. 22–25</div>
+      <div class="t">Risk</div>
+      <div class="d">Ruin as an exponential law, ruin under win-rate uncertainty, Kelly
+        game selection, and backing agreements priced as call options.</div>
+      <div class="hl">Going pro on a thin edge: RoR 0.98% → <span class="m">RoRU 17.25%</span>
+        after paying yourself. Plus a real erratum: the game-selection cutoff is
+        <span class="m">$9,647.50</span>, not $19,295.</div>
+    </a>
+    <a class="card" href="tournaments/">
+      <div class="ch">ch. 26–28</div>
+      <div class="t">Tournaments</div>
+      <div class="d">A tournament chip is not a dollar: the theory of doubling up, four
+        ICM models bracketed, bubble factors, and the variance multiple.</div>
+      <div class="hl"><span class="m">46/46</span> of the chapters' worked numbers
+        reproduced; two book inconsistencies found.</div>
+    </a>
+    <a class="card" href="multiway/">
+      <div class="ch">ch. 29</div>
+      <div class="t">Multiplayer Games</div>
+      <div class="d">Why "optimal" stops meaning anything with three players: implicit
+        alliances, the unbeatable fair game, and the clairvoyant maniac's discontinuous
+        payoff.</div>
+      <div class="hl">New erratum: the dry-side-pot equilibrium is
+        <span class="m">x = 0.5178</span>, not the book's 0.2848.</div>
+    </a>
+  </div>
+
+  <h2>Beyond the book</h2>
+  <div class="panel">
+    <ul>
+      <li><span class="beyond">Jam-or-fold:</span> the full 1→2,500-bb equilibrium chronology — 478 transitions, 21 strictly-verified non-monotonic hands, ATs exiled twice and mirrored exactly by the defender's AKs calls; game-value crossover at S* = 7.797.</li>
+      <li><span class="beyond">NL AKQ:</span> three exact regime laws, a C¹-smooth phase boundary at s = √2−1, and the self-referential plateau: depth stops mattering when the stack covers Y's largest equilibrium bet.</li>
+      <li><span class="beyond">[0,1] games:</span> the sequence-form LP settles the open x₁ question (the optimal set pins aggregates to 10⁻⁵ while leaving every hand's assignment free) and computes game #12's never-published value curve.</li>
+      <li><span class="beyond">Multi-street:</span> the auction-game limit verified at M = 1000 streets; Figure 19.1 completed for 2–5 streets.</li>
+      <li><span class="beyond">Tournaments:</span> the chip-value curve E = S<sup>β</sup> charted continuously across skill; rebuy strategy on the doubling-up engine.</li>
+    </ul>
+  </div>
+
+  <h2>Errata found in the book</h2>
+  <div class="panel">
+    <ul>
+      <li><span class="errlabel">p. 130 (ch. 12):</span> A5s vs AA equity is exactly <b>0.13307</b>, not 0.13331 — which moves the forced mixing at S = 833 from ATs onto A5s.</li>
+      <li><span class="errlabel">p. 144 (ch. 13):</span> the bluff ratio at P = 1.1 is <b>10/21</b> (= 1/(P+1)), not the printed "10/11".</li>
+      <li><span class="errlabel">ch. 22:</span> two numeric solves of ⟨e<sup>−αx</sup>⟩ = 1 are imprecise: the sit-and-go α is <b>0.000606</b> (printed ≈0.000632, and once as "0.00632"), the winner-take-all α is <b>0.016153</b> (printed 0.01683); its σ = 14.036 forgot to subtract μ² (exact 14.0). Conclusions unaffected.</li>
+      <li><span class="errlabel">ch. 24, Ex. 24.2:</span> the game-selection cutoff: the derivation correctly reaches 2c = $19,295, then prints c = $19,295. The cutoff is <b>c = $9,647.50</b> (verified by utility crossover).</li>
+      <li><span class="errlabel">ch. 25:</span> the backer's share of the worked agreement is <b>$1,546.64</b> ($1,547.64 printed — a $1 slip).</li>
+      <li><span class="errlabel">ch. 27:</span> Landrum-Burns P3 must be <b>$1,166.67</b> (printed $1,066.67) to sum to the prize pool; the evening tournament's variance multiple is <b>53.263</b>, not 53.6456.</li>
+      <li><span class="errlabel">ch. 29, Ex. 29.2 (dry side pot):</span> the reported equilibrium x ≈ 0.2848 does not satisfy the book's own indifference system and admits profitable deviations; the true equilibrium is <b>x = 0.5178, y₁ = 0.2589, bluff band 0.7589 ± 0.0242</b>.</li>
+    </ul>
+    <p class="note">Each is verified in the corresponding folder's solver with the book's own
+    equations; "erratum" here means the printed number is inconsistent with the book's own
+    stated model, not a disagreement of modeling taste.</p>
+  </div>
+
+  <h2>Method, throughout</h2>
+  <div class="panel">
+    <p class="note">Exact methods over approximation: full enumeration for equities
+    (133,784,560 seven-card hands verified against known frequency counts), linear programming
+    with strong-duality checks for equilibria, closed forms re-derived and verified by
+    independent numerics everywhere they exist, and strict EV-margin verification so LP
+    degeneracy can't masquerade as a finding. Every explorer is a single dependency-free HTML
+    page (vanilla JS + Canvas) that works offline. Built with the help of Claude
+    (Anthropic), reading the book chapter by chapter.</p>
+  </div>
+
+  <p class="foot">Source, solvers, data and per-family reports:
+  <a href="https://github.com/joeypopelka/mathematics-of-poker-visualized">github.com/joeypopelka/mathematics-of-poker-visualized</a>
+  · The book: Bill Chen &amp; Jerrod Ankenman, <i>The Mathematics of Poker</i> (ConJelCo, 2006).</p>
+</div>
 </body>
 </html>
