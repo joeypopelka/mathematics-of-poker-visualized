@@ -1,5 +1,8 @@
 # Plan: Mathematics of Poker, Visualized
 
+> **Status: executed** (Nov 2026). All phases complete; see the root README
+> for the result. Kept for the record.
+
 Consolidate the per-chapter *Mathematics of Poker* (Chen & Ankenman) exploration
 projects into one repo and one GitHub Pages site, organized by game family, and
 finish the remaining work.
