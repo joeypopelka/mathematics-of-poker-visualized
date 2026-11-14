@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Risk — Mathematics of Poker, Visualized</title>
+<style>
+  :root{
+    --bg:#0A0D13; --panel:#10141D; --panel2:#151B27; --line:#232B3A;
+    --ink:#E8E4DC; --dim:#8B93A3; --faint:#5A6274;
+    --heat:#F0A44E; --ice:#6FD3E8; --green:#8FD694; --red:#E07A6B; --purple:#B48EF0;
+    --serif:Charter,Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.55}
+  .wrap{max-width:940px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+  a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
+  .home{font-size:.85rem;color:var(--dim)}
+  h1{font-size:1.9rem;font-weight:600;margin:.7rem 0 .2rem}
+  .sub{color:var(--dim);font-size:1.02rem;max-width:50rem}
+  h2{font-size:1.25rem;margin:2.6rem 0 .7rem;color:var(--heat);font-weight:600}
+  p{margin:.6rem 0;max-width:50rem}
+  code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;margin:1rem 0}
+  .lbl{font-size:.8rem;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+  input[type=range]{width:100%;accent-color:var(--heat)}
+  .row{display:flex;gap:1.4rem;flex-wrap:wrap}
+  .row>div{flex:1;min-width:200px}
+  .readout{display:flex;flex-wrap:wrap;gap:1.4rem;margin:.7rem 0}
+  .readout .r{min-width:120px}
+  .readout .v{font:600 1.3rem var(--mono)}
+  canvas{width:100%;height:auto;display:block;border-radius:10px;background:var(--panel2)}
+  table{border-collapse:collapse;font-size:.9rem;margin:.8rem 0}
+  td,th{border:1px solid var(--line);padding:.32rem .66rem;text-align:center}
+  th{color:var(--dim);font-weight:600}
+  .note{font-size:.88rem;color:var(--dim)}
+  .err{color:var(--red);font-weight:600}
+  @media(max-width:640px){.row{flex-direction:column}}
+</style>
+<body>
+<div class="wrap">
+  <div class="home"><a href="../">← Mathematics of Poker, Visualized</a></div>
+  <h1>Risk</h1>
+  <p class="sub">Chapters 22–25 of Chen &amp; Ankenman's <i>The Mathematics of Poker</i>:
+  staying in action. Risk of ruin as an exponential law, what happens when you admit you
+  don't know your own win rate, the Kelly criterion for choosing games, and poker as
+  finance — swaps, Sharpe ratios, and backing agreements priced as options.</p>
+
+  <h2>Risk of ruin is an exponential (ch. 22)</h2>
+  <p>From one axiom — <span class="m">R(a+b) = R(a)·R(b)</span>, losing two stacked
+  bankrolls means losing each — ruin probability must be
+  <span class="m">R(b) = e<sup>−αb</sup></span>. The constant α solves
+  <span class="m">⟨e<sup>−αx</sup>⟩ = 1</span> over the game's outcome distribution;
+  for (approximately) normal outcomes, <span class="m">α = 2μ/σ²</span>.</p>
+  <div class="panel">
+    <div class="row">
+      <div><div class="lbl">win rate μ = <span id="m1v" class="m"></span> bets/100</div>
+        <input id="m1" type="range" min="2" max="60" value="25"></div>
+      <div><div class="lbl">std dev σ = <span id="s1v" class="m"></span> bets/100</div>
+        <input id="s1" type="range" min="80" max="350" value="180"></div>
+    </div>
+    <div class="readout">
+      <div class="r"><div class="lbl">α = 2μ/σ²</div><div class="v" id="a1v" style="color:var(--heat)"></div></div>
+      <div class="r"><div class="lbl">half-bankroll</div><div class="v" id="h1v" style="color:var(--ice)"></div></div>
+      <div class="r"><div class="lbl">R(300 bets)</div><div class="v" id="r1v" style="color:var(--green)"></div></div>
+    </div>
+    <canvas id="c22" width="1680" height="600"></canvas>
+    <p class="note">Ruin probability against bankroll (bets). Dots mark successive
+    <b>half-bankrolls</b> b<sub>½</sub> = ln2/α — each one halves the risk, like half-lives of a
+    radioactive sample. Caveats the book is emphatic about: skim profit off the top and your true
+    R is 100%; tournament distributions are too skew for the normal formula (their direct α gives
+    roughly <i>half</i> the normal approximation's ruin probability in the winner-take-all example).</p>
+  </div>
+
+  <h2>Risk of ruin when you don't know your win rate (ch. 23)</h2>
+  <p>Your observed win rate after N hands is itself a random variable with standard error
+  <span class="m">σ<sub>w</sub> = s/√N</span>. Weighting the ruin probability over that
+  uncertainty gives the closed form <span class="m">RoRU = R(w,b)·e<sup>2b²σ<sub>w</sub>²/σ⁴</sup>·Φ((w−2bσ<sub>w</sub>²/σ²)/σ<sub>w</sub>) + Φ(−w/σ<sub>w</sub>)</span> —
+  the last term is the blunt possibility that you're a losing player and no bankroll saves you.</p>
+  <div class="panel">
+    <div class="row">
+      <div><div class="lbl">observed w = <span id="wv" class="m"></span> bets/100</div>
+        <input id="w2" type="range" min="0" max="60" value="25"></div>
+      <div><div class="lbl">hands observed N = <span id="nv" class="m"></span></div>
+        <input id="n2" type="range" min="0" max="1000" value="500"></div>
+      <div><div class="lbl">bankroll b = <span id="bv" class="m"></span> bets</div>
+        <input id="b2" type="range" min="50" max="1000" value="300"></div>
+    </div>
+    <div class="readout">
+      <div class="r"><div class="lbl">naive RoR</div><div class="v" id="rsv" style="color:var(--ice)"></div></div>
+      <div class="r"><div class="lbl">RoRU</div><div class="v" id="ruv" style="color:var(--heat)"></div></div>
+      <div class="r"><div class="lbl">P(losing player)</div><div class="v" id="plv" style="color:var(--red)"></div></div>
+    </div>
+    <canvas id="c23" width="1680" height="620"></canvas>
+    <p class="note">RoRU (orange) vs naive RoR (blue) as a function of win rate, at your chosen N
+    and bankroll (σ fixed at 18 bets/100 — the book's case study). The gap is the price of
+    uncertainty. The book's going-pro example sits at the dots: 40,000 hands, w = 2.5 bets/100,
+    300-bet roll → RoR 0.98% but RoRU <b>3.67%</b>; deduct 1 bet/100 for living expenses and it's
+    6.22% vs <b>17.25%</b>. Taking a salary out of a thin edge is how pros go broke. The asymmetry
+    is the lesson: overestimating your win rate slightly understates your risk <i>a lot</i>.</p>
+  </div>
+
+  <h2>Kelly and picking your game (ch. 24)</h2>
+  <div class="panel">
+    <div class="row">
+      <div><div class="lbl">game 1: μ₁ $<span id="g1m" class="m"></span>/hr</div><input id="k1m" type="range" min="10" max="150" value="60"></div>
+      <div><div class="lbl">game 1: σ₁ $<span id="g1s" class="m"></span>/hr</div><input id="k1s" type="range" min="100" max="2000" value="800"></div>
+      <div><div class="lbl">game 2: μ₂ $<span id="g2m" class="m"></span>/hr</div><input id="k2m" type="range" min="5" max="100" value="35"></div>
+      <div><div class="lbl">game 2: σ₂ $<span id="g2s" class="m"></span>/hr</div><input id="k2s" type="range" min="50" max="1500" value="400"></div>
+    </div>
+    <div class="readout">
+      <div class="r"><div class="lbl">cutoff bankroll c</div><div class="v" id="cv2" style="color:var(--heat)"></div></div>
+      <div class="r"><div class="lbl">rule</div><div class="v" style="font-size:1rem;color:var(--dim)">above c → bigger game<br>below c → smaller game</div></div>
+    </div>
+    <canvas id="c24" width="1680" height="600"></canvas>
+    <p class="note">Log-utility growth per hour, <span class="m">U ≈ μ/B − (μ²+σ²)/2B²</span>,
+    for both games; the crossing is the cutoff <span class="m">2c = μ₁+μ₂+(σ₁²−σ₂²)/(μ₁−μ₂)</span>.
+    At the book's own numbers ($35/$400 vs $60/$800) the derivation correctly reaches
+    2c = $19,295 — <span class="err">and then prints c = $19,295; the cutoff is c = $9,647.50</span>,
+    confirmed here by the utility crossover. Kelly sizing itself: a 3% even-money edge bets 3% of
+    bankroll ($150 of $5,000 — Example 24.1, reproduced).</p>
+  </div>
+
+  <h2>Poker finance: swaps and backing as options (ch. 25)</h2>
+  <div class="panel">
+    <div class="row">
+      <div><div class="lbl">expected win w = $<span id="ow" class="m"></span></div>
+        <input id="o1" type="range" min="0" max="10000" value="4000"></div>
+      <div><div class="lbl">std dev σ = $<span id="os" class="m"></span></div>
+        <input id="o2" type="range" min="1000" max="15000" value="6000"></div>
+      <div><div class="lbl">player's cut starts at $<span id="oa" class="m"></span></div>
+        <input id="o3" type="range" min="0" max="8000" value="0" step="250"></div>
+    </div>
+    <div class="readout">
+      <div class="r"><div class="lbl">value of the wins</div><div class="v" id="ovv" style="color:var(--heat)"></div></div>
+      <div class="r"><div class="lbl">player (50% of wins)</div><div class="v" id="opv" style="color:var(--green)"></div></div>
+      <div class="r"><div class="lbl">backer (rest)</div><div class="v" id="obv" style="color:var(--ice)"></div></div>
+      <div class="r"><div class="lbl">player's share of EV</div><div class="v" id="oshv" style="color:var(--purple)"></div></div>
+    </div>
+    <p class="note">A standard backing deal — backer eats all losses, profits split — is a <b>call
+    option at strike 0</b>: value of the wins = <span class="m">(σ/√2π)e<sup>−(a−w)²/2σ²</sup> + w·Φ((w−a)/σ)</span>.
+    The book's example (w=$4,000, σ=$6,000): wins worth $4,906.72, so the 50/50 player takes
+    $2,453.36 — <b>61.3%</b> of the whole deal's EV (the book's backer figure, $1,547.64, is a $1
+    slip for $1,546.64). Swaps: trading 36% of yourself with an equal-EV player at 9-vs-12-buyin
+    variance maximizes your Sharpe ratio (a₁ = σ₂²/(σ₂²+σ₁²) = 0.64). And diversifying across
+    game <i>types</i> isn't diversification at all — you only ever hold one game at a time.</p>
+  </div>
+
+  <h2>Fidelity to the book</h2>
+  <div class="panel">
+    <table>
+      <tr><th>Quantity</th><th>Book</th><th>Exact</th></tr>
+      <tr><td>Die game R(1 unit) / α (22.1)</td><td>1/2 / ln 2</td><td>✓</td></tr>
+      <tr><td>SNG α (22.3)</td><td>≈0.000632</td><td><b>0.000606</b> (book's own equation; g(0.000632)=1.0009 — solver slip; its RoR table follows the high α; also prints "0.00632" once)</td></tr>
+      <tr><td>WTA tournament σ, α</td><td>14.036, 0.01683 → 18.6%</td><td>σ=14.0 (book used √E[x²]); α=<b>0.016153</b> → 19.9%; conclusion (≪ normal's 36%) unchanged</td></tr>
+      <tr><td>Limit example (μ=.02, σ²=10.8)</td><td>32.89% vs 32.17%</td><td>✓ (α = 0.003787)</td></tr>
+      <tr><td>NL example (μ=.12, σ²=50.27)</td><td>9.19% vs 9.12%</td><td>✓ (α = 0.004789)</td></tr>
+      <tr><td>RoRU going-pro case (23.1)</td><td>3.67% / 17.25%</td><td>✓ (and closed form re-derived by numeric integration)</td></tr>
+      <tr><td>Kelly bet, 3% edge (24.1)</td><td>$150</td><td>✓</td></tr>
+      <tr><td>Game-selection cutoff (24.2)</td><td>"c = $19,295"</td><td class="err">c = $9,647.50 (book printed 2c as c)</td></tr>
+      <tr><td>Swap fraction (25)</td><td>36%</td><td>✓</td></tr>
+      <tr><td>Backing option values (25.6/25.7)</td><td>$4,906.72 / $4,878.24 / $4,393.65; 55.8%; tier table; 60.4%</td><td>✓ to the cent (backer share $1,546.64, not $1,547.64)</td></tr>
+    </table>
+    <p class="note">All verified in <code>solve.py</code> (stdlib only, sub-second).</p>
+  </div>
+</div>
+<script>
+(function(){
+  function phi(z){ // standard normal CDF via erf approximation (A&S 7.1.26)
+    var s=z<0?-1:1; z=Math.abs(z)/Math.SQRT2;
+    var t=1/(1+0.3275911*z);
+    var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-z*z);
+    return 0.5*(1+s*y);
+  }
+  function grid(ctx,W,H,L,R,T,B,xmax,ymax,xstep,ystep,xlab,pct){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#232B3A'; ctx.lineWidth=1; ctx.font='21px ui-monospace,monospace';
+    for(var gx=0;gx<=xmax+1e-9;gx+=xstep){ var X=L+(W-L-R)*gx/xmax;
+      ctx.beginPath();ctx.moveTo(X,T);ctx.lineTo(X,H-B);ctx.stroke();
+      ctx.fillStyle='#5A6274';ctx.textAlign='center';ctx.fillText(Math.round(gx),X,H-B+28);}
+    for(var gy=0;gy<=ymax+1e-9;gy+=ystep){ var Y=T+(H-T-B)*(1-gy/ymax);
+      ctx.beginPath();ctx.moveTo(L,Y);ctx.lineTo(W-R,Y);ctx.stroke();
+      ctx.fillStyle='#5A6274';ctx.textAlign='right';
+      ctx.fillText(pct?Math.round(gy*100)+'%':gy.toPrecision(2),L-8,Y+7);}
+    ctx.textAlign='center';ctx.fillStyle='#5A6274';ctx.fillText(xlab,(L+W-R)/2,H-8);
+  }
+
+  // ---- ch22 ----
+  var m1=document.getElementById('m1'),s1=document.getElementById('s1');
+  var c22=document.getElementById('c22'),x22=c22.getContext('2d');
+  function upd22(){
+    var mu=+m1.value/10, sig=+s1.value/10;   // bets per 100 hands
+    var a=2*mu/(sig*sig);
+    document.getElementById('m1v').textContent=mu.toFixed(1);
+    document.getElementById('s1v').textContent=sig.toFixed(0);
+    document.getElementById('a1v').textContent=a.toFixed(5);
+    document.getElementById('h1v').textContent=(Math.log(2)/a).toFixed(0)+' bets';
+    document.getElementById('r1v').textContent=(100*Math.exp(-300*a)).toFixed(2)+'%';
+    var W=c22.width,H=c22.height,L=86,R=30,T=24,B=56,bmax=1200;
+    grid(x22,W,H,L,R,T,B,bmax,1,200,0.25,'bankroll (bets)',true);
+    x22.strokeStyle='#F0A44E'; x22.lineWidth=3.5; x22.beginPath();
+    for(var i=0;i<=600;i++){ var b=i*bmax/600, r=Math.exp(-a*b);
+      var X=L+(W-L-R)*b/bmax, Y=T+(H-T-B)*(1-r);
+      if(i===0)x22.moveTo(X,Y);else x22.lineTo(X,Y);}
+    x22.stroke();
+    var hb=Math.log(2)/a;
+    x22.fillStyle='#6FD3E8';
+    for(var k=1;k*hb<bmax&&k<=8;k++){
+      var X=L+(W-L-R)*k*hb/bmax, Y=T+(H-T-B)*(1-Math.pow(0.5,k));
+      x22.beginPath(); x22.arc(X,Y,7,0,7); x22.fill();
+    }
+  }
+  m1.addEventListener('input',upd22); s1.addEventListener('input',upd22);
+
+  // ---- ch23 ----
+  var w2=document.getElementById('w2'),n2=document.getElementById('n2'),b2=document.getElementById('b2');
+  var c23=document.getElementById('c23'),x23=c23.getContext('2d');
+  var SIG=18;
+  function roru(w,b,sig,sw){
+    if(sw<=0) return w>0?Math.exp(-2*w*b/(sig*sig)):1;
+    var r=w>0?Math.exp(-2*w*b/(sig*sig)):1;
+    var bump=Math.exp(2*b*b*sw*sw/Math.pow(sig,4));
+    var gate=phi((w-2*b*sw*sw/(sig*sig))/sw);
+    return Math.min(1, (w>0?Math.exp(-2*w*b/(sig*sig)):1)*bump*gate + phi(-w/sw));
+  }
+  function upd23(){
+    var w=+w2.value/10, N=Math.round(Math.pow(10,2+3*(+n2.value)/1000)), b=+b2.value;
+    var sw=SIG/Math.sqrt(N/100);             // N hands -> units of 100
+    document.getElementById('wv').textContent=w.toFixed(1);
+    document.getElementById('nv').textContent=N.toLocaleString();
+    document.getElementById('bv').textContent=b;
+    var rs=w>0?Math.exp(-2*w*b/(SIG*SIG)):1;
+    var ru=roru(w,b,SIG,sw);
+    document.getElementById('rsv').textContent=(100*rs).toFixed(2)+'%';
+    document.getElementById('ruv').textContent=(100*ru).toFixed(2)+'%';
+    document.getElementById('plv').textContent=(100*phi(-w/sw)).toFixed(2)+'%';
+    var W=c23.width,H=c23.height,L=86,R=30,T=24,B=56,wmax=6;
+    grid(x23,W,H,L,R,T,B,wmax,1,1,0.25,'win rate (bets/100)',true);
+    function curve(f,color){
+      x23.strokeStyle=color;x23.lineWidth=3.5;x23.beginPath();
+      for(var i=0;i<=400;i++){ var ww=i*wmax/400, v=Math.min(1,f(ww));
+        var X=L+(W-L-R)*ww/wmax, Y=T+(H-T-B)*(1-v);
+        if(i===0)x23.moveTo(X,Y);else x23.lineTo(X,Y);}
+      x23.stroke();
+    }
+    curve(function(ww){return ww>0?Math.exp(-2*ww*b/(SIG*SIG)):1;},'#6FD3E8');
+    curve(function(ww){return roru(ww,b,SIG,sw);},'#F0A44E');
+    // book case-study dots (N=40000, b=300)
+    if(Math.abs(b-300)<1){
+      var swb=18/Math.sqrt(400);
+      [[2.5,'#F0A44E'],[1.5,'#E07A6B']].forEach(function(t){
+        var v=roru(t[0],300,18,swb);
+        var X=L+(W-L-R)*t[0]/wmax, Y=T+(H-T-B)*(1-v);
+        x23.fillStyle=t[1]; x23.beginPath(); x23.arc(X,Y,8,0,7); x23.fill();
+      });
+    }
+    // current w marker
+    x23.strokeStyle='rgba(232,228,220,.45)'; x23.lineWidth=1.5;
+    var Xc=L+(W-L-R)*Math.min(w,wmax)/wmax;
+    x23.beginPath();x23.moveTo(Xc,T);x23.lineTo(Xc,H-B);x23.stroke();
+  }
+  [w2,n2,b2].forEach(function(e){e.addEventListener('input',upd23);});
+
+  // ---- ch24 ----
+  var k1m=document.getElementById('k1m'),k1s=document.getElementById('k1s'),
+      k2m=document.getElementById('k2m'),k2s=document.getElementById('k2s');
+  var c24=document.getElementById('c24'),x24=c24.getContext('2d');
+  function upd24(){
+    var mu1=+k1m.value, sg1=+k1s.value, mu2=+k2m.value, sg2=+k2s.value;
+    document.getElementById('g1m').textContent=mu1;
+    document.getElementById('g1s').textContent=sg1;
+    document.getElementById('g2m').textContent=mu2;
+    document.getElementById('g2s').textContent=sg2;
+    var c=null;
+    if(mu1!==mu2) c=(mu1+mu2+(sg1*sg1-sg2*sg2)/(mu1-mu2))/2;
+    document.getElementById('cv2').textContent=(c&&c>0)?('$'+Math.round(c).toLocaleString()):'—';
+    var W=c24.width,H=c24.height,L=86,R=30,T=24,B=56;
+    var bmax=(c&&c>0)?Math.max(4000,c*2.5):30000;
+    function U(mu,sg,Bv){ return mu/Bv-(mu*mu+sg*sg)/(2*Bv*Bv); }
+    var umax=0;
+    for(var i=1;i<=400;i++){ var Bv=i*bmax/400;
+      umax=Math.max(umax,U(mu1,sg1,Bv),U(mu2,sg2,Bv)); }
+    umax*=1.15;
+    grid(x24,W,H,L,R,T,B,bmax,umax,bmax/6,umax/4,'bankroll ($)',false);
+    function curve(mu,sg,color){
+      x24.strokeStyle=color;x24.lineWidth=3.5;x24.beginPath();var started=false;
+      for(var i=4;i<=400;i++){ var Bv=i*bmax/400, u=U(mu,sg,Bv);
+        if(u<0) continue;
+        var X=L+(W-L-R)*Bv/bmax, Y=T+(H-T-B)*(1-u/umax);
+        if(!started){x24.moveTo(X,Y);started=true;}else x24.lineTo(X,Y);}
+      x24.stroke();
+    }
+    curve(mu1,sg1,'#F0A44E'); curve(mu2,sg2,'#6FD3E8');
+    if(c&&c>0&&c<bmax){
+      x24.strokeStyle='rgba(224,122,107,.65)';x24.setLineDash([6,5]);
+      var X=L+(W-L-R)*c/bmax;
+      x24.beginPath();x24.moveTo(X,T);x24.lineTo(X,H-B);x24.stroke();x24.setLineDash([]);
+      x24.fillStyle='#E07A6B';x24.textAlign='center';x24.font='21px ui-monospace,monospace';
+      x24.fillText('c = $'+Math.round(c).toLocaleString(),X,T-4);
+    }
+    x24.textAlign='left';x24.font='21px ui-monospace,monospace';
+    x24.fillStyle='#F0A44E';x24.fillText('game 1 (bigger)',W-330,T+30);
+    x24.fillStyle='#6FD3E8';x24.fillText('game 2 (smaller)',W-330,T+62);
+  }
+  [k1m,k1s,k2m,k2s].forEach(function(e){e.addEventListener('input',upd24);});
+
+  // ---- ch25 ----
+  var o1=document.getElementById('o1'),o2=document.getElementById('o2'),o3=document.getElementById('o3');
+  function optval(w,sig,a){
+    return (sig/Math.sqrt(2*Math.PI))*Math.exp(-((a-w)*(a-w))/(2*sig*sig))+w*phi((w-a)/sig);
+  }
+  function upd25(){
+    var w=+o1.value, sig=+o2.value, a=+o3.value;
+    document.getElementById('ow').textContent=w.toLocaleString();
+    document.getElementById('os').textContent=sig.toLocaleString();
+    document.getElementById('oa').textContent=a.toLocaleString();
+    var v=optval(w,sig,a), pl=v/2, bk=w-pl;
+    document.getElementById('ovv').textContent='$'+v.toFixed(2);
+    document.getElementById('opv').textContent='$'+pl.toFixed(2);
+    document.getElementById('obv').textContent='$'+bk.toFixed(2);
+    document.getElementById('oshv').textContent=w>0?((100*pl/w).toFixed(1)+'%'):'—';
+  }
+  [o1,o2,o3].forEach(function(e){e.addEventListener('input',upd25);});
+
+  upd22(); upd23(); upd24(); upd25();
+})();
+</script>
+</body>
+</html>
