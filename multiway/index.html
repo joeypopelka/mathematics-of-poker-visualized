@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multiplayer Games — Mathematics of Poker, Visualized</title>
+<style>
+  :root{
+    --bg:#0A0D13; --panel:#10141D; --panel2:#151B27; --line:#232B3A;
+    --ink:#E8E4DC; --dim:#8B93A3; --faint:#5A6274;
+    --heat:#F0A44E; --ice:#6FD3E8; --green:#8FD694; --red:#E07A6B; --purple:#B48EF0;
+    --serif:Charter,Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.55}
+  .wrap{max-width:880px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+  a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
+  .home{font-size:.85rem;color:var(--dim)}
+  h1{font-size:1.9rem;font-weight:600;margin:.7rem 0 .2rem}
+  .sub{color:var(--dim);font-size:1.02rem;max-width:48rem}
+  h2{font-size:1.25rem;margin:2.6rem 0 .7rem;color:var(--heat);font-weight:600}
+  p{margin:.6rem 0;max-width:48rem}
+  code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;margin:1rem 0}
+  table{border-collapse:collapse;font-size:.9rem;margin:.8rem 0}
+  td,th{border:1px solid var(--line);padding:.32rem .66rem;text-align:center}
+  th{color:var(--dim);font-weight:600}
+  .note{font-size:.88rem;color:var(--dim)}
+  .err{color:var(--red);font-weight:600}
+  .lbl{font-size:.8rem;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+  input[type=range]{width:100%;accent-color:var(--heat)}
+  canvas{width:100%;height:auto;display:block;border-radius:10px;background:var(--panel2)}
+  .strip{display:flex;height:40px;border-radius:8px;overflow:hidden;margin:.5rem 0;border:1px solid var(--line)}
+  .seg{height:100%;display:flex;align-items:center;justify-content:center;
+    font:600 .7rem var(--mono);color:#0A0D13;white-space:nowrap;overflow:hidden}
+  .readout{display:flex;flex-wrap:wrap;gap:1.4rem;margin:.7rem 0}
+  .readout .v{font:600 1.3rem var(--mono)}
+</style>
+<body>
+<div class="wrap">
+  <div class="home"><a href="../">← Mathematics of Poker, Visualized</a></div>
+  <h1>Multiplayer Games</h1>
+  <p class="sub">Chapter 29 of Chen &amp; Ankenman's <i>The Mathematics of Poker</i>: why
+  "optimal" stops meaning anything when a third player sits down. A light treatment by
+  design — the chapter's own message is that these games have equilibria but no solutions.</p>
+
+  <h2>Why three is different</h2>
+  <p>Nash proved every finite game has an equilibrium — a strategy set no one can profit
+  by <i>unilaterally</i> leaving. But in multiplayer games equilibria multiply (chicken has
+  three, with utterly different characters), and nothing stops two players from jointly
+  drifting into an <b>alliance</b> that farms the third. "Hard" collusion breaks the rules;
+  "soft" collusion — implicit, no information shared — is just… poker. The three toy games
+  below (verified in <code>verify.py</code>) each isolate one facet.</p>
+
+  <h2>1 · The rock &amp; the maniac: a fair game you cannot win</h2>
+  <div class="panel">
+    <p>Three players ante $10, one card each; aces and kings win. The player on your left
+    announces: <i>"check always, call only with a winner."</i> The one on your right:
+    <i>"bet $30 always, call always."</i> Both exploitable-looking, both fully disclosed, and
+    the game is symmetric. Your best response (call with everything — folding a loser gives 0,
+    calling nets +$1.87) still loses:</p>
+    <table>
+      <tr><th>Your card</th><th>Opponents</th><th>Net</th><th>Prob.</th><th>EV</th></tr>
+      <tr><td>winner</td><td>both winners</td><td>$0</td><td>0.25%</td><td>0</td></tr>
+      <tr><td>winner</td><td>rock W, maniac L</td><td>+$20</td><td>1.86%</td><td>+$0.372</td></tr>
+      <tr><td>winner</td><td>rock L, maniac W</td><td>+$5</td><td>1.86%</td><td>+$0.093</td></tr>
+      <tr><td>winner</td><td>both losers</td><td>+$50</td><td>11.41%</td><td>+$5.707</td></tr>
+      <tr><td>loser</td><td>both losers</td><td>+$5</td><td>59.93%</td><td>+$2.996</td></tr>
+      <tr><td>loser</td><td>any winner</td><td>−$40</td><td>24.69%</td><td>−$9.875</td></tr>
+      <tr><th colspan="4">total</th><th>−$0.707</th></tr>
+    </table>
+    <p class="note">The rock and the maniac form an <b>implicit alliance without exchanging a
+    bit of information</b>: the maniac charges you $30 to see a showdown, and the rock only
+    ever puts money in when he has you beat. The book conjectures real three-handed analogues
+    exist — two players whose pre-announced strategies make the third's EV negative.</p>
+  </div>
+
+  <h2>2 · The dry side pot: bluffing changes meaning</h2>
+  <div class="panel">
+    <p>X and Y with chips, Z all-in; pot 9; hands uniform on [0,1]; one half street. A
+    successful "bluff" no longer wins the pot — Z can't fold — so it's really a semi-bluff
+    that evicts X and then must beat Z. The equilibrium (book's own indifference system:
+    <span class="m">y₁ = x/2</span>, <span class="m">w = x/(20−18x)</span>,
+    <span class="m">w = √((1+x)² − 40x/9)</span>, solved correctly and confirmed by a
+    2000-point no-deviation check):</p>
+    <div class="strip">
+      <div class="seg" style="width:25.9%;background:var(--heat)">value bet [0, .259]</div>
+      <div class="seg" style="width:47.6%;background:#3a4356;color:#aab2c0">check</div>
+      <div class="seg" style="width:4.9%;background:var(--purple)">bluff .759±.024</div>
+      <div class="seg" style="flex:1;background:#3a4356;color:#aab2c0">check</div>
+    </div>
+    <div class="strip">
+      <div class="seg" style="width:51.8%;background:var(--ice)">X calls [0, 0.518]</div>
+      <div class="seg" style="flex:1;background:#3a4356;color:#aab2c0">X folds</div>
+    </div>
+    <p class="note"><span class="err">Erratum:</span> the book reports x ≈ 0.2848, y₁ ≈ 0.1424,
+    bluff band 0.6424 ± 0.0095 — values that don't satisfy its own three equations (they give
+    w = 0.019 on one side and 0.620 on the other), and against which Y could profitably bluff
+    hand 0.5 for +0.68. The true simultaneous root is <b>x = 0.5178, y₁ = 0.2589, band
+    0.7589 ± 0.0242</b>. The chapter's qualitative points survive: X calls far less than the
+    9/10 he would without Z, and the bluff-to-value ratio (0.187) runs above the two-player
+    α = 1/10. And the destabilizing lesson stands: if Y <i>overbluffs</i>, he transfers X's
+    equity to Z — allying with the all-in player — and X's best recourse hands some equity
+    back to Y.</p>
+  </div>
+
+  <h2>3 · The clairvoyant maniac: announce your sins</h2>
+  <div class="panel">
+    <p>Z is clairvoyant into a pot of 9 against X and Y, who hold identical hands and can
+    only check/call. In equilibrium Z bluffs α = 1/10 per value bet and gets called 9/10 of
+    the time in total. Now let Z <b>announce</b> a bluff ratio β and let X and Y respond
+    greedily:</p>
+    <div class="lbl">announced bluffs per value bet: β = <span id="bv" class="m"></span></div>
+    <input id="beta" type="range" min="0" max="500" value="100">
+    <div class="readout">
+      <div><div class="lbl">X's response</div><div class="v" id="xr" style="color:var(--ice);font-size:1rem"></div></div>
+      <div><div class="lbl">Y's response</div><div class="v" id="yr" style="color:var(--purple);font-size:1rem"></div></div>
+      <div><div class="lbl">Z's EV per value bet</div><div class="v" id="zv" style="color:var(--heat)"></div></div>
+      <div><div class="lbl">alliance formed</div><div class="v" id="al" style="font-size:1rem"></div></div>
+    </div>
+    <canvas id="cz" width="1680" height="560"></canvas>
+    <p class="note">Z's EV per value bet is <b>discontinuous</b> in his announced bluff ratio.
+    Bluff a little too much (β just over 1/10) and X snaps off every bluff: Z bleeds. But bluff
+    <i>three times</i> the equilibrium rate and Y — who could never overcall at equilibrium —
+    finally has odds to overcall behind X: Z collects two bets on every value hand,
+    <b>17/10 per value bet instead of 9/10</b>. Over-bluffing only works if the victims know
+    about it: the equilibrium is disturbed into an alliance of Z with whichever opponent his β
+    recruits. This is the chapter's closing idea — and why the book refuses to say "optimal"
+    about multiplayer poker at all.</p>
+  </div>
+
+  <h2>Also in these pages</h2>
+  <p class="note">The chapter opens with tournament-adjacent material continued from ch. 28
+  (backing agreements under tournament skew — see the <a href="../tournaments/">tournaments
+  project</a>), a face-up three-way collision (set vs. nut flush draw vs. straight flush draw)
+  where <i>who should do what is genuinely undefined</i> because every pair of players prefers
+  a different alliance, and a pointer toward cooperative game theory (Shapley values) for
+  readers who want the deep end. Verified numbers: <code>verify.py</code>.</p>
+</div>
+<script>
+(function(){
+  var beta=document.getElementById('beta');
+  function zEV(b){
+    if(b<=0.1) return 9/10;
+    if(b<=0.2) return 1-b;
+    return 2-b;
+  }
+  var cv=document.getElementById('cz'),ctx=cv.getContext('2d');
+  function draw(cur){
+    var W=cv.width,H=cv.height,L=80,R=30,T=26,B=56,bmax=0.5,vmax=2.0;
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#232B3A';ctx.lineWidth=1;ctx.font='21px ui-monospace,monospace';
+    for(var g=0;g<=bmax+1e-9;g+=0.1){var X=L+(W-L-R)*g/bmax;
+      ctx.beginPath();ctx.moveTo(X,T);ctx.lineTo(X,H-B);ctx.stroke();
+      ctx.fillStyle='#5A6274';ctx.textAlign='center';ctx.fillText(g.toFixed(1),X,H-B+28);}
+    for(var v=0;v<=vmax+1e-9;v+=0.5){var Y=T+(H-T-B)*(1-v/vmax);
+      ctx.beginPath();ctx.moveTo(L,Y);ctx.lineTo(W-R,Y);ctx.stroke();
+      ctx.fillStyle='#5A6274';ctx.textAlign='right';ctx.fillText(v.toFixed(1),L-8,Y+7);}
+    ctx.textAlign='center';ctx.fillStyle='#5A6274';
+    ctx.fillText('announced bluff ratio β',(L+W-R)/2,H-8);
+    function px(b){return L+(W-L-R)*b/bmax;}
+    function py(v){return T+(H-T-B)*(1-v/vmax);}
+    // segments with jumps
+    ctx.strokeStyle='#F0A44E';ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(px(0),py(0.9));ctx.lineTo(px(0.1),py(0.9));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(px(0.1),py(0.9));ctx.lineTo(px(0.2),py(0.8));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(px(0.2),py(1.8));ctx.lineTo(px(0.5),py(1.5));ctx.stroke();
+    ctx.setLineDash([3,5]);ctx.strokeStyle='rgba(240,164,78,.5)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(px(0.2),py(0.8));ctx.lineTo(px(0.2),py(1.8));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#8FD694';
+    ctx.beginPath();ctx.arc(px(0.3),py(1.7),8,0,7);ctx.fill();
+    ctx.textAlign='left';ctx.fillText('β=0.3 → 17/10',px(0.3)+14,py(1.7)+7);
+    // current marker
+    ctx.strokeStyle='rgba(232,228,220,.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(px(cur),T);ctx.lineTo(px(cur),H-B);ctx.stroke();
+  }
+  function upd(){
+    var b=(+beta.value)/1000;
+    document.getElementById('bv').textContent=b.toFixed(3);
+    var x,y,al;
+    if(b<=0.1){x='equilibrium mix (total calls 9/10)';y='never overcalls';al='none';}
+    else if(b<=0.2){x='calls 100% — picks off bluffs';y='still can\'t overcall';al='X + Z squeeze Y (bad for Z)';}
+    else {x='calls 100%';y='overcalls — finally has odds';al='Y + Z vs X (great for Z)';}
+    document.getElementById('xr').textContent=x;
+    document.getElementById('yr').textContent=y;
+    document.getElementById('zv').textContent=zEV(b).toFixed(2);
+    document.getElementById('al').textContent=al;
+    draw(b);
+  }
+  beta.addEventListener('input',upd); upd();
+})();
+</script>
+</body>
+</html>
