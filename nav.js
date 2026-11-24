@@ -31,11 +31,11 @@
   var css = [
     '.mnav-header{display:block;margin:0;padding:0;border:0;border-bottom:1px solid #232B3A;max-width:none;width:auto;background:#10141D;font-family:Charter,Georgia,"Times New Roman",serif;line-height:1.55;text-align:left}',
     '.mnav-header *{box-sizing:border-box}',
-    '.mnav-mast{max-width:980px;margin:0 auto;padding:1.1rem 1.4rem .6rem}',
+    '.mnav-mast{max-width:1100px;margin:0 auto;padding:1.1rem 1.4rem .6rem}',
     '.mnav-mast a:hover{text-decoration:none;color:#E8E4DC}',
     '.mnav-mast a{font-size:1.25rem;font-weight:600;letter-spacing:-.01em;color:#E8E4DC;text-decoration:none}',
     '.mnav-mast a i{color:#F0A44E}',
-    '.mnav-tabs{max-width:980px;margin:0 auto;padding:0 1.4rem;display:flex;flex-wrap:wrap;gap:.2rem}',
+    '.mnav-tabs{max-width:1100px;margin:0 auto;padding:0 1.4rem;display:flex;flex-wrap:wrap;gap:.2rem}',
     '.mnav-tab{position:relative}',
     '.mnav-tab>button,.mnav-tab>a{display:block;margin:0;background:none;border:none;border-radius:0;box-shadow:none;text-transform:none;letter-spacing:normal;cursor:pointer;font:600 .95rem Charter,Georgia,serif;color:#8B93A3;padding:.6rem .9rem;border-bottom:2px solid transparent;text-decoration:none}',
     '.mnav-tab>button:hover,.mnav-tab>a:hover{color:#E8E4DC;text-decoration:none}',

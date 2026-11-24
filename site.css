@@ -16,12 +16,11 @@ a{color:var(--ice);text-decoration:none}
 a:hover{text-decoration:underline}
 code{font-family:var(--mono)}
 
-/* standard content column; add "wide" for chart-heavy explorers */
-.wrap{max-width:980px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
-.wrap.wide{max-width:1160px}
+/* the one content column, same on every page */
+.wrap{max-width:1100px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
 
 /* ---- canonical page typography — identical on every page ----
-   hero:     <p class="eyebrow">The Mathematics of Poker · Chapter N · Tag</p>
+   hero:     <p class="eyebrow">Chapter N · Tag</p>
              <h1>Title <i>accent</i> <span class="sub">subtitle</span></h1>
              <p class="lede">intro…</p>
    sections: <h2>Heading <span class="sub">mono annotation</span></h2>       */
