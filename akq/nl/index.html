@@ -2,21 +2,24 @@
 <html lang="en">
 <meta charset="utf-8">
 <title>The No-Limit AKQ Game: What Position Is Worth at Every Depth</title>
+<script defer src="../../nav.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../site.css">
 <style>
-  :root {
-    --bg:#0B0E12; --panel:#141922; --panel2:#1B2230;
-    --ink:#ECE7DA; --muted:#8A93A4; --line:#27313F; --line2:#1B2431;
-    --gold:#E4B551;                 /* value / money */
-    --A:#EC7A4E; --K:#67B8CE; --Q:#B58BD0;
-    --r1:#3A2E1E; --r2:#1F3330; --r3:#33222E; --r4:#182231;
+  :root{
+    --line2:#1B2431;
+    --gold:#E4B551;
+    /* value / money */
+    --A:#EC7A4E;
+    --K:#67B8CE;
+    --Q:#B58BD0;
+    --r1:#3A2E1E;
+    --r2:#1F3330;
+    --r3:#33222E;
+    --r4:#182231;
   }
-  * { box-sizing:border-box; }
   html { background:var(--bg); -webkit-text-size-adjust:100%; }
-  body { color:var(--ink); margin:0; padding:0 0 6rem;
-    font-family:Charter,'Iowan Old Style',Georgia,'Times New Roman',serif;
-    line-height:1.55; }
-  .wrap { max-width:1140px; margin:0 auto; padding:0 1.3rem; }
+  body{padding:0 0 6rem}
   .mono { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
   .tnum { font-variant-numeric:tabular-nums; }
   a { color:var(--gold); }
@@ -24,18 +27,18 @@
   header { padding:3.4rem 0 1.8rem; border-bottom:1px solid var(--line); }
   .eyebrow { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:.71rem; letter-spacing:.2em; text-transform:uppercase;
-    color:var(--muted); margin:0 0 1rem; }
+    color:var(--dim); margin:0 0 1rem; }
   h1 { font-size:clamp(2rem,4.6vw,2.9rem); font-weight:500; margin:0 0 .7rem;
     letter-spacing:-.01em; text-wrap:balance; line-height:1.1; }
   h1 em { color:var(--gold); font-style:italic; }
-  .lede { max-width:64ch; color:var(--muted); font-size:1.05rem; margin:0; }
+  .lede { max-width:64ch; color:var(--dim); font-size:1.05rem; margin:0; }
   .lede b { color:var(--ink); font-weight:500; }
 
   section { margin-top:3.2rem; }
   h2 { font-size:1.35rem; font-weight:500; margin:0 0 .3rem; }
   h2 .sub { display:block; font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:.72rem; letter-spacing:.13em; text-transform:uppercase;
-    color:var(--muted); margin-top:.45rem; }
+    color:var(--dim); margin-top:.45rem; }
   .panel { background:var(--panel); border:1px solid var(--line);
     border-radius:8px; padding:1.5rem 1.6rem; }
 
@@ -43,10 +46,10 @@
   .readouts { display:flex; gap:2.4rem; flex-wrap:wrap; align-items:baseline; }
   .readout .k { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:.66rem; letter-spacing:.15em; text-transform:uppercase;
-    color:var(--muted); margin-bottom:.2rem; }
+    color:var(--dim); margin-bottom:.2rem; }
   .readout .v { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:1.7rem; font-variant-numeric:tabular-nums; line-height:1; }
-  .readout .v small { font-size:.72rem; color:var(--muted); }
+  .readout .v small { font-size:.72rem; color:var(--dim); }
   #stackVal { color:var(--gold); }
   #regimeVal { font-size:1.15rem; }
   .rpill { display:inline-block; padding:.12em .6em; border-radius:999px;
@@ -59,7 +62,7 @@
     margin:.2rem 0; }
   input[type=range]:focus-visible{ outline:2px solid var(--gold);
     outline-offset:4px; }
-  .scale { display:flex; justify-content:space-between; color:var(--muted);
+  .scale { display:flex; justify-content:space-between; color:var(--dim);
     font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.66rem; }
   .jumps { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:1rem; }
   .jumps button { font-family:ui-monospace,'SF Mono',Menlo,monospace;
@@ -75,10 +78,10 @@
   @media (max-width:720px){ .strat { grid-template-columns:1fr; } }
   .stratcol h3 { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-weight:400; font-size:.74rem; letter-spacing:.1em;
-    text-transform:uppercase; color:var(--muted); margin:0 0 .2rem; }
+    text-transform:uppercase; color:var(--dim); margin:0 0 .2rem; }
   .stratcol h3 b { color:var(--ink); font-weight:600; }
   .substage { font-family:ui-monospace,'SF Mono',Menlo,monospace;
-    font-size:.66rem; letter-spacing:.06em; color:var(--muted);
+    font-size:.66rem; letter-spacing:.06em; color:var(--dim);
     margin:.9rem 0 .5rem; }
   .row { display:flex; align-items:center; gap:.7rem; margin:.42rem 0; }
   .rank { width:1.5rem; text-align:center; font-family:ui-monospace,'SF Mono',Menlo,monospace;
@@ -88,35 +91,35 @@
     display:flex; background:var(--line2); border:1px solid var(--line); }
   .seg { height:100%; display:flex; align-items:center; justify-content:center;
     font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.6rem;
-    color:#0B0E12aa; overflow:hidden; white-space:nowrap;
+    color:#0A0D13aa; overflow:hidden; white-space:nowrap;
     transition:width 90ms linear; }
-  .seg.fold { background:#4A5262; color:#0B0E12; }
-  .seg.check{ background:#5C6B7A; color:#0B0E12; }
+  .seg.fold { background:#4A5262; color:#0A0D13; }
+  .seg.check{ background:#5C6B7A; color:#0A0D13; }
   .seg.call { background:var(--K); }
   .seg.bet  { background:var(--gold); }
   .seg.raise{ background:var(--A); }
-  .sizetag { width:5.2rem; text-align:right; color:var(--muted);
+  .sizetag { width:5.2rem; text-align:right; color:var(--dim);
     font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.68rem; }
   .sizetag b { color:var(--gold); font-weight:500; }
   .legend { display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.3rem;
     font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.68rem;
-    color:var(--muted); }
+    color:var(--dim); }
   .legend span { display:inline-flex; align-items:center; gap:.35rem; }
   .sw { width:.75rem; height:.75rem; border-radius:2px; display:inline-block; }
 
   /* charts */
   .canvasbox { position:relative; overflow-x:auto; }
   canvas { display:block; width:100%; }
-  .caption { font-size:.9rem; color:var(--muted); max-width:74ch;
+  .caption { font-size:.9rem; color:var(--dim); max-width:74ch;
     margin-top:.9rem; }
   .caption b { color:var(--ink); font-weight:500; }
   .tabs { display:flex; gap:.5rem; margin:.2rem 0 1rem; }
   .tabs button { font-family:ui-monospace,'SF Mono',Menlo,monospace;
-    font-size:.72rem; letter-spacing:.06em; background:none; color:var(--muted);
+    font-size:.72rem; letter-spacing:.06em; background:none; color:var(--dim);
     border:1px solid var(--line); border-radius:5px; padding:.35rem .8rem;
     cursor:pointer; }
   .tabs button[aria-pressed=true]{ color:var(--ink); background:var(--panel2);
-    border-color:var(--muted); }
+    border-color:var(--dim); }
   .tabs button:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
 
   /* regimes */
@@ -130,17 +133,17 @@
   .reg.r4 { border-top-color:var(--K); }
   .reg .tag { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:.64rem; letter-spacing:.12em; text-transform:uppercase;
-    color:var(--muted); }
+    color:var(--dim); }
   .reg h4 { margin:.25rem 0 .3rem; font-size:1rem; font-weight:600; }
   .reg .rng { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:.75rem; color:var(--gold); margin-bottom:.55rem; }
-  .reg p { margin:0; font-size:.86rem; color:var(--muted); }
+  .reg p { margin:0; font-size:.86rem; color:var(--dim); }
   .reg p b { color:var(--ink); font-weight:500; }
   .reg .law { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:.78rem; color:var(--ink); margin-top:.55rem;
     padding-top:.5rem; border-top:1px solid var(--line2); }
 
-  .note { font-size:.92rem; color:var(--muted); max-width:74ch; }
+  .note { font-size:.92rem; color:var(--dim); max-width:74ch; }
   .note b { color:var(--ink); font-weight:500; }
   code { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.85em;
     background:var(--panel2); padding:.08em .4em; border-radius:4px; }
@@ -150,9 +153,8 @@
     padding:.4rem .6rem; color:var(--ink); white-space:pre; }
   @media (prefers-reduced-motion:reduce){ .seg { transition:none; } }
 </style>
-<a href="../../" class="mopv-home" style="position:fixed;top:10px;right:12px;z-index:9999;font:600 12px ui-monospace,Menlo,monospace;color:#8B93A3;background:rgba(16,20,29,.88);border:1px solid #232B3A;border-radius:99px;padding:4px 12px;text-decoration:none">&#8592; MoP, Visualized</a>
 
-<div class="wrap">
+<div class="wrap wide">
 <header>
   <p class="eyebrow">Mathematics of Poker &middot; Ch. 15 &middot; No-Limit AKQ</p>
   <h1>What position is worth &mdash; <em>and how deep it stops mattering</em></h1>
@@ -304,7 +306,7 @@ const $ = s => document.querySelector(s);
 const CARDS = ["A","K","Q"];
 const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const COL = {A:cssv('--A'),K:cssv('--K'),Q:cssv('--Q'),gold:cssv('--gold'),
-  ink:cssv('--ink'),muted:cssv('--muted'),line:cssv('--line')};
+  ink:cssv('--ink'),muted:cssv('--dim'),line:cssv('--line')};
 const fmt = (x,d=4)=> (x>=0?'+':'')+x.toFixed(d);
 const nS = DATA.S.length;
 let idx = 0;

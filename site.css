@@ -1,0 +1,21 @@
+/* Shared design system — single source of truth for every page.
+   Pages link this BEFORE their own <style>, declare only page-specific
+   tokens (chart colors etc.), and use these canonical names:
+   bg / panel / panel2 / line / ink / dim / faint / heat / ice / green / red / purple */
+:root{
+  --bg:#0A0D13; --panel:#10141D; --panel2:#151B27; --line:#232B3A;
+  --ink:#E8E4DC; --dim:#8B93A3; --faint:#5A6274;
+  --heat:#F0A44E; --ice:#6FD3E8; --green:#8FD694; --red:#E07A6B; --purple:#B48EF0;
+  --serif:Charter,Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:var(--serif);line-height:1.55}
+a{color:var(--ice);text-decoration:none}
+a:hover{text-decoration:underline}
+code{font-family:var(--mono)}
+
+/* standard content column; add "wide" for chart-heavy explorers */
+.wrap{max-width:980px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+.wrap.wide{max-width:1160px}
