@@ -3,22 +3,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Multi-Street Games — Mathematics of Poker, Visualized</title>
+<link rel="stylesheet" href="../site.css?v=2">
 <style>
-  :root{
-    --bg:#0A0D13; --panel:#10141D; --panel2:#151B27; --line:#232B3A;
-    --ink:#E8E4DC; --dim:#8B93A3; --faint:#5A6274;
-    --heat:#F0A44E; --ice:#6FD3E8; --green:#8FD694; --red:#E07A6B; --purple:#B48EF0;
-    --serif:Charter,Georgia,"Times New Roman",serif;
-    --mono:ui-monospace,"SF Mono",Menlo,monospace;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.55}
-  .wrap{max-width:940px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+  *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
-  .home{font-size:.85rem;color:var(--dim)}
-  h1{font-size:1.9rem;font-weight:600;margin:.7rem 0 .2rem}
-  .sub{color:var(--dim);font-size:1.02rem;max-width:50rem}
-  h2{font-size:1.25rem;margin:2.6rem 0 .7rem;color:var(--heat);font-weight:600}
   p{margin:.6rem 0;max-width:50rem}
   code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;margin:1rem 0}
@@ -43,10 +31,11 @@
   @media(max-width:640px){.row{flex-direction:column}}
 </style>
 <body>
+<script defer src="../nav.js?v=2"></script>
 <div class="wrap">
-  <div class="home"><a href="../">← Mathematics of Poker, Visualized</a></div>
+  <p class="eyebrow">Chapters 14 &amp; 19</p>
   <h1>Multi-Street Games</h1>
-  <p class="sub">Chapters 14 &amp; 19 of Chen &amp; Ankenman's <i>The Mathematics of Poker</i>:
+  <p class="lede">Chapters 14 &amp; 19 of Chen &amp; Ankenman's <i>The Mathematics of Poker</i>:
   what size to bet when the bet size is yours to choose — on one street, on many,
   and in the limit of infinitely many. Home of the book's most quoted result,
   the <b>geometric growth of pot</b>.</p>

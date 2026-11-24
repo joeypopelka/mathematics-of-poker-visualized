@@ -3,23 +3,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Limit AKQ Game — Mathematics of Poker, Visualized</title>
+<link rel="stylesheet" href="../../site.css?v=2">
 <style>
-  :root{
-    --bg:#0A0D13; --panel:#10141D; --panel2:#151B27; --line:#232B3A;
-    --ink:#E8E4DC; --dim:#8B93A3; --faint:#5A6274;
-    --heat:#F0A44E; --ice:#6FD3E8; --green:#8FD694; --red:#E07A6B;
-    --serif:Charter,Georgia,"Times New Roman",serif;
-    --mono:ui-monospace,"SF Mono",Menlo,monospace;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.55}
-  .wrap{max-width:880px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+  *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none}
   a:hover{text-decoration:underline}
-  .home{font-size:.85rem;color:var(--dim)}
-  h1{font-size:1.9rem;font-weight:600;margin:.7rem 0 .2rem}
-  .sub{color:var(--dim);font-size:1.02rem;max-width:46rem}
-  h2{font-size:1.25rem;margin:2.4rem 0 .7rem;color:var(--heat);font-weight:600}
   p{margin:.6rem 0;max-width:46rem}
   .cardrow{display:flex;gap:.9rem;margin:1.2rem 0}
   .pcard{width:64px;height:88px;border-radius:8px;background:#F4EFE6;color:#1A1A20;
@@ -52,10 +40,11 @@
   @media(max-width:640px){.hand{grid-template-columns:1fr}}
 </style>
 <body>
+<script defer src="../../nav.js?v=2"></script>
 <div class="wrap">
-  <div class="home"><a href="../../">← Mathematics of Poker, Visualized</a></div>
+  <p class="eyebrow">Chapter 13 · Examples 13.1–13.2</p>
   <h1>The Limit AKQ Game</h1>
-  <p class="sub">Chapter 13 of Chen &amp; Ankenman's <i>The Mathematics of Poker</i>
+  <p class="lede">Chapter 13 of Chen &amp; Ankenman's <i>The Mathematics of Poker</i>
   (Examples 13.1–13.2) — "perhaps the simplest form of symmetrical, non-trivial poker,"
   and the cleanest place to watch <span class="alpha">α&nbsp;=&nbsp;1/(P+1)</span>,
   the golden ratio of poker, do its work.</p>

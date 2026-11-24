@@ -2,48 +2,29 @@
 <html lang="en">
 <meta charset="utf-8">
 <title>Jam-or-Fold: The Phase Diagram</title>
+<script defer src="../nav.js?v=2"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../site.css?v=2">
 <style>
-  :root {
-    --bg: #0A0D13; --panel: #10141D; --panel2: #141926;
-    --ink: #E6E2D8; --muted: #8A92A4; --line: #222937;
-    --heat: #F0A44E; --ice: #6FD3E8;
-  }
+  
   html { background: var(--bg); }
-  body {
-    color: var(--ink);
-    font-family: Charter, Georgia, 'Times New Roman', serif;
-    line-height: 1.55; margin: 0; padding: 0 0 6rem;
-  }
-  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 1.25rem; }
+  body{padding: 0 0 6rem}
   .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
-  header { padding: 3.2rem 0 1.6rem; border-bottom: 1px solid var(--line); }
-  .eyebrow {
-    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-    font-size: .72rem; letter-spacing: .18em; text-transform: uppercase;
-    color: var(--muted); margin: 0 0 .9rem;
-  }
-  h1 { font-size: 2.5rem; font-weight: 500; margin: 0 0 .6rem; text-wrap: balance; }
-  h1 .thin { color: var(--muted); font-style: italic; }
-  .lede { max-width: 62ch; color: var(--muted); font-size: 1.02rem; margin: 0; }
-  .lede b { color: var(--ink); font-weight: 500; }
-  h2 { font-size: 1.35rem; font-weight: 500; margin: 0 0 .2rem; }
-  h2 .sub { display: block; font-size: .8rem; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-            color: var(--muted); letter-spacing: .06em; margin-top: .35rem; font-style: normal; }
+  header { padding: 0 0 1.6rem; border-bottom: 1px solid var(--line); }
   section { margin-top: 3rem; }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.4rem 1.5rem; }
 
   /* ---- explorer ---- */
   .readouts { display: flex; gap: 2.2rem; flex-wrap: wrap; align-items: baseline; margin: 1rem 0 .4rem; }
   .readout .k { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .68rem;
-                letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+                letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
   .readout .v { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 1.55rem;
                 font-variant-numeric: tabular-nums; }
-  .readout .v small { font-size: .8rem; color: var(--muted); }
+  .readout .v small { font-size: .8rem; color: var(--dim); }
   #stackVal { color: var(--heat); }
   input[type=range] { width: 100%; accent-color: var(--heat); margin: .8rem 0 .2rem; cursor: pointer; }
   input[type=range]:focus-visible { outline: 2px solid var(--heat); outline-offset: 4px; }
-  .slider-scale { display: flex; justify-content: space-between; font-size: .68rem; color: var(--muted); }
+  .slider-scale { display: flex; justify-content: space-between; font-size: .68rem; color: var(--dim); }
   .jumpbtns { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .9rem; }
   .jumpbtns button {
     font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .72rem;
@@ -56,7 +37,7 @@
   .gridbox { flex: 0 1 480px; min-width: 320px; }
   .gridbox h3 { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-weight: 400;
                 font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
-                color: var(--muted); margin: 0 0 .6rem; }
+                color: var(--dim); margin: 0 0 .6rem; }
   .gridbox h3 b { font-weight: 600; }
   .hgrid { display: grid; grid-template-columns: repeat(13, 1fr); gap: 2px; }
   .cell {
@@ -66,7 +47,7 @@
   }
   .cell.on { color: #000000CC; font-weight: 600; }
   .gridpct { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .75rem;
-             color: var(--muted); margin-top: .55rem; }
+             color: var(--dim); margin-top: .55rem; }
   .gridpct b { font-size: .95rem; }
   .gridpct .heat { color: var(--heat); } .gridpct .ice { color: var(--ice); }
 
@@ -74,10 +55,10 @@
   .tabs { display: flex; gap: .5rem; margin: .9rem 0 .8rem; }
   .tabs button {
     font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .75rem; letter-spacing: .08em;
-    background: none; color: var(--muted); border: 1px solid var(--line);
+    background: none; color: var(--dim); border: 1px solid var(--line);
     border-radius: 4px; padding: .35rem .9rem; cursor: pointer;
   }
-  .tabs button[aria-pressed=true] { color: var(--ink); background: var(--panel2); border-color: var(--muted); }
+  .tabs button[aria-pressed=true] { color: var(--ink); background: var(--panel2); border-color: var(--dim); }
   .tabs button:focus-visible { outline: 2px solid var(--heat); outline-offset: 2px; }
   .canvasbox { position: relative; overflow-x: auto; }
   canvas { display: block; }
@@ -87,7 +68,7 @@
     font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .72rem;
     padding: .35rem .55rem; color: var(--ink); white-space: pre;
   }
-  .caption { font-size: .85rem; color: var(--muted); max-width: 74ch; margin-top: .8rem; }
+  .caption { font-size: .85rem; color: var(--dim); max-width: 74ch; margin-top: .8rem; }
   .caption b { color: var(--ink); font-weight: 500; }
 
   /* ---- curves ---- */
@@ -98,7 +79,7 @@
   .tablebox { overflow-x: auto; margin-top: 1rem; }
   table { border-collapse: collapse; width: 100%; font-family: ui-monospace, 'SF Mono', Menlo, monospace;
           font-size: .78rem; font-variant-numeric: tabular-nums; }
-  th { text-align: left; font-weight: 400; color: var(--muted); font-size: .68rem;
+  th { text-align: left; font-weight: 400; color: var(--dim); font-size: .68rem;
        letter-spacing: .12em; text-transform: uppercase; padding: .45rem .8rem .45rem 0;
        border-bottom: 1px solid var(--line); }
   td { padding: .38rem .8rem .38rem 0; border-bottom: 1px solid #1A202D; }
@@ -107,9 +88,9 @@
   .oddcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
   .odd { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1rem 1.2rem; }
   .odd h4 { margin: 0 0 .4rem; font-size: .95rem; font-weight: 600; }
-  .odd p { margin: 0; font-size: .86rem; color: var(--muted); }
+  .odd p { margin: 0; font-size: .86rem; color: var(--dim); }
   .odd p b { color: var(--ink); font-weight: 500; }
-  .note { font-size: .9rem; color: var(--muted); max-width: 72ch; }
+  .note { font-size: .9rem; color: var(--dim); max-width: 72ch; }
   .note b { color: var(--ink); font-weight: 500; }
   code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .85em;
          background: var(--panel2); padding: .08em .35em; border-radius: 3px; }
@@ -118,11 +99,10 @@
     .cell { transition: background-color 120ms linear; }
   }
 </style>
-<a href="../" class="mopv-home" style="position:fixed;top:10px;right:12px;z-index:9999;font:600 12px ui-monospace,Menlo,monospace;color:#8B93A3;background:rgba(16,20,29,.88);border:1px solid #232B3A;border-radius:99px;padding:4px 12px;text-decoration:none">&#8592; MoP, Visualized</a>
 
 <div class="wrap">
 <header>
-  <p class="eyebrow">The Mathematics of Poker &middot; Chapter 12 &middot; Example 12.3</p>
+  <p class="eyebrow">Chapter 12 &middot; Example 12.3</p>
   <h1>Jam-or-Fold <span class="thin">at every temperature</span></h1>
   <p class="lede">An exhaustive equilibrium analysis of Chen &amp; Ankenman's shove/fold no-limit
   hold'em game, from <b>1 big blind</b> to the frozen depths of <b>2,500</b>. Exact enumerated
