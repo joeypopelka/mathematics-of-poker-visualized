@@ -3,17 +3,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{page-title}}</title>
-<link rel="stylesheet" href="../../site.css?v=9">
+<link rel="stylesheet" href="../../site.css?v=10">
 <style>
+  :root{ --cardface:#F4EFE6; --cardink:var(--cardink); --cardred:var(--cardred); }
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none}
   a:hover{text-decoration:underline}
   p{margin:.6rem 0;max-width:46rem}
   .cardrow{display:flex;gap:.9rem;margin:1.2rem 0}
-  .pcard{width:64px;height:88px;background:#F4EFE6;color:#1A1A20;
+  .pcard{width:64px;height:88px;background:var(--cardface);color:var(--cardink);
     display:flex;align-items:center;justify-content:center;font:700 2rem var(--serif);
     }
-  .pcard.red{color:#B33E30}
+  .pcard.red{color:var(--cardred)}
   code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
   .panel{background:var(--panel);border:1px solid var(--line);
     padding:1.1rem 1.3rem;margin:1rem 0}
@@ -40,7 +41,7 @@
   @media(max-width:640px){.hand{grid-template-columns:1fr}}
 </style>
 <body>
-<script defer src="../../nav.js?v=9"></script>
+<script defer src="../../nav.js?v=10"></script>
 <div class="wrap">
   <p class="eyebrow">{{eyebrow}}</p>
   <h1>{{the-limit-akq-game}}</h1>
@@ -143,8 +144,8 @@
     var Pmax=20;
     function x(P){ return L+(W-L-R)*(P/Pmax); }
     function y(v){ return T+(H-T-B)*(1-v); }       // v in [0,1]
-    ctx.strokeStyle='#8A857A44'; ctx.lineWidth=1; ctx.font='22px ui-monospace,monospace';
-    ctx.fillStyle='#8A857A'; ctx.textAlign='center';
+    ctx.strokeStyle=(MOP.chartneutral+'44'); ctx.lineWidth=1; ctx.font='22px ui-monospace,monospace';
+    ctx.fillStyle=MOP.chartneutral; ctx.textAlign='center';
     for(var g=0;g<=20;g+=4){ ctx.beginPath(); ctx.moveTo(x(g),T); ctx.lineTo(x(g),H-B); ctx.stroke(); ctx.fillText(g,x(g),H-B+30); }
     for(var v=0;v<=1.0001;v+=0.25){ ctx.beginPath(); ctx.moveTo(L,y(v)); ctx.lineTo(W-R,y(v)); ctx.stroke(); ctx.textAlign='right'; ctx.fillText(v.toFixed(2),L-8,y(v)+7); ctx.textAlign='center'; }
     ctx.fillText('pot size P (bets)',(L+W-R)/2,H-8);

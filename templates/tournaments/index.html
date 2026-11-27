@@ -3,8 +3,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{page-title}}</title>
-<script defer src="../nav.js?v=9"></script>
-<link rel="stylesheet" href="../site.css?v=9">
+<script defer src="../nav.js?v=10"></script>
+<link rel="stylesheet" href="../site.css?v=10">
 <style>
   :root{
     --a:var(--blue);
@@ -30,7 +30,7 @@
   label{color:var(--dim);font-size:13px;display:flex;gap:8px;align-items:center}
   input[type=range]{accent-color:var(--a)}
   .val{color:var(--ink);font-variant-numeric:tabular-nums;
-    background:#8A857A22;padding:2px 7px;border:1px solid var(--line)}
+    background:color-mix(in srgb, var(--chartneutral) 13%, transparent);padding:2px 7px;border:1px solid var(--line)}
   table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
   th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right}
   th:first-child,td:first-child{text-align:left;color:var(--dim)}
@@ -39,9 +39,9 @@
     vertical-align:middle}
   .legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:13px;margin:8px 0}
   .note{font-size:13px;color:var(--dim);border-left:3px solid var(--b);
-    padding:6px 0 6px 12px;margin:12px 0;background:#14181e}
+    padding:6px 0 6px 12px;margin:12px 0;background:var(--screen)}
   .warn{border-left-color:var(--warn)}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+  .mono{font-family:var(--mono);font-size:13px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   @media(max-width:720px){.grid2{grid-template-columns:1fr}}
   .matrix td,.matrix th{text-align:center;border:1px solid var(--line)}
@@ -185,7 +185,7 @@ function plot(cv, opts){
   const m={l:56,r:16,t:14,b:40}, iw=W-m.l-m.r, ih=H-m.t-m.b;
   const {xmin,xmax,ymin,ymax}=opts;
   const X=x=>m.l+(x-xmin)/(xmax-xmin)*iw, Y=y=>m.t+ih-(y-ymin)/(ymax-ymin)*ih;
-  g.strokeStyle='#8A857A44'; g.fillStyle='#8A857A'; g.font='12px sans-serif'; g.lineWidth=1;
+  g.strokeStyle=(MOP.chartneutral+'44'); g.fillStyle=MOP.chartneutral; g.font='12px sans-serif'; g.lineWidth=1;
   const yt=opts.yticks||5;
   for(let i=0;i<=yt;i++){const v=ymin+(ymax-ymin)*i/yt;
     g.beginPath();g.moveTo(m.l,Y(v));g.lineTo(W-m.r,Y(v));g.stroke();
@@ -195,7 +195,7 @@ function plot(cv, opts){
   for(let i=0;i<=xt;i++){const v=xmin+(xmax-xmin)*i/xt;
     g.textAlign='center';g.textBaseline='top';
     g.fillText(opts.xfmt?opts.xfmt(v):v.toFixed(2),X(v),H-m.b+8);}
-  g.fillStyle='#8A857A';
+  g.fillStyle=MOP.chartneutral;
   if(opts.xlab){g.textAlign='center';g.fillText(opts.xlab,m.l+iw/2,H-12);}
   (opts.series||[]).forEach(s=>{
     g.strokeStyle=s.color; g.lineWidth=s.w||2; g.setLineDash(s.dash||[]);
@@ -215,11 +215,11 @@ function drawCurve(){
   const sel=S.map(s=>[s,Math.pow(s,beta)]);
   const lin=S.map(s=>[s,s]);
   const fam=DATA.doubling.chip_value_curves.curves.map(cu=>({
-    color:'#3a3350', w:1, pts:S.map((s,i)=>[s,cu.E[i]])}));
+    color:'var(--screengrid)', w:1, pts:S.map((s,i)=>[s,cu.E[i]])}));
   plot(document.getElementById('curveCv'),{
     xmin:0,xmax:1,ymin:0,ymax:1,xlab:'stack fraction  S',
     series:[...fam,
-      {pts:lin,color:'#8A857A',w:1,dash:[5,4]},
+      {pts:lin,color:MOP.chartneutral,w:1,dash:[5,4]},
       {pts:sel,color:MOP.blue,w:2.5}]});
 }
 
@@ -234,12 +234,12 @@ function drawRebuy(){
     xmin:0,xmax,ymin:0,ymax,xlab:'current stack (000s of chips)',
     yfmt:v=>'$'+v.toFixed(0),
     series:[...series,
-      {pts:[[0,R.discount_cost],[xmax,R.discount_cost]],color:'#8A857A',w:1,dash:[5,4]},
+      {pts:[[0,R.discount_cost],[xmax,R.discount_cost]],color:MOP.chartneutral,w:1,dash:[5,4]},
       {pts:[[0,R.par_cost],[xmax,R.par_cost]],color:MOP.red,w:1,dash:[5,4]}]});
   document.getElementById('rebuyLeg').innerHTML=
     R.series.map((s,i)=>`<span><span class="chip" style="background:${cols[i%3]}"></span>C = ${s.C}</span>`).join('')
-    +`<span><span class="chip" style="background:#8A857A"></span>$${R.discount_cost} discounted cost</span>`
-    +`<span><span class="chip" style="background:#C3362B"></span>$${R.par_cost} at-par cost</span>`;
+    +`<span><span class="chip" style="background:${MOP.chartneutral}"></span>$${R.discount_cost} discounted cost</span>`
+    +`<span><span class="chip" style="background:${MOP.red}"></span>$${R.par_cost} at-par cost</span>`;
 }
 
 /* ---------- Tab 2: table + spread ---------- */
@@ -272,7 +272,7 @@ function drawStr(){
     series:[
       {pts:sw.map(r=>[r.hero_stack/1000,r.bubble_factor]),color:MOP.blue,w:2.5},
       {pts:[[sw[0].hero_stack/1000,1],[sw[sw.length-1].hero_stack/1000,1]],
-        color:'#8A857A',w:1,dash:[5,4]}]});
+        color:MOP.chartneutral,w:1,dash:[5,4]}]});
 }
 
 function draw(){

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Multiplayer Games — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../site.css?v=9">
+<link rel="stylesheet" href="../site.css?v=10">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
@@ -21,12 +21,12 @@
   canvas{width:100%;height:auto;display:block;background:var(--panel2)}
   .strip{display:flex;height:40px;overflow:hidden;margin:.5rem 0;border:1px solid var(--line)}
   .seg{height:100%;display:flex;align-items:center;justify-content:center;
-    font:600 .7rem var(--mono);color:#8A857A22;white-space:nowrap;overflow:hidden}
+    font:600 .7rem var(--mono);color:color-mix(in srgb, var(--chartneutral) 13%, transparent);white-space:nowrap;overflow:hidden}
   .readout{display:flex;flex-wrap:wrap;gap:1.4rem;margin:.7rem 0}
   .readout .v{font:600 1.3rem var(--mono)}
 </style>
 <body>
-<script defer src="../nav.js?v=9"></script>
+<script defer src="../nav.js?v=10"></script>
 <div class="wrap">
   <p class="eyebrow">Chapter 29</p>
   <h1>Multiplayer Games</h1>
@@ -75,13 +75,13 @@
     2000-point no-deviation check):</p>
     <div class="strip">
       <div class="seg" style="width:25.9%;background:var(--heat)">value bet [0, .259]</div>
-      <div class="seg" style="width:47.6%;background:#3a4356;color:#aab2c0">check</div>
+      <div class="seg" style="width:47.6%;background:var(--check);color:var(--check-ink)">check</div>
       <div class="seg" style="width:4.9%;background:var(--purple)">bluff .759±.024</div>
-      <div class="seg" style="flex:1;background:#3a4356;color:#aab2c0">check</div>
+      <div class="seg" style="flex:1;background:var(--check);color:var(--check-ink)">check</div>
     </div>
     <div class="strip">
       <div class="seg" style="width:51.8%;background:var(--ice)">X calls [0, 0.518]</div>
-      <div class="seg" style="flex:1;background:#3a4356;color:#aab2c0">X folds</div>
+      <div class="seg" style="flex:1;background:var(--check);color:var(--check-ink)">X folds</div>
     </div>
     <p class="note"><span class="err">Erratum:</span> the book reports x ≈ 0.2848, y₁ ≈ 0.1424,
     bluff band 0.6424 ± 0.0095 — values that don't satisfy its own three equations (they give
@@ -140,14 +140,14 @@
   function draw(cur){
     var W=cv.width,H=cv.height,L=80,R=30,T=26,B=56,bmax=0.5,vmax=2.0;
     ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='#8A857A44';ctx.lineWidth=1;ctx.font='21px ui-monospace,monospace';
+    ctx.strokeStyle=(MOP.chartneutral+'44');ctx.lineWidth=1;ctx.font='21px ui-monospace,monospace';
     for(var g=0;g<=bmax+1e-9;g+=0.1){var X=L+(W-L-R)*g/bmax;
       ctx.beginPath();ctx.moveTo(X,T);ctx.lineTo(X,H-B);ctx.stroke();
-      ctx.fillStyle='#8A857A';ctx.textAlign='center';ctx.fillText(g.toFixed(1),X,H-B+28);}
+      ctx.fillStyle=MOP.chartneutral;ctx.textAlign='center';ctx.fillText(g.toFixed(1),X,H-B+28);}
     for(var v=0;v<=vmax+1e-9;v+=0.5){var Y=T+(H-T-B)*(1-v/vmax);
       ctx.beginPath();ctx.moveTo(L,Y);ctx.lineTo(W-R,Y);ctx.stroke();
-      ctx.fillStyle='#8A857A';ctx.textAlign='right';ctx.fillText(v.toFixed(1),L-8,Y+7);}
-    ctx.textAlign='center';ctx.fillStyle='#8A857A';
+      ctx.fillStyle=MOP.chartneutral;ctx.textAlign='right';ctx.fillText(v.toFixed(1),L-8,Y+7);}
+    ctx.textAlign='center';ctx.fillStyle=MOP.chartneutral;
     ctx.fillText('announced bluff ratio β',(L+W-R)/2,H-8);
     function px(b){return L+(W-L-R)*b/bmax;}
     function py(v){return T+(H-T-B)*(1-v/vmax);}
