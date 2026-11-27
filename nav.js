@@ -45,7 +45,7 @@
       'background:var(--bg);border-bottom:1px solid var(--strong);',
       'font-family:var(--sans);line-height:1.5}',
     '.mnav-header *{box-sizing:border-box}',
-    '.mnav-bar{max-width:1100px;margin:0 auto;padding:0 1.4rem;display:flex;align-items:center;gap:1.2rem;min-height:3.1rem;flex-wrap:wrap}',
+    '.mnav-bar{max-width:1200px;margin:0 auto;padding:0 1.4rem;display:flex;align-items:center;gap:1.2rem;min-height:3.1rem;flex-wrap:wrap}',
     '.mnav-title{font-size:.78rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap}',
     '.mnav-title:hover{text-decoration:none;color:var(--ink)}',
     '.mnav-tabs{display:flex;flex-wrap:wrap;gap:.1rem;align-items:center;margin-left:auto}',
@@ -84,7 +84,7 @@
     '.mnav-rail .mnav-gs{--c:var(--blue)}',
     '.mnav-rail .mnav-gc{--c:var(--red)}',
     '.mnav-rail .mnav-gt{--c:var(--yellow)}',
-    '@media (max-width:1259px){.mnav-rail{display:none}}'
+    '@media (max-width:1299px){.mnav-rail{display:none}}'
   ].join('\n');
 
   function item(href, label, sub) {
@@ -94,7 +94,7 @@
 
   var html =
     '<div class="mnav-bar">' +
-      '<a class="mnav-title" href="' + root + '">MoP · Visualized</a>' +
+      '<a class="mnav-title" href="' + root + '">Mathematics of Poker · Visualized</a>' +
       '<nav class="mnav-tabs" aria-label="Site">' +
         '<div class="mnav-tab" data-key="home"><a href="' + root + '#home">Home</a></div>' +
         '<div class="mnav-tab" data-key="zo"><button type="button" aria-haspopup="true" aria-expanded="false">[0,1] Games <span class="mnav-caret">▾</span></button><div class="mnav-menu">' +

@@ -65,7 +65,7 @@ a:hover{text-decoration:underline}
 code{font-family:var(--mono)}
 
 /* the one content column, same on every page */
-.wrap{max-width:1100px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
+.wrap{max-width:1200px;margin:0 auto;padding:2.2rem 1.4rem 4rem}
 
 /* Meisterhaus discipline: zero radius, zero shadow (range-slider thumbs
    are pseudo-elements, untouched — they stay circles) */
