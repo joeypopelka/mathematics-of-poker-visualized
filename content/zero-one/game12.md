@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: eyebrow -->
+Chapter 17 · Example 17.4
+
 <!-- block: 0-1-game-12 -->
 [0,1] Game #12
       <span class="sub">folding + an unlimited raising ladder — the last finite-pot [0,1] game</span>

@@ -2,7 +2,7 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
-<!-- block: chapter-15-middot-no -->
+<!-- block: eyebrow -->
 Chapter 15 &middot; No-Limit AKQ
 
 <!-- block: what-position-is-worth -->

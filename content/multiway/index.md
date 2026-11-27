@@ -2,7 +2,7 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
-<!-- block: chapter-29 -->
+<!-- block: eyebrow -->
 Chapter 29
 
 <!-- block: multiplayer-games -->

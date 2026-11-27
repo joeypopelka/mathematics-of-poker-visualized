@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: eyebrow -->
+Chapter 11 · Example 11.3
+
 <!-- block: 0-1-game-2 -->
 [0,1] Game #2
       <span class="sub">the half-street game with folding — von Neumann's poker model, made live</span>

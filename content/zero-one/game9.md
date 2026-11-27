@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: eyebrow -->
+Chapter 17 · Example 17.1
+
 <!-- block: 0-1-game-9 -->
 [0,1] Game #9
       <span class="sub">mixing in bluffs — the strategy structure of Figure 17.1, made live</span>

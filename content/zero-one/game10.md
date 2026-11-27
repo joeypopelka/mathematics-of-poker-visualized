@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: eyebrow -->
+Chapter 17 · Example 17.2
+
 <!-- block: 0-1-game-10 -->
 [0,1] Game #10
       <span class="sub">introducing the raise — the strategy structure of Figure 17.2, made live</span>
