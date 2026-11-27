@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: page-title -->
+[0,1] Game #11 — Live Figure (check-raise)
+
 <!-- block: eyebrow -->
 Chapter 17 · Example 17.3
 
@@ -67,3 +70,24 @@ The value regions are what move; everything else cascades off them. The book sol
 **The x₁\* = y₁\* symmetry breaks.** In #9 and #10 those cutoffs coincided; here they
         separate, because X's post-check decision is no longer a clean call/fold — he can
         check-raise. That's the structural signature of this game.
+
+# -- recovered in audit pass --
+
+<!-- block: method -->
+**How these numbers are computed — the sequence-form LP, and what it found.** The Y-side
+    value thresholds (y₂, y₂\*, y₁, y₀) are the book's **exact closed forms** (Eq. 17.13). The
+    rest come from an **exact sequence-form LP** (Koller–Megiddo–von&nbsp;Stengel;
+    <code>seqlp.py</code>), gate-validated by reproducing Games&nbsp;#9 and #10's closed forms
+    (x₁ = 5/21, x₂\* = 4/21, x₁\* = 68/105 at P=2) and the no-fold #7 limit. The LP settled the
+    question CFR could not: **there is no crisp x₁.** At P=2 the optimal set pins X's total bet
+    mass to **0.28763&nbsp;±&nbsp;0.00001** and total aggressive mass (bet + check-raise) to
+    **0.37533&nbsp;±&nbsp;0.00001**, yet *every individual hand's* action probability can
+    range over [0,1] — rigorously measured by maximizing/minimizing each hand's bet frequency over
+    the optimal face. The same freedom holds for Y's give-up zone (call/raise-bluff/fold
+    assignment on ≈[0.55,&nbsp;0.85]). The thresholds drawn here are the **canonical monotone
+    representative** (aggression pushed lexicographically toward stronger hands — the selection
+    that reproduces the book's own #9/#10 thresholds exactly). Under it, x₁\* ≈ 0.650 ≠ y₁\* ≈ 0.667
+    (the book's predicted split, confirmed), y₁\* = y₂# (a representative with *no raise-bluffs*
+    exists in the optimal face), and the old CFR "blur" at x₁ stands revealed as genuine
+    equilibrium-set structure, not solver noise. The game value is exact:
+    **G(Y) = 0.062142 at P=2** (N→∞ converged), confirming the region-sum formula.

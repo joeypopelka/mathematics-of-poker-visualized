@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: page-title -->
+The No-Limit AKQ Game: What Position Is Worth at Every Depth
+
 <!-- block: eyebrow -->
 Chapter 15 &middot; No-Limit AKQ
 
@@ -60,3 +63,32 @@ The book&rsquo;s move switches on: X&rsquo;s **King makes a small
 Value freezes at **+0.0272 pots** and every strategy locks. Onset =
       Y&rsquo;s largest bet size: once chips cover that, more stack is dead
       weight. Flat to 10&#8315;&sup1;&#8310;.
+
+# -- recovered in audit pass --
+
+<!-- block: caption -->
+Four regimes, shaded. Two have **exact closed-form
+  laws** (dashed): jam-only <span class="mono">S&sup2;/(6(1+S))</span> and the
+  polar-bet law <span class="mono">(S/(1+S)&minus;(3&minus;2&radic;2))/6</span>,
+  which meet **tangent** at S = &radic;2&minus;1. The curve rises, corners,
+  and goes perfectly flat at **S\* = 0.525** &mdash; exactly Y&rsquo;s own
+  largest bet size.
+
+<!-- block: caption-2 -->
+Deep-stack play is dominated by **check&ndash;check**
+  (39%) and the **check&ndash;bet** lines: X often checks its merged range and
+  lets Y drive. The raise lines (<span class="mono">b&ndash;r</span>) &mdash; Y
+  punishing X&rsquo;s blocking bet &mdash; appear only once the stack is deep
+  enough to raise into.
+
+<!-- block: tag -->
+I &middot; ends at &radic;2&minus;1
+
+<!-- block: tag-2 -->
+II &middot; polar
+
+<!-- block: tag-3 -->
+III &middot; Player X strikes back
+
+<!-- block: tag-4 -->
+IV &middot; plateau

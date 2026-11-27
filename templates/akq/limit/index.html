@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Limit AKQ Game — Mathematics of Poker, Visualized</title>
+<title>{{page-title}}</title>
 <link rel="stylesheet" href="../../site.css?v=6">
 <style>
   *{margin:0;padding:0}
@@ -83,17 +83,13 @@
   </div>
 
   <div class="panel">
-    <div class="lbl" style="margin-bottom:.5rem">strategies &amp; value by pot size — the book's Figure 13.1, plus the value curve</div>
+    <div class="lbl" style="margin-bottom:.5rem">{{lbl}}</div>
     <canvas id="chart" width="1560" height="760"></canvas>
     <p class="note">{{y-s-bluff-frequency}}</p>
   </div>
 
   <h2>{{why-is-everywhere}}</h2>
-  <p class="big">Y bets every Ace and <span class="alpha">α</span> of his Queens — bluffs are a fixed
-  <i>fraction of value bets</i>, chosen so a King gains nothing by calling. X folds
-  <span class="alpha">α</span> of the hands that beat a bluff — chosen so a Queen gains nothing by
-  bluffing. The same constant prices both sides of the bet, here with a three-card deck,
-  in the [0,1] games with a continuum, and in real poker with 1,326 combos.</p>
+  <p class="big">{{big}}</p>
 
   <h2>{{fidelity-to-the-book}}</h2>
   <div class="panel">
@@ -103,7 +99,7 @@
       <tr><td>Game #1 (P=2): call freq c*</td><td>1/3</td><td>1/3 ✓</td></tr>
       <tr><td>Game #1 value to Y</td><td>1/18</td><td>1/18 ✓</td></tr>
       <tr><td>b* at P=1.5</td><td>2/5</td><td>2/5 ✓</td></tr>
-      <tr><td>b* at P=1.1</td><td>"10/11"</td><td><b>10/21</b> (= 1/(P+1); the printed value contradicts the book's own formula)</td></tr>
+      <tr><td>b* at P=1.1</td><td>"10/11"</td><td>{{fid}}</td></tr>
       <tr><td>P→∞ value limit</td><td>1/6</td><td>1/6 ✓</td></tr>
     </table>
     <p class="note">{{closed-forms-verified-against}}</p>

@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: page-title -->
+[0,1] Game #2 — von Neumann's half-street game
+
 <!-- block: eyebrow -->
 Chapter 11 · Example 11.3
 
@@ -57,3 +60,10 @@ Y bets his best hands for **value** [0, y₁], **checks** the middle [y₁, y₀
 **The value of position.** Being the player who gets to bet is worth
       <span class="mono">G</span> per hand — from 0 in a vanishing pot up to **¼ of a bet** in an
       enormous one. That ¼ is the pure value of the betting lead when folding no longer matters.
+
+# -- recovered in audit pass --
+
+<!-- block: histnote -->
+**Historical note.** This is essentially the poker model John von Neumann
+      &amp; Oskar Morgenstern solved in <em>Theory of Games and Economic Behavior</em> (1944) — one
+      of the first games ever solved by game theory. Chen &amp; Ankenman recast it as [0,1] Game&nbsp;#2.

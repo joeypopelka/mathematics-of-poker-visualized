@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
-<title>The No-Limit AKQ Game: What Position Is Worth at Every Depth</title>
+<title>{{page-title}}</title>
 <script defer src="../../nav.js?v=6"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../../site.css?v=6">
@@ -199,12 +199,7 @@
     <canvas id="curveV" height="420" role="img"
       aria-label="value to Y versus stack size, with four regime bands"></canvas>
   </div>
-  <p class="caption">Four regimes, shaded. Two have <b>exact closed-form
-  laws</b> (dashed): jam-only <span class="mono">S&sup2;/(6(1+S))</span> and the
-  polar-bet law <span class="mono">(S/(1+S)&minus;(3&minus;2&radic;2))/6</span>,
-  which meet <b>tangent</b> at S = &radic;2&minus;1. The curve rises, corners,
-  and goes perfectly flat at <b>S* = 0.525</b> &mdash; exactly Y&rsquo;s own
-  largest bet size.</p>
+  <p class="caption">{{caption}}</p>
 </section>
 
 <section>
@@ -217,39 +212,35 @@
     <canvas id="curveL" height="360" role="img"
       aria-label="stacked area of betting line frequencies versus stack size"></canvas>
   </div>
-  <p class="caption">Deep-stack play is dominated by <b>check&ndash;check</b>
-  (39%) and the <b>check&ndash;bet</b> lines: X often checks its merged range and
-  lets Y drive. The raise lines (<span class="mono">b&ndash;r</span>) &mdash; Y
-  punishing X&rsquo;s blocking bet &mdash; appear only once the stack is deep
-  enough to raise into.</p>
+  <p class="caption">{{caption-2}}</p>
 </section>
 
 <section>
   <h2>{{the-four-regimesreading-upward}}</h2>
   <div class="regimes">
     <div class="reg r1">
-      <div class="tag">I &middot; ends at &radic;2&minus;1</div>
+      <div class="tag">{{tag}}</div>
       <h4>Jam-or-fold</h4>
       <div class="rng">0 &lt; S &le; 0.414</div>
       <p>{{bets-are-tiny-next}}</p>
       <div class="law">V = S&sup2; / (6(1+S))</div>
     </div>
     <div class="reg r2">
-      <div class="tag">II &middot; polar</div>
+      <div class="tag">{{tag-2}}</div>
       <h4>The classical bet</h4>
       <div class="rng">0.414 &le; S &le; 0.483</div>
       <p>{{the-stack-covers-the}}</p>
       <div class="law">V = (S/(1+S) &minus; (3&minus;2&radic;2)) / 6</div>
     </div>
     <div class="reg r3">
-      <div class="tag">III &middot; Player X strikes back</div>
+      <div class="tag">{{tag-3}}</div>
       <h4>The King&rsquo;s blocker</h4>
       <div class="rng">0.483 &le; S &le; 0.525</div>
       <p>{{the-book-rsquo-s}}</p>
       <div class="law">no closed form &mdash; fast mixture</div>
     </div>
     <div class="reg r4">
-      <div class="tag">IV &middot; plateau</div>
+      <div class="tag">{{tag-4}}</div>
       <h4>Depth stops mattering</h4>
       <div class="rng">S &ge; 0.525</div>
       <p>{{value-freezes-at-0}}</p>

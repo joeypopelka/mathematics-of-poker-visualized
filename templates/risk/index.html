@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Risk — Mathematics of Poker, Visualized</title>
+<title>{{page-title}}</title>
 <link rel="stylesheet" href="../site.css?v=6">
 <style>
   *{margin:0;padding:0}
@@ -110,15 +110,15 @@
     <table>
       <tr><th>Quantity</th><th>Book</th><th>Exact</th></tr>
       <tr><td>Die game R(1 unit) / α (22.1)</td><td>1/2 / ln 2</td><td>✓</td></tr>
-      <tr><td>SNG α (22.3)</td><td>≈0.000632</td><td><b>0.000606</b> (book's own equation; g(0.000632)=1.0009 — solver slip; its RoR table follows the high α; also prints "0.00632" once)</td></tr>
-      <tr><td>WTA tournament σ, α</td><td>14.036, 0.01683 → 18.6%</td><td>σ=14.0 (book used √E[x²]); α=<b>0.016153</b> → 19.9%; conclusion (≪ normal's 36%) unchanged</td></tr>
+      <tr><td>SNG α (22.3)</td><td>≈0.000632</td><td>{{fid}}</td></tr>
+      <tr><td>WTA tournament σ, α</td><td>14.036, 0.01683 → 18.6%</td><td>{{fid-2}}</td></tr>
       <tr><td>Limit example (μ=.02, σ²=10.8)</td><td>32.89% vs 32.17%</td><td>✓ (α = 0.003787)</td></tr>
       <tr><td>NL example (μ=.12, σ²=50.27)</td><td>9.19% vs 9.12%</td><td>✓ (α = 0.004789)</td></tr>
-      <tr><td>RoRU going-pro case (23.1)</td><td>3.67% / 17.25%</td><td>✓ (and closed form re-derived by numeric integration)</td></tr>
+      <tr><td>RoRU going-pro case (23.1)</td><td>3.67% / 17.25%</td><td>{{fid-3}}</td></tr>
       <tr><td>Kelly bet, 3% edge (24.1)</td><td>$150</td><td>✓</td></tr>
-      <tr><td>Game-selection cutoff (24.2)</td><td>"c = $19,295"</td><td class="err">c = $9,647.50 (book printed 2c as c)</td></tr>
+      <tr><td>Game-selection cutoff (24.2)</td><td>"c = $19,295"</td><td class="err">{{fid-7}}</td></tr>
       <tr><td>Swap fraction (25)</td><td>36%</td><td>✓</td></tr>
-      <tr><td>Backing option values (25.6/25.7)</td><td>$4,906.72 / $4,878.24 / $4,393.65; 55.8%; tier table; 60.4%</td><td>✓ to the cent (backer share $1,546.64, not $1,547.64)</td></tr>
+      <tr><td>Backing option values (25.6/25.7)</td><td>{{fid-4}}</td><td>{{fid-5}}</td></tr>
     </table>
     <p class="note">All verified in <code>solve.py</code> (stdlib only, sub-second).</p>
   </div>

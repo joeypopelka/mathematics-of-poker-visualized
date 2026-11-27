@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: page-title -->
+Chen ch. 26–28 · Tournaments
+
 <!-- block: eyebrow -->
 Chapters 26–28
 
@@ -86,3 +89,18 @@ A 5-3-2 sit-and-go, hero facing a jam as his own stack varies (others
         the factor by which your ch. 12 shove/call ranges must tighten. It peaks
         for a middling stack and drops below 1 for a dominant leader, who can
         call *lighter* than chip-EV.
+
+# -- recovered in audit pass --
+
+<!-- block: note -->
+Folding (0.009269) beats calling (0.008857): passing up a
+        thin edge protects the skill you'll deploy over many future doubles.
+
+<!-- block: note-2 -->
+Reproduces the book: at 6000 chips E = $953, at 7500
+        chips E = $1,162, so the $100 add-on (worth ≈ $209) is automatic; at-par
+        break-even (C = 0.51) sits near a 8,325 stack.
+
+<!-- block: note-erratum -->
+Book erratum flagged: Landrum-Burns P3 prints as
+        $1,066.67, but the sum-to-pool identity forces $1,166.67 (a typo).

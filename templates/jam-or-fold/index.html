@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
-<title>Jam-or-Fold: The Phase Diagram</title>
+<title>{{page-title}}</title>
 <script defer src="../nav.js?v=6"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="../site.css?v=6">
@@ -148,11 +148,7 @@
   <div class="panel canvasbox">
     <canvas id="phase" role="img" aria-label="phase diagram of hand ranges by stack size"></canvas>
   </div>
-  <p class="caption">Each row is one starting hand, ordered by the stack size at which it first
-  enters the range; brightness is its equilibrium frequency. Reading right to left is cooling:
-  ranges freeze out hand by hand until only <b>AA</b> survives. Broken or re-ignited bands are
-  Chen's &ldquo;oddities&rdquo; &mdash; hands that are jammed at one stack size, abandoned at
-  another, and sometimes recalled later. Hover for details.</p>
+  <p class="caption">{{caption}}</p>
 </section>
 
 <section>
@@ -173,8 +169,7 @@
       <tbody></tbody>
     </table>
   </div>
-  <p class="caption">All range-membership transitions with S &gt; <span id="thCut"></span> bb,
-  refined by bisection. The full list continues to shallow stacks inside the data payload.</p>
+  <p class="caption">{{caption-2}}</p>
 </section>
 
 <section>

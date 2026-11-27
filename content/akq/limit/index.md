@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: page-title -->
+The Limit AKQ Game — Mathematics of Poker, Visualized
+
 <!-- block: eyebrow -->
 Chapter 13 · Examples 13.1–13.2
 
@@ -67,3 +70,18 @@ Before any mixing, pure logic deletes most of the game:
 **Keep the limit, lose the deck.** The same α logic on hands uniform in
       [0,1], through bets, raises and check-raises:
       <a href="../../zero-one/">the [0,1] games&nbsp;→</a>
+
+# -- recovered in audit pass --
+
+<!-- block: big -->
+Y bets every Ace and <span class="alpha">α</span> of his Queens — bluffs are a fixed
+  *fraction of value bets*, chosen so a King gains nothing by calling. X folds
+  <span class="alpha">α</span> of the hands that beat a bluff — chosen so a Queen gains nothing by
+  bluffing. The same constant prices both sides of the bet, here with a three-card deck,
+  in the [0,1] games with a continuum, and in real poker with 1,326 combos.
+
+<!-- block: lbl -->
+strategies &amp; value by pot size — the book's Figure 13.1, plus the value curve
+
+<!-- block: fid -->
+**10/21** (= 1/(P+1); the printed value contradicts the book's own formula)

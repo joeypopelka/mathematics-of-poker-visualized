@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>[0,1] Game #11 — Live Figure (check-raise)</title>
+<title>{{page-title}}</title>
 <script defer src="../nav.js?v=6"></script>
 <link rel="stylesheet" href="../site.css?v=6">
 <style>
@@ -194,25 +194,7 @@
     </section>
   </div>
 
-  <div class="method">
-    <b>How these numbers are computed — the sequence-form LP, and what it found.</b> The Y-side
-    value thresholds (y₂, y₂*, y₁, y₀) are the book's <b>exact closed forms</b> (Eq. 17.13). The
-    rest come from an <b>exact sequence-form LP</b> (Koller–Megiddo–von&nbsp;Stengel;
-    <code>seqlp.py</code>), gate-validated by reproducing Games&nbsp;#9 and #10's closed forms
-    (x₁ = 5/21, x₂* = 4/21, x₁* = 68/105 at P=2) and the no-fold #7 limit. The LP settled the
-    question CFR could not: <b>there is no crisp x₁.</b> At P=2 the optimal set pins X's total bet
-    mass to <b>0.28763&nbsp;±&nbsp;0.00001</b> and total aggressive mass (bet + check-raise) to
-    <b>0.37533&nbsp;±&nbsp;0.00001</b>, yet <i>every individual hand's</i> action probability can
-    range over [0,1] — rigorously measured by maximizing/minimizing each hand's bet frequency over
-    the optimal face. The same freedom holds for Y's give-up zone (call/raise-bluff/fold
-    assignment on ≈[0.55,&nbsp;0.85]). The thresholds drawn here are the <b>canonical monotone
-    representative</b> (aggression pushed lexicographically toward stronger hands — the selection
-    that reproduces the book's own #9/#10 thresholds exactly). Under it, x₁* ≈ 0.650 ≠ y₁* ≈ 0.667
-    (the book's predicted split, confirmed), y₁* = y₂# (a representative with <i>no raise-bluffs</i>
-    exists in the optimal face), and the old CFR "blur" at x₁ stands revealed as genuine
-    equilibrium-set structure, not solver noise. The game value is exact:
-    <b>G(Y) = 0.062142 at P=2</b> (N→∞ converged), confirming the region-sum formula.
-  </div>
+  <div class="method">{{method}}</div>
 
   <p class="foot">{{model-from-bill-chen}}</p>
 </div>

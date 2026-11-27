@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: page-title -->
+The [0,1] Games — Mathematics of Poker, Visualized
+
 <!-- block: eyebrow -->
 Chapters 11 &amp; 16–18
 
@@ -33,3 +36,38 @@ One chart: what each strategic option is worth
 
 <!-- block: the-catalog -->
 The α catalog
+
+# -- recovered in audit pass --
+
+<!-- block: card -->
+Von Neumann's poker model — the first solved poker game. One bet, X checks dark.
+      The birthplace of α = 1/(P+1).
+
+<!-- block: card-2 -->
+X may now bet. Thresholds interleave; x₁\* = y₁\* = 1−α — one price for
+      bluff-catching on both sides.
+
+<!-- block: card-3 -->
+The raise arrives, with raise-bluffs. The 1−α boundary relocates to y₂#; the
+      R-ratio links Y's raises to X's bets.
+
+<!-- block: card-4 -->
+Where the book stops publishing solutions. The LP shows why: x₁ is a *band* —
+      aggregates pinned to 1e-5, assignments free. Canonical selection + exact value inside.
+
+<!-- block: card-5 -->
+The Rₚ cascade of value thresholds marching to the nuts — and the finite-pot
+      game value the book declined to compute, now exact.
+
+<!-- block: card-6 -->
+Methods, validation gates, the band-structure finding, the #12 value curve,
+      and the full file map. Study notes in Q&amp;A_notes.md.
+
+<!-- block: fid -->
+bluff : value ratio; caller's fold share — "the golden ratio of poker"
+
+<!-- block: fid-2 -->
+the same, for the nth bet into the enlarged pot
+
+<!-- block: fid-3 -->
+the golden mean of poker: #12's P→∞ ladder, the NL AKQ bet, the α at P=√2

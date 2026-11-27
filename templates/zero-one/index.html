@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The [0,1] Games — Mathematics of Poker, Visualized</title>
+<title>{{page-title}}</title>
 <link rel="stylesheet" href="../site.css?v=6">
 <style>
   *{margin:0;padding:0}
@@ -33,25 +33,19 @@
   <h2>{{the-games}}</h2>
   <div class="cards">
     <a class="card" href="game2.html"><div class="t">#2 · Half street <span class="m">(Ex. 11.3)</span></div>
-      <div class="d">Von Neumann's poker model — the first solved poker game. One bet, X checks dark.
-      The birthplace of α = 1/(P+1).</div><span class="badge">EXACT</span></a>
+      <div class="d">{{card}}</div><span class="badge">EXACT</span></a>
     <a class="card" href="game9.html"><div class="t">#9 · One full bet <span class="m">(Ex. 17.1)</span></div>
-      <div class="d">X may now bet. Thresholds interleave; x₁* = y₁* = 1−α — one price for
-      bluff-catching on both sides.</div><span class="badge">EXACT</span></a>
+      <div class="d">{{card-2}}</div><span class="badge">EXACT</span></a>
     <a class="card" href="game10.html"><div class="t">#10 · Two bets, no check-raise <span class="m">(Ex. 17.2)</span></div>
-      <div class="d">The raise arrives, with raise-bluffs. The 1−α boundary relocates to y₂#; the
-      R-ratio links Y's raises to X's bets.</div><span class="badge">EXACT</span></a>
+      <div class="d">{{card-3}}</div><span class="badge">EXACT</span></a>
     <a class="card" href="game11.html"><div class="t">#11 · Check-raise <span class="m">(Ex. 17.3)</span></div>
-      <div class="d">Where the book stops publishing solutions. The LP shows why: x₁ is a <i>band</i> —
-      aggregates pinned to 1e-5, assignments free. Canonical selection + exact value inside.</div>
+      <div class="d">{{card-4}}</div>
       <span class="badge">EXACT LP · RESOLVED</span></a>
     <a class="card" href="game12.html"><div class="t">#12 · Unlimited raises <span class="m">(Ex. 17.4)</span></div>
-      <div class="d">The Rₚ cascade of value thresholds marching to the nuts — and the finite-pot
-      game value the book declined to compute, now exact.</div>
+      <div class="d">{{card-5}}</div>
       <span class="badge">EXACT LP · RESOLVED</span></a>
     <a class="card" href="https://github.com/joeypopelka/mathematics-of-poker-visualized/blob/main/zero-one/REPORT.md"><div class="t">The report</div>
-      <div class="d">Methods, validation gates, the band-structure finding, the #12 value curve,
-      and the full file map. Study notes in Q&amp;A_notes.md.</div><span class="badge">WRITEUP</span></a>
+      <div class="d">{{card-6}}</div><span class="badge">WRITEUP</span></a>
   </div>
 
   <h2>{{one-chart-what-each}}</h2>
@@ -64,11 +58,11 @@
   <div class="panel">
     <table>
       <tr><th>Constant</th><th>Value</th><th>Role</th></tr>
-      <tr><td class="m">α</td><td class="m">1/(P+1)</td><td>bluff : value ratio; caller's fold share — "the golden ratio of poker"</td></tr>
-      <tr><td class="m">αₙ</td><td class="m">1/(P+2n−1)</td><td>the same, for the nth bet into the enlarged pot</td></tr>
+      <tr><td class="m">α</td><td class="m">1/(P+1)</td><td>{{fid}}</td></tr>
+      <tr><td class="m">αₙ</td><td class="m">1/(P+2n−1)</td><td>{{fid-2}}</td></tr>
       <tr><td class="m">R</td><td class="m">(1−α₂)/2</td><td>value-raise : value-bet ratio (two-bet games)</td></tr>
       <tr><td class="m">Rₚ</td><td class="m">recursion → r</td><td>the pot-dependent ladder ratio of game #12</td></tr>
-      <tr><td class="m">r</td><td class="m">√2−1</td><td>the golden mean of poker: #12's P→∞ ladder, the NL AKQ bet, the α at P=√2</td></tr>
+      <tr><td class="m">r</td><td class="m">√2−1</td><td>{{fid-3}}</td></tr>
     </table>
   </div>
 </div>

@@ -2,6 +2,9 @@
 # Edit here, then run `python3 build.py` (or push — the GitHub Action
 # rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
 
+<!-- block: page-title -->
+Jam-or-Fold: The Phase Diagram
+
 <!-- block: eyebrow -->
 Chapter 12 &middot; Example 12.3
 
@@ -41,3 +44,16 @@ Catalog of oddities
 
 <!-- block: method-amp-fidelity-to -->
 Method &amp; fidelity to the book <span class="sub">how this was computed</span>
+
+# -- recovered in audit pass --
+
+<!-- block: caption -->
+Each row is one starting hand, ordered by the stack size at which it first
+  enters the range; brightness is its equilibrium frequency. Reading right to left is cooling:
+  ranges freeze out hand by hand until only **AA** survives. Broken or re-ignited bands are
+  Chen's &ldquo;oddities&rdquo; &mdash; hands that are jammed at one stack size, abandoned at
+  another, and sometimes recalled later. Hover for details.
+
+<!-- block: caption-2 -->
+All range-membership transitions with S &gt; <span id="thCut"></span> bb,
+  refined by bisection. The full list continues to shallow stacks inside the data payload.

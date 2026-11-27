@@ -37,9 +37,11 @@ def md_inline(text: str) -> str:
 
 
 def render(block: str) -> str:
-    """Render one block. Blank lines become paragraph breaks, which works
-    because every multi-paragraph slot sits inside a <p>...</p> wrapper."""
-    paras = re.split(r"\n\s*\n", block.strip())
+    """Render one block. Lines starting with '# ' are build comments and are
+    dropped. Blank lines become paragraph breaks, which works because every
+    multi-paragraph slot sits inside a <p>...</p> wrapper."""
+    block = re.sub(r"(?m)^[ \t]*# .*\n?", "", block)
+    paras = [p for p in re.split(r"\n\s*\n", block.strip()) if p.strip()]
     return "</p>\n<p>".join(md_inline(p) for p in paras)
 
 

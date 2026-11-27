@@ -3,6 +3,9 @@
 # GitHub Action rebuilds automatically). Markdown: **bold**, *italic*,
 # `math` for mono styling; raw HTML like <sub>/<span class="m"> also works.
 
+<!-- block: page-title -->
+Risk — Mathematics of Poker, Visualized
+
 <!-- block: eyebrow -->
 Chapters 22–25
 
@@ -74,3 +77,23 @@ A standard backing deal — backer eats all losses, profits split — is a **cal
 
 <!-- block: fid-h -->
 Fidelity to the book
+
+# -- recovered in audit pass --
+
+<!-- block: fid -->
+**0.000606** (book's own equation; g(0.000632)=1.0009 — solver slip; its RoR table follows the high α; also prints "0.00632" once)
+
+<!-- block: fid-2 -->
+σ=14.0 (book used √E[x²]); α=**0.016153** → 19.9%; conclusion (≪ normal's 36%) unchanged
+
+<!-- block: fid-3 -->
+✓ (and closed form re-derived by numeric integration)
+
+<!-- block: fid-4 -->
+$4,906.72 / $4,878.24 / $4,393.65; 55.8%; tier table; 60.4%
+
+<!-- block: fid-5 -->
+✓ to the cent (backer share $1,546.64, not $1,547.64)
+
+<!-- block: fid-7 -->
+c = $9,647.50 (book printed 2c as c)
