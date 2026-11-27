@@ -1,27 +1,28 @@
+<!-- GENERATED FILE — do not edit. Source: templates/zero-one/game11.html + content/zero-one/game11.md ; rebuild with: python3 build.py -->
 <meta charset="utf-8">
 <title>[0,1] Game #11 — Live Figure (check-raise)</title>
-<script defer src="../nav.js?v=2"></script>
-<link rel="stylesheet" href="../site.css?v=2">
+<script defer src="../nav.js?v=9"></script>
+<link rel="stylesheet" href="../site.css?v=9">
 <style>
   :root{
-    --value:#d99a2b;
-    --value-ink:#1c1300;
-    --value2:#eac784;
-    --value2-ink:#241903;
-    --bluff:#c14257;
-    --bluff-ink:#fff1f3;
-    --call:#3f9aad;
-    --call-ink:#03181c;
-    --fold:#3a424b;
-    --fold-ink:#cdd5db;
-    --check:#4a5245;
-    --check-ink:#e7ecdf;
+    --value:var(--blue);
+    --value-ink:#EEF2FB;
+    --value2:#7E99D6;
+    --value2-ink:#10131F;
+    --bluff:var(--red);
+    --bluff-ink:#FBEFE9;
+    --call:var(--yellow);
+    --call-ink:#1A1915;
+    --fold:#4E4A42;
+    --fold-ink:#E6E1D5;
+    --check:#67635A;
+    --check-ink:#E6E1D5;
     --xr:#9a6dd7;
     --xr-ink:#faf6ff;
     --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
   }
   .rule{height:1px;background:var(--line);border:0;margin:34px 0}
-  .deck{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px clamp(18px,3vw,26px);box-shadow:0 20px 50px -30px #000}
+  .deck{background:var(--panel);border:1px solid var(--line);padding:22px clamp(18px,3vw,26px);}
   .deck-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:22px 30px}
   .pot-readout{display:flex;flex-direction:column;gap:2px;min-width:130px}
   .pot-readout .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint)}
@@ -29,16 +30,16 @@
   .pot-readout .v small{font-size:15px;color:var(--dim);margin-left:4px}
   .ratios{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:150px}
   .ratios .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:var(--faint);margin-bottom:1px}
-  .ratios b{color:var(--call);font-weight:600}
+  .ratios b{color:var(--blue);font-weight:600}
   .sliderbox{flex:1 1 300px;min-width:250px}
   .sliderbox label{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint);display:block;margin-bottom:10px}
-  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--fold),var(--value));outline:none}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--value);cursor:pointer;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--value)}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:linear-gradient(90deg,var(--fold),var(--value));outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--value);cursor:pointer;border:3px solid var(--bg);}
   input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--value);cursor:pointer;border:3px solid var(--bg)}
-  input[type=range]:focus-visible{box-shadow:0 0 0 3px #d99a2b55}
+  input[type=range]:focus-visible{}
   .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
   .presets .pk{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-right:2px}
-  .chip{font-family:var(--mono);font-size:13px;color:var(--ink);cursor:pointer;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:5px 13px;transition:border-color .15s,color .15s,background .15s}
+  .chip{font-family:var(--mono);font-size:13px;color:var(--ink);cursor:pointer;background:var(--panel2);border:1px solid var(--line);padding:5px 13px;transition:border-color .15s,color .15s,background .15s}
   .chip:hover{border-color:var(--value);color:var(--value)}
   .chip.active{background:var(--value);color:var(--value-ink);border-color:var(--value);font-weight:600}
   .diagram{margin-top:30px}
@@ -55,7 +56,7 @@
   .gridlines .gl.gl-approx{background:repeating-linear-gradient(var(--bluff),var(--bluff) 3px,transparent 3px,transparent 7px);opacity:.4}
   .gridlines{position:absolute;left:0;right:0;top:0;bottom:26px;pointer-events:none;z-index:2}
   .gridlines .gl{position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(var(--line),transparent);opacity:.5;transition:left .45s cubic-bezier(.4,0,.2,1)}
-  .track{position:relative;height:60px;border-radius:9px;overflow:hidden;margin-bottom:9px;background:var(--panel2);border:1px solid var(--line)}
+  .track{position:relative;height:60px;overflow:hidden;margin-bottom:9px;background:var(--panel2);border:1px solid var(--line)}
   .track .rlabel{position:absolute;z-index:3;left:12px;top:8px;font-family:var(--sans);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#ffffffcc;text-shadow:0 1px 3px #000a;pointer-events:none}
   .track .cond{font-weight:400;color:#ffffff8c;letter-spacing:.06em;text-transform:none;font-style:italic;font-size:11px}
   .region{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;padding:8px 8px;overflow:hidden;transition:left .45s cubic-bezier(.4,0,.2,1),width .45s cubic-bezier(.4,0,.2,1);border-right:1px solid #0006}
@@ -69,12 +70,12 @@
   .r-call{background:var(--call);color:var(--call-ink)}
   .r-fold{background:var(--fold);color:var(--fold-ink)}
   .r-check{background:var(--check);color:var(--check-ink)}
-  .region .xrtag{position:absolute;top:6px;right:7px;font-family:var(--sans);font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--xr);background:#ffffffdd;border-radius:3px;padding:1px 4px;text-transform:uppercase}
+  .region .xrtag{position:absolute;top:6px;right:7px;font-family:var(--sans);font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--xr);background:#ffffffdd;padding:1px 4px;text-transform:uppercase}
   .baseline{position:relative;height:24px;font-family:var(--mono);font-size:12px;color:var(--faint)}
   .baseline .z{position:absolute;left:0} .baseline .o{position:absolute;right:0}
   .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px}
   .legend .li{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:12.5px;color:var(--dim)}
-  .legend .sw{width:14px;height:14px;border-radius:4px;flex:none}
+  .legend .sw{width:14px;height:14px;flex:none}
   .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:34px;margin-top:14px}
   @media(max-width:780px){.grid2{grid-template-columns:1fr;gap:26px}}
   table{width:100%;border-collapse:collapse;font-size:13.5px}
@@ -82,22 +83,22 @@
   thead th{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
   td.sym{font-family:var(--mono);color:var(--ink);white-space:nowrap}
   td.src{font-family:var(--sans);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
-  td.src.exact{color:var(--call)} td.src.cfr{color:var(--xr)} td.src.approx{color:var(--bluff)}
+  td.src.exact{color:var(--blue)} td.src.cfr{color:var(--xr)} td.src.approx{color:var(--bluff)}
   td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
-  tr[data-hue] td.sym::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:8px;vertical-align:middle;background:var(--h)}
+  tr[data-hue] td.sym::before{content:"";display:inline-block;width:9px;height:9px;margin-right:8px;vertical-align:middle;background:var(--h)}
   .notes p{color:var(--dim);font-size:14.5px;max-width:60ch}
   .notes p b{color:var(--ink)}
-  .notes .mono{font-family:var(--mono);color:var(--call);font-size:.92em}
+  .notes .mono{font-family:var(--mono);color:var(--blue);font-size:.92em}
   .callout{border-left:2px solid var(--xr);padding:2px 0 2px 16px;margin:18px 0;font-style:italic;color:var(--ink)}
   .foot{margin-top:36px;color:var(--faint);font-size:12.5px;font-family:var(--sans);max-width:76ch}
   .foot code{font-family:var(--mono);color:var(--dim)}
-  .method{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--xr);border-radius:10px;padding:16px 20px;margin-top:24px;font-size:13.5px;color:var(--dim);max-width:78ch}
+  .method{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--xr);padding:16px 20px;margin-top:24px;font-size:13.5px;color:var(--dim);max-width:78ch}
   .method b{color:var(--ink)}
-  .pot-readout.gvbox .v{color:#c9a24a}
-  .gvcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:24px}
+  .pot-readout.gvbox .v{color:var(--blue)}
+  .gvcard{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin-top:24px}
   .gvcard canvas{width:100%;height:200px;display:block}
   .gvcaption{font-family:var(--sans);font-size:12px;color:var(--dim);margin-top:8px;max-width:74ch}
-  .gvcaption b{color:#c9a24a}
+  .gvcaption b{color:var(--blue)}
   @media (prefers-reduced-motion: reduce){ .region,.gl,.tick{transition:none} }
 </style>
 
@@ -105,8 +106,7 @@
   <header>
     <div class="eyebrow">Chapter 17 · Example 17.3</div>
     <h1>[0,1] Game #11
-      <span class="sub">two bets, with check-raising — the strategy structure, made live</span>
-    </h1>
+      <span class="sub">two bets, with check-raising — the strategy structure, made live</span></h1>
     <p class="lede">One full street, <b>two bets left</b>, and now <b>X may check-raise</b>. Hands are
       uniform on <b>[0, 1]</b>, 0 the nuts. This is where the book stops giving a full closed-form
       solution. The <b>Y-side value thresholds are exact</b> (Eq. 17.13); everything else is now
@@ -213,14 +213,13 @@
         range after X checks, and splits it into <b>bet-call</b> [0, y₂*] and <b>bet-fold</b>
         [y₂*, y₁] — folding α₂ of his value bets to a check-raise
         (<span class="mono">y₂* = (1−α₂)y₁</span>).</p>
-      <p><b>The x₁\* = y₁\* symmetry breaks.</b> In #9 and #10 those cutoffs coincided; here they
+      <p><b>The x₁* = y₁* symmetry breaks.</b> In #9 and #10 those cutoffs coincided; here they
         separate, because X's post-check decision is no longer a clean call/fold — he can
         check-raise. That's the structural signature of this game.</p>
     </section>
   </div>
 
-  <div class="method">
-    <b>How these numbers are computed — the sequence-form LP, and what it found.</b> The Y-side
+  <div class="method"><b>How these numbers are computed — the sequence-form LP, and what it found.</b> The Y-side
     value thresholds (y₂, y₂*, y₁, y₀) are the book's <b>exact closed forms</b> (Eq. 17.13). The
     rest come from an <b>exact sequence-form LP</b> (Koller–Megiddo–von&nbsp;Stengel;
     <code>seqlp.py</code>), gate-validated by reproducing Games&nbsp;#9 and #10's closed forms
@@ -236,8 +235,7 @@
     (the book's predicted split, confirmed), y₁* = y₂# (a representative with <i>no raise-bluffs</i>
     exists in the optimal face), and the old CFR "blur" at x₁ stands revealed as genuine
     equilibrium-set structure, not solver noise. The game value is exact:
-    <b>G(Y) = 0.062142 at P=2</b> (N→∞ converged), confirming the region-sum formula.
-  </div>
+    <b>G(Y) = 0.062142 at P=2</b> (N→∞ converged), confirming the region-sum formula.</div>
 
   <p class="foot">Model from Bill Chen &amp; Jerrod Ankenman, <em>The Mathematics of Poker</em>,
     Example 17.3 (“[0,1] Game #11”: one street / two bets / check-raise allowed). The book gives the
@@ -245,7 +243,8 @@
     numerically here. Companion to <code>game9.html</code>, <code>game10.html</code>.</p>
 </div>
 
-<script>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   // ---- exact sequence-form LP grid (monotone-selection X-side + Y give-up);
   //      Y value thresholds computed live from Eq 17.13 (exact closed forms) ----
@@ -329,23 +328,23 @@
     var padL=44,padR=14,padT=14,padB=30,gw=W-padL-padR,gh=H-padT-padB,PMAX=20,GMAX=0.12,ASY=1/9;
     function X(P){return padL+(P/PMAX)*gw;}
     function Y(g){return padT+gh-(g/GMAX)*gh;}
-    ctx.strokeStyle='#232B3A';ctx.fillStyle='#5A6274';ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
+    ctx.strokeStyle='#8A857A44';ctx.fillStyle='#8A857A';ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
     ctx.textAlign='right';ctx.textBaseline='middle';
     [0,0.03,0.06,0.09,0.12].forEach(function(g){var y=Y(g);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();ctx.globalAlpha=1;ctx.fillText(g.toFixed(2),padL-6,y);});
     ctx.textAlign='center';ctx.textBaseline='top';
     [0,5,10,15,20].forEach(function(p){ctx.fillText(p,X(p),H-padB+8);});
     ctx.textBaseline='alphabetic';
-    ctx.strokeStyle='#8B93A3';ctx.setLineDash([4,4]);ctx.globalAlpha=.7;
+    ctx.strokeStyle='#8A857A';ctx.setLineDash([4,4]);ctx.globalAlpha=.7;
     ctx.beginPath();ctx.moveTo(padL,Y(ASY));ctx.lineTo(W-padR,Y(ASY));ctx.stroke();
-    ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle='#8B93A3';ctx.textAlign='left';
+    ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle='#8A857A';ctx.textAlign='left';
     ctx.fillText('1/9  (no-fold Game #7)',padL+6,Y(ASY)-5);
-    ctx.strokeStyle='#c9a24a';ctx.lineWidth=2.4;ctx.beginPath();
+    ctx.strokeStyle=MOP.blue;ctx.lineWidth=2.4;ctx.beginPath();
     for(var i=0;i<=240;i++){var P=(i/240)*PMAX;if(P<0.05)P=0.05;var g=gvAt(P);var px=X(P),py=Y(g);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
     ctx.stroke();
     var cg=gvAt(curP),cx=X(curP),cy=Y(cg);
-    ctx.strokeStyle='#c9a24a55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
-    ctx.fillStyle='#c9a24a';ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#0A0D13';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#E8E4DC';ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
+    ctx.strokeStyle=(MOP.blue+'55');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
+    ctx.fillStyle=MOP.blue;ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#8A857A22';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#8A857A';ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
     var lx=Math.min(cx+9,W-padR-70);ctx.fillText('G = '+cg.toFixed(3),lx,cy-8);
   }
 

@@ -1,0 +1,22 @@
+# Rebuilds templated pages when content/ or templates/ change, so prose
+# can be edited directly on github.com with zero local tooling.
+name: build content
+on:
+  push:
+    branches: [main]
+    paths: ["content/**", "templates/**", "build.py"]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 build.py
+      - name: commit rebuilt pages
+        run: |
+          git config user.name "content-build"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Rebuild pages from content edits"
+          git push

@@ -1,15 +1,16 @@
+<!-- GENERATED FILE — do not edit. Source: templates/multiway/index.html + content/multiway/index.md ; rebuild with: python3 build.py -->
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Multiplayer Games — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../site.css?v=2">
+<link rel="stylesheet" href="../site.css?v=9">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
   p{margin:.6rem 0;max-width:48rem}
   code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;margin:1rem 0}
+  .panel{background:var(--panel);border:1px solid var(--line);padding:1.1rem 1.3rem;margin:1rem 0}
   table{border-collapse:collapse;font-size:.9rem;margin:.8rem 0}
   td,th{border:1px solid var(--line);padding:.32rem .66rem;text-align:center}
   th{color:var(--dim);font-weight:600}
@@ -17,15 +18,15 @@
   .err{color:var(--red);font-weight:600}
   .lbl{font-size:.8rem;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
   input[type=range]{width:100%;accent-color:var(--heat)}
-  canvas{width:100%;height:auto;display:block;border-radius:10px;background:var(--panel2)}
-  .strip{display:flex;height:40px;border-radius:8px;overflow:hidden;margin:.5rem 0;border:1px solid var(--line)}
+  canvas{width:100%;height:auto;display:block;background:var(--panel2)}
+  .strip{display:flex;height:40px;overflow:hidden;margin:.5rem 0;border:1px solid var(--line)}
   .seg{height:100%;display:flex;align-items:center;justify-content:center;
-    font:600 .7rem var(--mono);color:#0A0D13;white-space:nowrap;overflow:hidden}
+    font:600 .7rem var(--mono);color:#8A857A22;white-space:nowrap;overflow:hidden}
   .readout{display:flex;flex-wrap:wrap;gap:1.4rem;margin:.7rem 0}
   .readout .v{font:600 1.3rem var(--mono)}
 </style>
 <body>
-<script defer src="../nav.js?v=2"></script>
+<script defer src="../nav.js?v=9"></script>
 <div class="wrap">
   <p class="eyebrow">Chapter 29</p>
   <h1>Multiplayer Games</h1>
@@ -126,7 +127,8 @@
   a different alliance, and a pointer toward cooperative game theory (Shapley values) for
   readers who want the deep end. Verified numbers: <code>verify.py</code>.</p>
 </div>
-<script>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   var beta=document.getElementById('beta');
   function zEV(b){
@@ -138,26 +140,26 @@
   function draw(cur){
     var W=cv.width,H=cv.height,L=80,R=30,T=26,B=56,bmax=0.5,vmax=2.0;
     ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='#232B3A';ctx.lineWidth=1;ctx.font='21px ui-monospace,monospace';
+    ctx.strokeStyle='#8A857A44';ctx.lineWidth=1;ctx.font='21px ui-monospace,monospace';
     for(var g=0;g<=bmax+1e-9;g+=0.1){var X=L+(W-L-R)*g/bmax;
       ctx.beginPath();ctx.moveTo(X,T);ctx.lineTo(X,H-B);ctx.stroke();
-      ctx.fillStyle='#5A6274';ctx.textAlign='center';ctx.fillText(g.toFixed(1),X,H-B+28);}
+      ctx.fillStyle='#8A857A';ctx.textAlign='center';ctx.fillText(g.toFixed(1),X,H-B+28);}
     for(var v=0;v<=vmax+1e-9;v+=0.5){var Y=T+(H-T-B)*(1-v/vmax);
       ctx.beginPath();ctx.moveTo(L,Y);ctx.lineTo(W-R,Y);ctx.stroke();
-      ctx.fillStyle='#5A6274';ctx.textAlign='right';ctx.fillText(v.toFixed(1),L-8,Y+7);}
-    ctx.textAlign='center';ctx.fillStyle='#5A6274';
+      ctx.fillStyle='#8A857A';ctx.textAlign='right';ctx.fillText(v.toFixed(1),L-8,Y+7);}
+    ctx.textAlign='center';ctx.fillStyle='#8A857A';
     ctx.fillText('announced bluff ratio β',(L+W-R)/2,H-8);
     function px(b){return L+(W-L-R)*b/bmax;}
     function py(v){return T+(H-T-B)*(1-v/vmax);}
     // segments with jumps
-    ctx.strokeStyle='#F0A44E';ctx.lineWidth=4;
+    ctx.strokeStyle=MOP.red;ctx.lineWidth=4;
     ctx.beginPath();ctx.moveTo(px(0),py(0.9));ctx.lineTo(px(0.1),py(0.9));ctx.stroke();
     ctx.beginPath();ctx.moveTo(px(0.1),py(0.9));ctx.lineTo(px(0.2),py(0.8));ctx.stroke();
     ctx.beginPath();ctx.moveTo(px(0.2),py(1.8));ctx.lineTo(px(0.5),py(1.5));ctx.stroke();
     ctx.setLineDash([3,5]);ctx.strokeStyle='rgba(240,164,78,.5)';ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(px(0.2),py(0.8));ctx.lineTo(px(0.2),py(1.8));ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle='#8FD694';
+    ctx.fillStyle=MOP.yellow;
     ctx.beginPath();ctx.arc(px(0.3),py(1.7),8,0,7);ctx.fill();
     ctx.textAlign='left';ctx.fillText('β=0.3 → 17/10',px(0.3)+14,py(1.7)+7);
     // current marker

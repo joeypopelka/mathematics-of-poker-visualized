@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{page-title}}</title>
+<link rel="stylesheet" href="../site.css?v=9">
+<style>
+  *{margin:0;padding:0}
+  a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
+  p{margin:.6rem 0;max-width:48rem}
+  code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
+  .panel{background:var(--panel);border:1px solid var(--line);padding:1.1rem 1.3rem;margin:1rem 0}
+  table{border-collapse:collapse;font-size:.9rem;margin:.8rem 0}
+  td,th{border:1px solid var(--line);padding:.32rem .66rem;text-align:center}
+  th{color:var(--dim);font-weight:600}
+  .note{font-size:.88rem;color:var(--dim)}
+  .err{color:var(--red);font-weight:600}
+  .lbl{font-size:.8rem;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+  input[type=range]{width:100%;accent-color:var(--heat)}
+  canvas{width:100%;height:auto;display:block;background:var(--panel2)}
+  .strip{display:flex;height:40px;overflow:hidden;margin:.5rem 0;border:1px solid var(--line)}
+  .seg{height:100%;display:flex;align-items:center;justify-content:center;
+    font:600 .7rem var(--mono);color:#8A857A22;white-space:nowrap;overflow:hidden}
+  .readout{display:flex;flex-wrap:wrap;gap:1.4rem;margin:.7rem 0}
+  .readout .v{font:600 1.3rem var(--mono)}
+</style>
+<body>
+<script defer src="../nav.js?v=9"></script>
+<div class="wrap">
+  <p class="eyebrow">{{eyebrow}}</p>
+  <h1>{{multiplayer-games}}</h1>
+  <p class="lede">{{chapter-29-of-chen}}</p>
+
+  <h2>{{why-three-is-different}}</h2>
+  <p>{{nash-proved-every-finite}}</p>
+
+  <h2>{{1-the-rock-amp}}</h2>
+  <div class="panel">
+    <p>{{three-players-ante-10}}</p>
+    <table>
+      <tr><th>Your card</th><th>Opponents</th><th>Net</th><th>Prob.</th><th>EV</th></tr>
+      <tr><td>winner</td><td>both winners</td><td>$0</td><td>0.25%</td><td>0</td></tr>
+      <tr><td>winner</td><td>rock W, maniac L</td><td>+$20</td><td>1.86%</td><td>+$0.372</td></tr>
+      <tr><td>winner</td><td>rock L, maniac W</td><td>+$5</td><td>1.86%</td><td>+$0.093</td></tr>
+      <tr><td>winner</td><td>both losers</td><td>+$50</td><td>11.41%</td><td>+$5.707</td></tr>
+      <tr><td>loser</td><td>both losers</td><td>+$5</td><td>59.93%</td><td>+$2.996</td></tr>
+      <tr><td>loser</td><td>any winner</td><td>−$40</td><td>24.69%</td><td>−$9.875</td></tr>
+      <tr><th colspan="4">total</th><th>−$0.707</th></tr>
+    </table>
+    <p class="note">{{the-rock-and-the}}</p>
+  </div>
+
+  <h2>{{2-the-dry-side}}</h2>
+  <div class="panel">
+    <p>{{x-and-y-with}}</p>
+    <div class="strip">
+      <div class="seg" style="width:25.9%;background:var(--heat)">value bet [0, .259]</div>
+      <div class="seg" style="width:47.6%;background:#3a4356;color:#aab2c0">check</div>
+      <div class="seg" style="width:4.9%;background:var(--purple)">bluff .759±.024</div>
+      <div class="seg" style="flex:1;background:#3a4356;color:#aab2c0">check</div>
+    </div>
+    <div class="strip">
+      <div class="seg" style="width:51.8%;background:var(--ice)">X calls [0, 0.518]</div>
+      <div class="seg" style="flex:1;background:#3a4356;color:#aab2c0">X folds</div>
+    </div>
+    <p class="note">{{erratum-the-book-reports}}</p>
+  </div>
+
+  <h2>{{3-the-clairvoyant-maniac}}</h2>
+  <div class="panel">
+    <p>{{z-is-clairvoyant-into}}</p>
+    <div class="lbl">announced bluffs per value bet: β = <span id="bv" class="m"></span></div>
+    <input id="beta" type="range" min="0" max="500" value="100">
+    <div class="readout">
+      <div><div class="lbl">X's response</div><div class="v" id="xr" style="color:var(--ice);font-size:1rem"></div></div>
+      <div><div class="lbl">Y's response</div><div class="v" id="yr" style="color:var(--purple);font-size:1rem"></div></div>
+      <div><div class="lbl">Z's EV per value bet</div><div class="v" id="zv" style="color:var(--heat)"></div></div>
+      <div><div class="lbl">alliance formed</div><div class="v" id="al" style="font-size:1rem"></div></div>
+    </div>
+    <canvas id="cz" width="1680" height="560"></canvas>
+    <p class="note">{{z-s-ev-per}}</p>
+  </div>
+
+  <h2>{{also-in-these-pages}}</h2>
+  <p class="note">{{the-chapter-opens-with}}</p>
+</div>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
+(function(){
+  var beta=document.getElementById('beta');
+  function zEV(b){
+    if(b<=0.1) return 9/10;
+    if(b<=0.2) return 1-b;
+    return 2-b;
+  }
+  var cv=document.getElementById('cz'),ctx=cv.getContext('2d');
+  function draw(cur){
+    var W=cv.width,H=cv.height,L=80,R=30,T=26,B=56,bmax=0.5,vmax=2.0;
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle='#8A857A44';ctx.lineWidth=1;ctx.font='21px ui-monospace,monospace';
+    for(var g=0;g<=bmax+1e-9;g+=0.1){var X=L+(W-L-R)*g/bmax;
+      ctx.beginPath();ctx.moveTo(X,T);ctx.lineTo(X,H-B);ctx.stroke();
+      ctx.fillStyle='#8A857A';ctx.textAlign='center';ctx.fillText(g.toFixed(1),X,H-B+28);}
+    for(var v=0;v<=vmax+1e-9;v+=0.5){var Y=T+(H-T-B)*(1-v/vmax);
+      ctx.beginPath();ctx.moveTo(L,Y);ctx.lineTo(W-R,Y);ctx.stroke();
+      ctx.fillStyle='#8A857A';ctx.textAlign='right';ctx.fillText(v.toFixed(1),L-8,Y+7);}
+    ctx.textAlign='center';ctx.fillStyle='#8A857A';
+    ctx.fillText('announced bluff ratio β',(L+W-R)/2,H-8);
+    function px(b){return L+(W-L-R)*b/bmax;}
+    function py(v){return T+(H-T-B)*(1-v/vmax);}
+    // segments with jumps
+    ctx.strokeStyle=MOP.red;ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(px(0),py(0.9));ctx.lineTo(px(0.1),py(0.9));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(px(0.1),py(0.9));ctx.lineTo(px(0.2),py(0.8));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(px(0.2),py(1.8));ctx.lineTo(px(0.5),py(1.5));ctx.stroke();
+    ctx.setLineDash([3,5]);ctx.strokeStyle='rgba(240,164,78,.5)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(px(0.2),py(0.8));ctx.lineTo(px(0.2),py(1.8));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=MOP.yellow;
+    ctx.beginPath();ctx.arc(px(0.3),py(1.7),8,0,7);ctx.fill();
+    ctx.textAlign='left';ctx.fillText('β=0.3 → 17/10',px(0.3)+14,py(1.7)+7);
+    // current marker
+    ctx.strokeStyle='rgba(232,228,220,.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(px(cur),T);ctx.lineTo(px(cur),H-B);ctx.stroke();
+  }
+  function upd(){
+    var b=(+beta.value)/1000;
+    document.getElementById('bv').textContent=b.toFixed(3);
+    var x,y,al;
+    if(b<=0.1){x='equilibrium mix (total calls 9/10)';y='never overcalls';al='none';}
+    else if(b<=0.2){x='calls 100% — picks off bluffs';y='still can\'t overcall';al='X + Z squeeze Y (bad for Z)';}
+    else {x='calls 100%';y='overcalls — finally has odds';al='Y + Z vs X (great for Z)';}
+    document.getElementById('xr').textContent=x;
+    document.getElementById('yr').textContent=y;
+    document.getElementById('zv').textContent=zEV(b).toFixed(2);
+    document.getElementById('al').textContent=al;
+    draw(b);
+  }
+  beta.addEventListener('input',upd); upd();
+})();
+</script>
+</body>
+</html>

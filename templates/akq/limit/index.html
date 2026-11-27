@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{page-title}}</title>
+<link rel="stylesheet" href="../../site.css?v=9">
+<style>
+  *{margin:0;padding:0}
+  a{color:var(--ice);text-decoration:none}
+  a:hover{text-decoration:underline}
+  p{margin:.6rem 0;max-width:46rem}
+  .cardrow{display:flex;gap:.9rem;margin:1.2rem 0}
+  .pcard{width:64px;height:88px;background:#F4EFE6;color:#1A1A20;
+    display:flex;align-items:center;justify-content:center;font:700 2rem var(--serif);
+    }
+  .pcard.red{color:#B33E30}
+  code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
+  .panel{background:var(--panel);border:1px solid var(--line);
+    padding:1.1rem 1.3rem;margin:1rem 0}
+  table{border-collapse:collapse;font-size:.92rem;margin:.8rem 0}
+  td,th{border:1px solid var(--line);padding:.35rem .7rem;text-align:center}
+  th{color:var(--dim);font-weight:600}
+  .strike{color:var(--faint);text-decoration:line-through}
+  .lbl{font-size:.8rem;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+  input[type=range]{width:100%;accent-color:var(--heat)}
+  .readout{display:flex;flex-wrap:wrap;gap:1.6rem;margin:.9rem 0 .4rem}
+  .readout .r{min-width:120px}
+  .readout .v{font:600 1.5rem var(--mono)}
+  .bar{height:26px;background:var(--panel2);overflow:hidden;
+    display:flex;margin:.3rem 0 .8rem;border:1px solid var(--line)}
+  .seg{height:100%}
+  canvas{width:100%;height:auto;display:block;background:var(--panel2)}
+  .note{font-size:.88rem;color:var(--dim)}
+  .hand{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.6rem 0}
+  .hcard{background:var(--panel);border:1px solid var(--line);
+    padding:1rem 1.2rem}
+  .hcard b{color:var(--heat)}
+  .big{font-size:1.1rem}
+  .alpha{color:var(--heat);font-family:var(--mono)}
+  @media(max-width:640px){.hand{grid-template-columns:1fr}}
+</style>
+<body>
+<script defer src="../../nav.js?v=9"></script>
+<div class="wrap">
+  <p class="eyebrow">{{eyebrow}}</p>
+  <h1>{{the-limit-akq-game}}</h1>
+  <p class="lede">{{chapter-13-of-chen}}</p>
+
+  <div class="cardrow">
+    <div class="pcard">A</div><div class="pcard red">K</div><div class="pcard">Q</div>
+  </div>
+
+  <h2>{{the-game}}</h2>
+  <p>{{a-three-card-deck}}</p>
+
+  <h2>{{dominance-does-most-of}}</h2>
+  <p>{{before-any-mixing-pure}}</p>
+  <div class="panel">
+    <table>
+      <tr><th>Holding</th><th>X (out of position)</th><th>Y (bettor)</th></tr>
+      <tr><td>Ace</td><td>call <span class="strike">fold</span></td><td>bet <span class="strike">check</span></td></tr>
+      <tr><td>King</td><td><b>mix call / fold</b></td><td>check <span class="strike">bet</span></td></tr>
+      <tr><td>Queen</td><td>fold <span class="strike">call</span></td><td><b>mix bluff / check</b></td></tr>
+    </table>
+    <p class="note">{{never-fold-the-nuts}}</p>
+  </div>
+
+  <h2>{{the-equilibrium-live}}</h2>
+  <div class="panel">
+    <div class="lbl">pot size P = <span id="pv" class="m">2.00</span> bets</div>
+    <input id="pot" type="range" min="0" max="1000" value="500">
+    <div class="readout">
+      <div class="r"><div class="lbl">Y bluffs a Queen</div><div class="v" id="bv" style="color:var(--heat)"></div></div>
+      <div class="r"><div class="lbl">X calls a King</div><div class="v" id="cv" style="color:var(--ice)"></div></div>
+      <div class="r"><div class="lbl">α = 1/(P+1)</div><div class="v" id="av" style="color:var(--green)"></div></div>
+      <div class="r"><div class="lbl">game value to Y</div><div class="v" id="gv"></div></div>
+    </div>
+    <div class="lbl">Y with a Queen</div>
+    <div class="bar"><div class="seg" id="ybar" style="background:var(--heat)"></div><div class="seg" style="background:var(--panel2)"></div></div>
+    <div class="lbl">X with a King</div>
+    <div class="bar"><div class="seg" id="xbar" style="background:var(--ice)"></div><div class="seg" style="background:var(--panel2)"></div></div>
+    <div class="note" id="regime"></div>
+  </div>
+
+  <div class="panel">
+    <div class="lbl" style="margin-bottom:.5rem">{{lbl}}</div>
+    <canvas id="chart" width="1560" height="760"></canvas>
+    <p class="note">{{y-s-bluff-frequency}}</p>
+  </div>
+
+  <h2>{{why-is-everywhere}}</h2>
+  <p class="big">{{big}}</p>
+
+  <h2>{{fidelity-to-the-book}}</h2>
+  <div class="panel">
+    <table>
+      <tr><th>Quantity</th><th>Book</th><th>Exact</th></tr>
+      <tr><td>Game #1 (P=2): bluff freq b*</td><td>1/3</td><td>1/3 ✓</td></tr>
+      <tr><td>Game #1 (P=2): call freq c*</td><td>1/3</td><td>1/3 ✓</td></tr>
+      <tr><td>Game #1 value to Y</td><td>1/18</td><td>1/18 ✓</td></tr>
+      <tr><td>b* at P=1.5</td><td>2/5</td><td>2/5 ✓</td></tr>
+      <tr><td>b* at P=1.1</td><td>"10/11"</td><td>{{fid}}</td></tr>
+      <tr><td>P→∞ value limit</td><td>1/6</td><td>1/6 ✓</td></tr>
+    </table>
+    <p class="note">{{closed-forms-verified-against}}</p>
+  </div>
+
+  <div class="hand">
+    <div class="hcard"><div class="lbl">continue the family</div>
+      <p>{{now-remove-the-limit}}</p></div>
+    <div class="hcard"><div class="lbl">or trade 3 cards for a continuum</div>
+      <p>{{keep-the-limit-lose}}</p></div>
+  </div>
+</div>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
+(function(){
+  var pot=document.getElementById('pot');
+  function pFromSlider(s){ return 0.25*Math.pow(80,s/1000); } // 0.25 .. 20
+  function fmt(x,d){ return x.toFixed(d===undefined?3:d); }
+  var cv=document.getElementById('chart'),ctx=cv.getContext('2d');
+  function solve(P){
+    if(P<=1) return {b:0,c:0,g:0};
+    return {b:1/(P+1), c:(P-1)/(P+1), g:(P-1)/(6*(P+1))};
+  }
+  function upd(){
+    var P=pFromSlider(+pot.value), s=solve(P);
+    document.getElementById('pv').textContent=fmt(P,2);
+    document.getElementById('bv').textContent=fmt(s.b);
+    document.getElementById('cv').textContent=fmt(s.c);
+    document.getElementById('av').textContent=fmt(1/(P+1));
+    document.getElementById('gv').textContent=fmt(s.g,4);
+    document.getElementById('ybar').style.width=(s.b*100)+'%';
+    document.getElementById('xbar').style.width=(s.c*100)+'%';
+    document.getElementById('regime').textContent = P<=1
+      ? 'P ≤ 1: bluffing loses even against a pure folder — the game freezes and is worth exactly zero.'
+      : 'Bluff-to-value ratio '+fmt(s.b)+' = α; X folds α of his bluff-catchers (Aces + called Kings keep Y\'s queens indifferent).';
+    draw(P);
+  }
+  function draw(Pcur){
+    var W=cv.width,H=cv.height,L=70,R=30,T=28,B=56;
+    ctx.clearRect(0,0,W,H);
+    var Pmax=20;
+    function x(P){ return L+(W-L-R)*(P/Pmax); }
+    function y(v){ return T+(H-T-B)*(1-v); }       // v in [0,1]
+    ctx.strokeStyle='#8A857A44'; ctx.lineWidth=1; ctx.font='22px ui-monospace,monospace';
+    ctx.fillStyle='#8A857A'; ctx.textAlign='center';
+    for(var g=0;g<=20;g+=4){ ctx.beginPath(); ctx.moveTo(x(g),T); ctx.lineTo(x(g),H-B); ctx.stroke(); ctx.fillText(g,x(g),H-B+30); }
+    for(var v=0;v<=1.0001;v+=0.25){ ctx.beginPath(); ctx.moveTo(L,y(v)); ctx.lineTo(W-R,y(v)); ctx.stroke(); ctx.textAlign='right'; ctx.fillText(v.toFixed(2),L-8,y(v)+7); ctx.textAlign='center'; }
+    ctx.fillText('pot size P (bets)',(L+W-R)/2,H-8);
+    // P=1 kink marker
+    ctx.strokeStyle='rgba(224,122,107,.55)'; ctx.setLineDash([6,5]);
+    ctx.beginPath(); ctx.moveTo(x(1),T); ctx.lineTo(x(1),H-B); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=MOP.red; ctx.fillText('P=1',x(1),T-6);
+    // 1/6 asymptote
+    ctx.strokeStyle='rgba(143,214,148,.35)'; ctx.setLineDash([3,6]);
+    ctx.beginPath(); ctx.moveTo(L,y(1/6)); ctx.lineTo(W-R,y(1/6)); ctx.stroke(); ctx.setLineDash([]);
+    function curve(f,color){
+      ctx.strokeStyle=color; ctx.lineWidth=3.5; ctx.beginPath();
+      for(var i=0;i<=560;i++){ var P=i*Pmax/560, s=solve(P), v=f(s);
+        if(i===0) ctx.moveTo(x(P),y(v)); else ctx.lineTo(x(P),y(v)); }
+      ctx.stroke();
+    }
+    curve(function(s){return s.b;},MOP.red);
+    curve(function(s){return s.c;},MOP.blue);
+    curve(function(s){return s.g*6;},MOP.yellow); // scale x6 so limit->1
+    ctx.textAlign='left'; ctx.font='21px ui-monospace,monospace';
+    ctx.fillStyle=MOP.red; ctx.fillText('b* bluff freq',x(14.5),y(solve(14.5).b)-12);
+    ctx.fillStyle=MOP.blue; ctx.fillText('c* call freq',x(10),y(solve(10).c)-12);
+    ctx.fillStyle=MOP.yellow; ctx.fillText('6·G(Y)  (→1 ⇔ G→1/6)',x(9),y(solve(9).g*6)+32);
+    // current P marker
+    ctx.strokeStyle='rgba(232,228,220,.5)'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(x(Math.min(Pcur,Pmax)),T); ctx.lineTo(x(Math.min(Pcur,Pmax)),H-B); ctx.stroke();
+  }
+  pot.addEventListener('input',upd);
+  upd();
+})();
+</script>
+</body>
+</html>

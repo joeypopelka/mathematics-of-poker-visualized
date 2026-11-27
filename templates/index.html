@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{page-title}}</title>
+<script defer src="nav.js?v=9"></script>
+<link rel="stylesheet" href="site.css?v=9">
+<style>
+  .panel-page{display:none}
+  .panel-page.active{display:block}
+  .placeholder{color:var(--faint);font-size:.9rem;font-weight:300}
+  .foot{max-width:1200px;margin:0 auto;padding:1.2rem 1.4rem 2rem;color:var(--faint);
+    font-size:.72rem;font-weight:300;letter-spacing:.04em;border-top:1px solid var(--hair)}
+</style>
+<body>
+
+<main class="wrap">
+  <section id="page-home" class="panel-page active">
+    <p class="placeholder">{{placeholder-1}}</p>
+  </section>
+  <section id="page-about" class="panel-page">
+    <p class="placeholder">{{placeholder-2}}</p>
+  </section>
+</main>
+
+<p class="foot">{{companion-site-to-bill}}</p>
+
+<script>
+(function(){
+  function show(){
+    var about = location.hash === '#about';
+    document.getElementById('page-home').classList.toggle('active', !about);
+    document.getElementById('page-about').classList.toggle('active', about);
+  }
+  window.addEventListener('hashchange', show);
+  show();
+})();
+</script>
+</body>
+</html>
