@@ -12,7 +12,7 @@ Chapter 11 · Example 11.3
 Half a street, one bet. **X must check in the dark**; then **Y** may bet or
       check, and if Y bets, X may **call or fold**. Hands are uniform on **[0, 1]** (0 = the
       nuts). Because X can now fold, Y starts to **bluff** — and the whole betting/bluffing/calling
-      balance is governed by one number, the pot size **P**. This is the ancestor of Games
+      balance is governed by one number, the pot size **P**. This is the ancestor of Games #9–#11.
 
 <!-- block: ex-showdown-expectation-to -->
 Ex-showdown expectation to Y: **G = (1−α)² / [2(2−α)(1+α)]**.
