@@ -84,7 +84,8 @@
     '.mnav-rail .mnav-gs{--c:var(--blue)}',
     '.mnav-rail .mnav-gc{--c:var(--red)}',
     '.mnav-rail .mnav-gt{--c:var(--yellow)}',
-    '@media (max-width:1299px){.mnav-rail{display:none}}'
+    '@media (max-width:1079px){.mnav-rail{display:none}}',
+    '@media (min-width:1080px) and (max-width:1299px){body{padding-left:2.2rem}}'
   ].join('\n');
 
   function item(href, label, sub) {
