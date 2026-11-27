@@ -28,11 +28,12 @@ CNT = ROOT / "content"
 
 
 def md_inline(text: str) -> str:
+    text = text.replace(r"\*", "\x00")  # \* = literal asterisk (math: S*, y₁*)
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text, flags=re.S)
     text = re.sub(r"(?<![\w*])\*([^*\n]+)\*(?![\w*])", r"<i>\1</i>", text)
     text = re.sub(r"`([^`]+)`", r'<span class="m">\1</span>', text)
     text = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", r'<a href="\2">\1</a>', text)
-    return text
+    return text.replace("\x00", "*")
 
 
 def render(block: str) -> str:

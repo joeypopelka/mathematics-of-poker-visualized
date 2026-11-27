@@ -1,0 +1,402 @@
+<meta charset="utf-8">
+<title>[0,1] Game #12 — the infinite raising ladder</title>
+<script defer src="../nav.js?v=6"></script>
+<link rel="stylesheet" href="../site.css?v=6">
+<style>
+  :root{
+    --value:var(--blue);
+    --value-ink:#EEF2FB;
+    --bluff:var(--red);
+    --bluff-ink:#FBEFE9;
+    --call:var(--yellow);
+    --call-ink:#1A1915;
+    --fold:#4E4A42;
+    --fold-ink:#E6E1D5;
+    --check:#67635A;
+    --check-ink:#E6E1D5;
+    --lad:var(--yellow);
+    --r:#8A857A;
+    --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  .rule{height:1px;background:var(--line);border:0;margin:32px 0}
+  .deck{background:var(--panel);border:1px solid var(--line);padding:22px clamp(18px,3vw,26px);}
+  .deck-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:22px 30px}
+  .readout{display:flex;flex-direction:column;gap:2px;min-width:120px}
+  .readout .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint)}
+  .readout .v{font-family:var(--mono);font-size:38px;font-variant-numeric:tabular-nums;line-height:1;color:var(--value)}
+  .readout .v small{font-size:15px;color:var(--dim);margin-left:4px}
+  .readout.rbox .v{color:var(--r)}
+  .ratios{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:150px}
+  .ratios .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:var(--faint);margin-bottom:1px}
+  .ratios b{color:var(--blue);font-weight:600}
+  .sliderbox{flex:1 1 280px;min-width:240px}
+  .sliderbox label{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint);display:block;margin-bottom:10px}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:linear-gradient(90deg,var(--fold),var(--r));outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--r);cursor:pointer;border:3px solid var(--bg);}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--r);cursor:pointer;border:3px solid var(--bg)}
+  input[type=range]:focus-visible{}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+  .presets .pk{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-right:2px}
+  .chip{font-family:var(--mono);font-size:13px;color:var(--ink);cursor:pointer;background:var(--panel2);border:1px solid var(--line);padding:5px 13px;transition:border-color .15s,color .15s,background .15s}
+  .chip:hover{border-color:var(--r);color:var(--r)}
+  .chip.active{background:var(--r);color:#04191c;border-color:var(--r);font-weight:600}
+  .diagram{margin-top:30px}
+  .axishead{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+  .axishead .best{color:var(--value)} .axishead .worst{color:var(--bluff)}
+  .plot{position:relative}
+  .ruler{position:relative;height:40px;margin-bottom:2px}
+  .tick{position:absolute;top:0;bottom:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;transition:left .4s cubic-bezier(.4,0,.2,1)}
+  .tick .stem{width:1px;flex:1;background:var(--line)}
+  .tick .lab{font-family:var(--mono);font-size:11.5px;color:var(--dim);white-space:nowrap;padding-bottom:3px}
+  .gridlines{position:absolute;left:0;right:0;top:0;bottom:26px;pointer-events:none;z-index:2}
+  .gridlines .gl{position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(var(--line),transparent);opacity:.5;transition:left .4s cubic-bezier(.4,0,.2,1)}
+  .track{position:relative;height:58px;overflow:hidden;margin-bottom:9px;background:var(--panel2);border:1px solid var(--line)}
+  .track .rlabel{position:absolute;z-index:3;left:12px;top:8px;font-family:var(--sans);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#ffffffcc;text-shadow:0 1px 3px #000a;pointer-events:none}
+  .track .cond{font-weight:400;color:#ffffff8c;letter-spacing:.06em;text-transform:none;font-style:italic;font-size:11px}
+  .region{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end;padding:8px 8px;overflow:hidden;transition:left .4s cubic-bezier(.4,0,.2,1),width .4s cubic-bezier(.4,0,.2,1);border-right:1px solid #0006}
+  .region:last-child{border-right:0}
+  .region .act{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.01em;white-space:nowrap;line-height:1.15}
+  .region .frq{font-family:var(--mono);font-size:11px;opacity:.85;font-variant-numeric:tabular-nums}
+  .region.narrow .act,.region.narrow .frq{display:none}
+  .r-value{background:var(--value);color:var(--value-ink)}
+  .r-bluff{background:var(--bluff);color:var(--bluff-ink)}
+  .r-call{background:var(--call);color:var(--call-ink)}
+  .r-fold{background:var(--fold);color:var(--fold-ink)}
+  .r-check{background:var(--check);color:var(--check-ink)}
+  .casc-ov{position:absolute;top:0;bottom:0;pointer-events:none;z-index:4}
+  .casc-ov .ct{position:absolute;top:0;bottom:0;width:1px;background:#8A857A22;opacity:.55}
+  .baseline{position:relative;height:24px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .baseline .z{position:absolute;left:0} .baseline .o{position:absolute;right:0}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px}
+  .legend .li{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-size:12.5px;color:var(--dim)}
+  .legend .sw{width:14px;height:14px;flex:none}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:26px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr;gap:26px}}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:baseline}
+  thead th{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  td.sym{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+  td.frm{font-family:var(--mono);color:var(--dim);font-size:11.5px}
+  td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+  tr[data-hue] td.sym::before{content:"";display:inline-block;width:9px;height:9px;margin-right:8px;vertical-align:middle;background:var(--h)}
+  .card{background:var(--panel);border:1px solid var(--line);padding:18px 20px}
+  canvas{width:100%;height:190px;display:block}
+  .cap{font-family:var(--sans);font-size:12px;color:var(--dim);margin-top:8px}
+  .cap b{color:var(--r)}
+  /* ladder */
+  .ladder{margin-top:8px}
+  .ladbar{position:relative;height:34px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+  .ladbar .seg{position:absolute;top:0;bottom:0;left:0;border-right:2px solid var(--bg)}
+  .ladbar .lt{position:absolute;top:0;bottom:0;width:1px;background:var(--lad)}
+  .ladlist{list-style:none;margin:12px 0 0;padding:0;font-size:13px}
+  .ladlist li{display:flex;align-items:baseline;gap:10px;padding:3px 0;border-bottom:1px dotted var(--line)}
+  .ladlist .who{font-family:var(--sans);font-size:11px;color:var(--faint);width:96px;flex:none}
+  .ladlist .sy{font-family:var(--mono);color:var(--lad);width:26px;flex:none}
+  .ladlist .vl{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums;width:70px;flex:none;text-align:right}
+  .ladlist .rt{font-family:var(--mono);color:var(--dim);font-size:11.5px}
+  .ladlist .more{color:var(--faint);font-style:italic;font-family:var(--serif)}
+  .notes p{color:var(--dim);font-size:14.5px;max-width:62ch}
+  .notes p b{color:var(--ink)}
+  .notes .mono{font-family:var(--mono);color:var(--blue);font-size:.92em}
+  .callout{border-left:2px solid var(--r);padding:2px 0 2px 16px;margin:18px 0;font-style:italic;color:var(--ink)}
+  .gvnote{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--lad);padding:16px 20px;margin-top:24px;font-size:14px;color:var(--dim);max-width:80ch}
+  .gvnote b{color:var(--ink)} .gvnote .big{font-family:var(--mono);color:var(--lad);font-size:18px}
+  .foot{margin-top:36px;color:var(--faint);font-size:12.5px;font-family:var(--sans);max-width:78ch}
+  .foot code{font-family:var(--mono);color:var(--dim)}
+  @media (prefers-reduced-motion: reduce){ .region,.gl,.tick{transition:none} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 17 · Example 17.4</div>
+    <h1>{{0-1-game-12}}</h1>
+    <p class="lede">{{one-full-street-folding}}</p>
+  </header>
+
+  <hr class="rule">
+
+  <section class="deck" aria-label="Pot control">
+    <div class="deck-top">
+      <div class="readout">
+        <span class="k">Pot size</span>
+        <span class="v"><span id="potVal">2.0</span><small>bets</small></span>
+      </div>
+      <div class="readout rbox">
+        <span class="k">Rₚ — the raising ratio</span>
+        <span class="v"><span id="rVal">0.346</span></span>
+      </div>
+      <div class="sliderbox">
+        <label for="pot">Drag to resize the pot &nbsp;·&nbsp; bet = 1 unit</label>
+        <input id="pot" type="range" min="0.5" max="20" step="0.1" value="2">
+        <div class="presets">
+          <span class="pk">Jump to</span>
+          <button class="chip" data-p="1">P = 1</button>
+          <button class="chip active" data-p="2">P = 2</button>
+          <button class="chip" data-p="4">P = 4</button>
+          <button class="chip" data-p="9">P = 9</button>
+        </div>
+      </div>
+      <div class="ratios">
+        <span class="k">Ratios</span>
+        <span>α₁ = 1/(P+1) = <b id="a1Val">0.333</b></span>
+        <span>α₂ = 1/(P+3) = <b id="a2Val">0.200</b></span>
+        <span>Rₚ → r = √2−1 ≈ <b>0.414</b></span>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <div class="axishead">
+        <span class="best">◀ 0 · strongest hands</span>
+        <span>hand strength</span>
+        <span class="worst">weakest hands · 1 ▶</span>
+      </div>
+      <div class="plot">
+        <div class="ruler" id="ruler"></div>
+        <div style="position:relative">
+          <div class="gridlines" id="gridlines"></div>
+          <div class="track" id="trackX"><span class="rlabel">X &nbsp;<span class="cond">acts first — can re-raise</span></span><div class="casc-ov" id="cascX"></div></div>
+          <div class="track" id="trackYb"><span class="rlabel">Y &nbsp;<span class="cond">if X bets — can re-raise</span></span><div class="casc-ov" id="cascYb"></div></div>
+          <div class="track" id="trackYc"><span class="rlabel">Y &nbsp;<span class="cond">if X checks</span></span></div>
+        </div>
+        <div class="baseline"><span class="z">0.0</span><span class="o">1.0</span></div>
+      </div>
+
+      <div class="legend">
+        <span class="li"><span class="sw" style="background:var(--value)"></span>Value bet / raise</span>
+        <span class="li"><span class="sw" style="background:var(--call)"></span>Call / check-call</span>
+        <span class="li"><span class="sw" style="background:var(--bluff)"></span>Bluff / raise-bluff</span>
+        <span class="li"><span class="sw" style="background:var(--check)"></span>Check</span>
+        <span class="li"><span class="sw" style="background:var(--fold)"></span>Fold / check-fold</span>
+        <span class="li"><span class="sw" style="background:var(--lad)"></span>│ value-threshold cascade (re-raise ladder)</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2 class="lad">{{the-raising-ladder-nbsp}}</h2>
+      <div class="ladder">
+        <div class="ladbar" id="ladbar"></div>
+        <ul class="ladlist" id="ladlist"></ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="r">{{rp-nbsp-vs-pot}}</h2>
+      <canvas id="rchart" width="800" height="380" aria-label="Rp versus pot size"></canvas>
+      <div class="cap">Rₚ is the ratio between each value threshold and the next in the raising ladder
+        (yₙ = Rₚ₊… · xₙ₋₁). It solves the recursion
+        <b>Rₚ = [(P+2)/(P+3)] / [2 + Rₚ₊₂·(P+4)/(P+5)]</b> and climbs to the golden mean
+        <b>r = √2−1</b> as P→∞.</div>
+    </section>
+  </div>
+
+  <div class="gvnote">
+    <b>Value of the game to Y — now resolved.</b> At this pot:
+    <span class="big mono" id="g12val"></span> &nbsp;(ex-showdown, exact sequence-form LP,
+    raise-ladder capped at B bets with B grown until the value converges — it converges completely
+    by B&nbsp;=&nbsp;6, the cascade's geometric decay in action). As P→∞ it climbs to the no-fold
+    Game&nbsp;#6's <span class="big">1/16 + r/8 ≈ 0.1143</span> (LP at P=1000: 0.1128). The book
+    declines to compute the finite-pot value; an earlier CFR attempt here failed validation and was
+    withdrawn — the LP replaces it, gate-validated by reproducing Game&nbsp;#10 exactly at a 2-bet
+    cap (G(Y) match to 10⁻⁷) and the cascade x₁→y₂→x₃→y₄ at P=2 (0.248 / 0.085 / 0.030 / 0.013).
+    <b>One surprise:</b> at every finite pot the unlimited-raise value sits <i>below</i>
+    Game&nbsp;#10's two-bet value (0.06696 vs 0.06824 at P=2) — the third bet is X's option, and it
+    costs Y more than Y's fourth-bet option wins back.
+  </div>
+
+  <div class="grid2">
+    <section>
+      <h2>{{threshold-readout}}</h2>
+      <table>
+        <thead><tr><th>Symbol</th><th>Meaning</th><th>Formula</th><th style="text-align:right">Value</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+
+    <section class="notes">
+      <h2>{{what-the-endless-ladder}}</h2>
+      <p>{{every-equation-from-game}}</p>
+      <div class="callout">{{once-you-pass-the}}</div>
+      <p>{{the-lower-structure-is}}</p>
+      <p>{{as-p-rp-r}}</p>
+    </section>
+  </div>
+
+  <p class="foot">{{model-from-bill-chen}}</p>
+</div>
+
+<script>
+(function(){
+  var r=Math.SQRT2-1;
+  function Rp(P){ var K=300,R=r,p=P+2*K; for(var i=0;i<K;i++){p-=2;R=((p+2)/(p+3))/(2+R*(p+4)/(p+5));} return R; }
+
+  var potEl=document.getElementById('pot'),potVal=document.getElementById('potVal');
+  var rVal=document.getElementById('rVal'),a1Val=document.getElementById('a1Val'),a2Val=document.getElementById('a2Val');
+  var ruler=document.getElementById('ruler'),grid=document.getElementById('gridlines'),tbody=document.getElementById('tbody');
+  var chips=document.querySelectorAll('.chip');
+  var trackX=document.getElementById('trackX'),trackYb=document.getElementById('trackYb'),trackYc=document.getElementById('trackYc');
+  var cascX=document.getElementById('cascX'),cascYb=document.getElementById('cascYb');
+  var ladbar=document.getElementById('ladbar'),ladlist=document.getElementById('ladlist');
+  var cv=document.getElementById('rchart'),ctx=cv.getContext('2d');
+
+  function solve(P){
+    var a=1/(P+1),a2=1/(P+3),R=Rp(P);
+    var x1=(1-a)*(1-a)/(1+a+(2-a)*(1-a2)*R);
+    var casc=[{sy:'x₁',who:'1st bet · X',v:x1,side:'X'}];
+    var cur=x1,p=P;
+    var L=[['y₂','2nd bet · Y','Y'],['x₃','3rd bet · X','X'],['y₄','4th bet · Y','Y'],['x₅','5th bet · X','X'],['y₆','6th bet · Y','Y'],['x₇','7th bet · X','X']];
+    for(var n=0;n<L.length;n++){ var Rn=Rp(p); cur=Rn*cur; p+=2; casc.push({sy:L[n][0],who:L[n][1],v:cur,side:L[n][2],R:Rn}); }
+    var y2=casc[1].v;
+    var y1=((1-a)+(1+a)*x1)/(2+a-a*a);
+    var y0=1-a*y1, x1s=2*y1-x1, x0=1-a*x1, y2h=1-a, y1s=y2h-a2*y2;
+    return {a:a,a2:a2,R:R,x1:x1,y2:y2,y1:y1,x1s:x1s,y0:y0,x0:x0,y2h:y2h,y1s:y1s,casc:casc};
+  }
+
+  function pct(v){return (v*100).toFixed(4)+'%';}
+  function region(s){
+    var d=document.createElement('div'); d.className='region '+s.cls;
+    d.style.left=pct(s.a); d.style.width=pct(s.b-s.a);
+    var w=s.b-s.a;
+    d.innerHTML='<div class="act">'+s.act+'</div><div class="frq">'+(w*100).toFixed(1)+'%</div>';
+    if(w<0.075) d.classList.add('narrow');
+    d.title=s.act+' — '+s.a.toFixed(3)+' to '+s.b.toFixed(3)+'  ('+(w*100).toFixed(1)+'%)';
+    return d;
+  }
+  function fill(tr,segs){
+    Array.prototype.slice.call(tr.querySelectorAll('.region')).forEach(function(n){n.remove();});
+    // insert regions before overlay if present
+    var ov=tr.querySelector('.casc-ov');
+    segs.forEach(function(s){ var el=region(s); if(ov) tr.insertBefore(el,ov); else tr.appendChild(el); });
+  }
+  function cascTicks(ov, casc, sidePick){
+    ov.innerHTML='';
+    casc.forEach(function(c){ if(c.side!==sidePick) return; if(c.sy==='x₁') return;
+      var t=document.createElement('div'); t.className='ct'; t.style.left=pct(c.v); ov.appendChild(t); });
+  }
+
+  var THRESH=[
+    {k:'x1', sym:'x₁',  hue:'var(--value)', mean:'X: value ↔ check-call (1st bet)', frm:'(1−α)²/[1+α+(2−α)(1−α₂)Rₚ]'},
+    {k:'y2', sym:'y₂',  hue:'var(--value)', mean:'Y: value-raise ↔ call (2nd bet)', frm:'Rₚ·x₁'},
+    {k:'y1', sym:'y₁',  hue:'var(--value)', mean:'Y: value-bet ↔ check (if checked to)', frm:'((1−α)+(1+α)x₁)/(2+α−α²)'},
+    {k:'x1s',sym:'x₁*=y₁*',hue:'var(--call)',mean:'X check-call cutoff · Y call cutoff', frm:'2y₁−x₁'},
+    {k:'y2h',sym:'y₂#', hue:'var(--bluff)', mean:'Y: raise-bluff ↔ fold', frm:'1−α'},
+    {k:'y0', sym:'y₀',  hue:'var(--bluff)', mean:'Y: check ↔ bluff', frm:'1−α·y₁'},
+    {k:'x0', sym:'x₀',  hue:'var(--bluff)', mean:'X: check-fold ↔ bluff', frm:'1−α·x₁'}
+  ];
+
+  function drawR(curP){
+    var dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    var padL=42,padR=14,padT=14,padB=30,gw=W-padL-padR,gh=H-padT-padB,PMAX=20,YMAX=0.45;
+    function X(P){return padL+(P/PMAX)*gw;}
+    function Y(g){return padT+gh-(g/YMAX)*gh;}
+    ctx.strokeStyle='#8A857A44';ctx.fillStyle='#8A857A';ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    [0,0.1,0.2,0.3,0.4].forEach(function(g){var y=Y(g);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();ctx.globalAlpha=1;ctx.fillText(g.toFixed(1),padL-6,y);});
+    ctx.textAlign='center';ctx.textBaseline='top';[0,5,10,15,20].forEach(function(p){ctx.fillText(p,X(p),H-padB+8);});
+    ctx.textBaseline='alphabetic';
+    ctx.strokeStyle='#8A857A';ctx.setLineDash([4,4]);ctx.globalAlpha=.7;
+    ctx.beginPath();ctx.moveTo(padL,Y(r));ctx.lineTo(W-padR,Y(r));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.fillStyle='#8A857A';ctx.textAlign='left';ctx.fillText('r = √2−1  (Game #6)',padL+6,Y(r)-5);
+    ctx.strokeStyle='#8A857A';ctx.lineWidth=2.4;ctx.beginPath();
+    for(var i=0;i<=240;i++){var P=0.3+(i/240)*(PMAX-0.3);var g=Rp(P);var px=X(P),py=Y(g);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();
+    var cg=Rp(curP),cx=X(curP),cy=Y(cg);
+    ctx.strokeStyle='#7ea6a055';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
+    ctx.fillStyle='#8A857A';ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#8A857A22';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#8A857A';ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
+    var lx=Math.min(cx+9,W-padR-74);ctx.fillText('Rₚ = '+cg.toFixed(3),lx,cy+14);
+  }
+
+  function drawLadder(casc){
+    var x1=casc[0].v;
+    ladbar.innerHTML='';
+    // nested segments [0, each threshold], shaded lighter as they go deeper
+    for(var i=casc.length-1;i>=0;i--){
+      var seg=document.createElement('div'); seg.className='seg';
+      seg.style.width=(100*casc[i].v/x1)+'%';
+      var shade=0.20+0.62*(i/(casc.length-1));
+      seg.style.background='rgba(201,162,74,'+shade.toFixed(3)+')';
+      ladbar.appendChild(seg);
+    }
+    ladlist.innerHTML='';
+    casc.forEach(function(c){
+      var li=document.createElement('li');
+      var rt=c.R?('× Rₚ₊'+((casc.indexOf(c)-1)*2)+' = '+c.R.toFixed(3)):'';
+      li.innerHTML='<span class="who">'+c.who+'</span><span class="sy">'+c.sy+'</span>'+
+                   '<span class="vl">'+c.v.toFixed(4)+'</span><span class="rt">'+rt+'</span>';
+      ladlist.appendChild(li);
+    });
+    var li=document.createElement('li'); li.innerHTML='<span class="who"></span><span class="sy"></span><span class="vl more">…→0</span><span class="rt more">continues to the nuts</span>';
+    ladlist.appendChild(li);
+  }
+
+  // exact finite-pot game value (sequence-form LP, raise cap converged)
+  var GV={P:[0.25,0.5,0.75,1,1.25,1.5,2,2.5,3,4,5,6,8,10,13,17,22,30,45,70,120,200],
+          G:[0.0089326,0.0226284,0.0347103,0.0443958,0.0520271,0.0580827,0.0669622,
+             0.0730815,0.0775496,0.083712,0.0878309,0.0908315,0.0949871,0.0977787,
+             0.1006737,0.1031318,0.10507,0.1070099,0.1088766,0.1103311,0.1112882,0.1121124]};
+  function g12(P){
+    var Ps=GV.P,Gs=GV.G;
+    if(P<=Ps[0]) return Gs[0];
+    if(P>=Ps[Ps.length-1]) return Gs[Gs.length-1];
+    for(var i=1;i<Ps.length;i++){ if(P<=Ps[i]){
+      var t=(P-Ps[i-1])/(Ps[i]-Ps[i-1]); return Gs[i-1]+t*(Gs[i]-Gs[i-1]); }}
+    return Gs[Gs.length-1];
+  }
+  function render(){
+    var P=parseFloat(potEl.value), s=solve(P);
+    potVal.textContent=P.toFixed(1);
+    rVal.textContent=s.R.toFixed(3);
+    a1Val.textContent=s.a.toFixed(3); a2Val.textContent=s.a2.toFixed(3);
+    var gv=document.getElementById('g12val');
+    if(gv) gv.textContent='G(Y) = '+g12(P).toFixed(4);
+
+    fill(trackX,[
+      {a:0,     b:s.x1,  cls:'r-value', act:'Value bet (+ re-raises)'},
+      {a:s.x1,  b:s.x1s, cls:'r-call',  act:'Check-call'},
+      {a:s.x1s, b:s.x0,  cls:'r-fold',  act:'Check-fold'},
+      {a:s.x0,  b:1,     cls:'r-bluff', act:'Bluff'}
+    ]);
+    fill(trackYb,[
+      {a:0,      b:s.y2,  cls:'r-value', act:'Value raise (+ re-raises)'},
+      {a:s.y2,   b:s.y1s, cls:'r-call',  act:'Call'},
+      {a:s.y1s,  b:s.y2h, cls:'r-bluff', act:'Raise-bluff'},
+      {a:s.y2h,  b:1,     cls:'r-fold',  act:'Fold'}
+    ]);
+    fill(trackYc,[
+      {a:0,     b:s.y1,  cls:'r-value', act:'Value bet'},
+      {a:s.y1,  b:s.y0,  cls:'r-check', act:'Check'},
+      {a:s.y0,  b:1,     cls:'r-bluff', act:'Bluff'}
+    ]);
+    cascTicks(cascX, s.casc, 'X');
+    cascTicks(cascYb, s.casc, 'Y');
+
+    var ticks=THRESH.map(function(t){return {sym:t.sym,val:s[t.k]};}).sort(function(a,b){return a.val-b.val;});
+    ruler.innerHTML=''; grid.innerHTML='';
+    ticks.forEach(function(t,i){
+      var lo=(i%2===1);
+      var d=document.createElement('div'); d.className='tick'; d.style.left=pct(t.val);
+      d.innerHTML= lo ? '<div class="stem"></div><div class="lab">'+t.sym+'</div>' : '<div class="lab">'+t.sym+'</div><div class="stem"></div>';
+      ruler.appendChild(d);
+      var g=document.createElement('div'); g.className='gl'; g.style.left=pct(t.val); grid.appendChild(g);
+    });
+
+    tbody.innerHTML='';
+    THRESH.forEach(function(t){
+      var tr=document.createElement('tr'); tr.setAttribute('data-hue',''); tr.style.setProperty('--h',t.hue);
+      tr.innerHTML='<td class="sym">'+t.sym+'</td><td>'+t.mean+'</td><td class="frm">'+t.frm+'</td><td class="num">'+s[t.k].toFixed(4)+'</td>';
+      tbody.appendChild(tr);
+    });
+
+    drawLadder(s.casc);
+    drawR(P);
+  }
+  function syncChips(){ chips.forEach(function(c){ c.classList.toggle('active', Math.abs(parseFloat(c.dataset.p)-parseFloat(potEl.value))<1e-9); }); }
+  potEl.addEventListener('input',function(){ syncChips(); render(); });
+  chips.forEach(function(c){ c.addEventListener('click',function(){ potEl.value=c.dataset.p; syncChips(); render(); }); });
+  window.addEventListener('resize',function(){ drawR(parseFloat(potEl.value)); });
+  syncChips(); render();
+})();
+</script>

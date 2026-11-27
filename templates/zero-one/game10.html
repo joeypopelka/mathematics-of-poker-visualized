@@ -1,0 +1,416 @@
+<meta charset="utf-8">
+<title>[0,1] Game #10 — Live Figure 17.2</title>
+<script defer src="../nav.js?v=6"></script>
+<link rel="stylesheet" href="../site.css?v=6">
+<style>
+  :root{
+    /* semantic region hues */
+    --value:var(--blue);
+    --value-ink:#EEF2FB;
+    --value2:#7E99D6;
+    --value2-ink:#10131F;
+    /* value bet that folds to a raise */
+    --bluff:var(--red);
+    --bluff-ink:#FBEFE9;
+    --call:var(--yellow);
+    --call-ink:#1A1915;
+    --fold:#4E4A42;
+    --fold-ink:#E6E1D5;
+    --check:#67635A;
+    --check-ink:#E6E1D5;
+    --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+
+
+  .rule{height:1px;background:var(--line);border:0;margin:34px 0}
+
+  .deck{background:var(--panel);border:1px solid var(--line);
+    padding:22px clamp(18px,3vw,26px);}
+  .deck-top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:22px 30px}
+  .pot-readout{display:flex;flex-direction:column;gap:2px;min-width:130px}
+  .pot-readout .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;
+    font-size:10.5px;color:var(--faint)}
+  .pot-readout .v{font-family:var(--mono);font-size:38px;font-variant-numeric:tabular-nums;
+    line-height:1;color:var(--value)}
+  .pot-readout .v small{font-size:15px;color:var(--dim);margin-left:4px}
+  .ratios{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:13px;
+    color:var(--dim);font-variant-numeric:tabular-nums;min-width:150px}
+  .ratios .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.14em;
+    font-size:10px;color:var(--faint);margin-bottom:1px}
+  .ratios b{color:var(--blue);font-weight:600}
+  .sliderbox{flex:1 1 300px;min-width:250px}
+  .sliderbox label{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;
+    font-size:10.5px;color:var(--faint);display:block;margin-bottom:10px}
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;
+    background:linear-gradient(90deg,var(--fold),var(--value));outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:20px;height:20px;border-radius:50%;background:var(--value);cursor:pointer;
+    border:3px solid var(--bg);}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;
+    background:var(--value);cursor:pointer;border:3px solid var(--bg)}
+  input[type=range]:focus-visible{}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+  .presets .pk{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--faint);margin-right:2px}
+  .chip{font-family:var(--mono);font-size:13px;color:var(--ink);cursor:pointer;
+    background:var(--panel2);border:1px solid var(--line);
+    padding:5px 13px;transition:border-color .15s,color .15s,background .15s}
+  .chip:hover{border-color:var(--value);color:var(--value)}
+  .chip.active{background:var(--value);color:var(--value-ink);border-color:var(--value);font-weight:600}
+
+  .diagram{margin-top:30px}
+  .axishead{display:flex;justify-content:space-between;align-items:baseline;
+    font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--faint);margin-bottom:4px}
+  .axishead .best{color:var(--value)}
+  .axishead .worst{color:var(--bluff)}
+
+  .plot{position:relative}
+  .ruler{position:relative;height:40px;margin-bottom:2px}
+  .tick{position:absolute;top:0;bottom:0;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;transition:left .45s cubic-bezier(.4,0,.2,1)}
+  .tick .stem{width:1px;flex:1;background:var(--line)}
+  .tick .lab{font-family:var(--mono);font-size:11.5px;color:var(--dim);white-space:nowrap;
+    padding-bottom:3px}
+
+  .gridlines{position:absolute;left:0;right:0;top:0;bottom:26px;pointer-events:none;z-index:2}
+  .gridlines .gl{position:absolute;top:0;bottom:0;width:1px;
+    background:linear-gradient(var(--line),transparent);opacity:.5;
+    transition:left .45s cubic-bezier(.4,0,.2,1)}
+
+  .track{position:relative;height:60px;overflow:hidden;
+    margin-bottom:9px;background:var(--panel2);border:1px solid var(--line)}
+  .track .rlabel{position:absolute;z-index:3;left:12px;top:8px;font-family:var(--sans);
+    font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#ffffffcc;
+    text-shadow:0 1px 3px #000a;pointer-events:none}
+  .track .cond{font-weight:400;color:#ffffff8c;letter-spacing:.06em;text-transform:none;
+    font-style:italic;font-size:11px}
+  .region{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;
+    justify-content:flex-end;padding:8px 8px;overflow:hidden;
+    transition:left .45s cubic-bezier(.4,0,.2,1),width .45s cubic-bezier(.4,0,.2,1);
+    border-right:1px solid #0006}
+  .region:last-child{border-right:0}
+  .region .act{font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.01em;
+    white-space:nowrap;line-height:1.15}
+  .region .frq{font-family:var(--mono);font-size:11px;opacity:.85;font-variant-numeric:tabular-nums}
+  .region.narrow .act,.region.narrow .frq{display:none}
+  .r-value{background:var(--value);color:var(--value-ink)}
+  .r-value2{background:var(--value2);color:var(--value2-ink)}
+  .r-bluff{background:var(--bluff);color:var(--bluff-ink)}
+  .r-call{background:var(--call);color:var(--call-ink)}
+  .r-fold{background:var(--fold);color:var(--fold-ink)}
+  .r-check{background:var(--check);color:var(--check-ink)}
+
+  .baseline{position:relative;height:24px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .baseline .z{position:absolute;left:0}
+  .baseline .o{position:absolute;right:0}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px}
+  .legend .li{display:flex;align-items:center;gap:8px;font-family:var(--sans);
+    font-size:12.5px;color:var(--dim)}
+  .legend .sw{width:14px;height:14px;flex:none}
+
+  .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;margin-top:14px}
+  @media(max-width:780px){.grid2{grid-template-columns:1fr;gap:26px}}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:baseline}
+  thead th{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--faint);font-weight:600}
+  td.sym{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+  td.frm{font-family:var(--mono);color:var(--dim);font-size:11.5px}
+  td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+  tr[data-hue] td.sym::before{content:"";display:inline-block;width:9px;height:9px;
+    margin-right:8px;vertical-align:middle;background:var(--h)}
+
+  .notes p{color:var(--dim);font-size:14.5px;max-width:60ch}
+  .notes p b{color:var(--ink)}
+  .notes .mono{font-family:var(--mono);color:var(--blue);font-size:.92em}
+  .callout{border-left:2px solid var(--value);padding:2px 0 2px 16px;margin:18px 0;
+    font-style:italic;color:var(--ink)}
+
+  .foot{margin-top:40px;color:var(--faint);font-size:12.5px;font-family:var(--sans);max-width:74ch}
+  .foot code{font-family:var(--mono);color:var(--dim)}
+  .pot-readout.gvbox .v{color:var(--blue)}
+  .gvcard{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin-top:24px}
+  .gvcard canvas{width:100%;height:200px;display:block}
+  .gvcaption{font-family:var(--sans);font-size:12px;color:var(--dim);margin-top:8px;max-width:72ch}
+  .gvcaption b{color:var(--blue)}
+  @media (prefers-reduced-motion: reduce){ .region,.gl,.tick{transition:none} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 17 · Example 17.2</div>
+    <h1>{{0-1-game-10}}</h1>
+    <p class="lede">{{one-full-street-two}}</p>
+  </header>
+
+  <hr class="rule">
+
+  <section class="deck" aria-label="Pot control">
+    <div class="deck-top">
+      <div class="pot-readout">
+        <span class="k">Pot size</span>
+        <span class="v"><span id="potVal">2.0</span><small>bets</small></span>
+      </div>
+      <div class="pot-readout gvbox">
+        <span class="k">Value of game to Y</span>
+        <span class="v"><span id="gVal">0.068</span><small>bet</small></span>
+      </div>
+      <div class="sliderbox">
+        <label for="pot">Drag to resize the pot &nbsp;·&nbsp; bet = 1 unit</label>
+        <input id="pot" type="range" min="0" max="30" step="0.1" value="2">
+        <div class="presets">
+          <span class="pk">Jump to</span>
+          <button class="chip" data-p="1">P = 1</button>
+          <button class="chip active" data-p="2">P = 2</button>
+          <button class="chip" data-p="4">P = 4</button>
+          <button class="chip" data-p="9">P = 9</button>
+          <button class="chip" data-p="inf">P → ∞</button>
+        </div>
+      </div>
+      <div class="ratios">
+        <span class="k">Ratios</span>
+        <span>α₁ = 1/(P+1) = <b id="a1Val">0.333</b></span>
+        <span>α₂ = 1/(P+3) = <b id="a2Val">0.200</b></span>
+        <span>R = (1−α₂)/2 = <b id="rVal">0.400</b></span>
+      </div>
+    </div>
+
+    <div class="diagram">
+      <div class="axishead">
+        <span class="best">◀ 0 · strongest hands</span>
+        <span>hand strength</span>
+        <span class="worst">weakest hands · 1 ▶</span>
+      </div>
+      <div class="plot">
+        <div class="ruler" id="ruler"></div>
+        <div style="position:relative">
+          <div class="gridlines" id="gridlines"></div>
+          <div class="track" id="trackX"><span class="rlabel">X &nbsp;<span class="cond">acts first</span></span></div>
+          <div class="track" id="trackYb"><span class="rlabel">Y &nbsp;<span class="cond">if X bets — can raise</span></span></div>
+          <div class="track" id="trackYc"><span class="rlabel">Y &nbsp;<span class="cond">if X checks</span></span></div>
+        </div>
+        <div class="baseline"><span class="z">0.0</span><span class="o">1.0</span></div>
+      </div>
+
+      <div class="legend">
+        <span class="li"><span class="sw" style="background:var(--value)"></span>Value bet / raise</span>
+        <span class="li"><span class="sw" style="background:var(--value2)"></span>Value bet, folds to a raise</span>
+        <span class="li"><span class="sw" style="background:var(--call)"></span>Call / check-call</span>
+        <span class="li"><span class="sw" style="background:var(--bluff)"></span>Bluff / raise-bluff</span>
+        <span class="li"><span class="sw" style="background:var(--check)"></span>Check</span>
+        <span class="li"><span class="sw" style="background:var(--fold)"></span>Fold / check-fold</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="gvcard">
+    <h2>{{value-of-the-game}}</h2>
+    <canvas id="gvchart" width="800" height="400" aria-label="Game value to Y versus pot"></canvas>
+    <div class="gvcaption">{{ex-showdown-expectation-to}}</div>
+  </section>
+
+  <div class="grid2">
+    <section>
+      <h2>{{threshold-readout}}</h2>
+      <table>
+        <thead><tr><th>Symbol</th><th>Meaning</th><th>Formula</th><th style="text-align:right">Value</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </section>
+
+    <section class="notes">
+      <h2>{{what-the-raise-changes}}</h2>
+      <p>{{a-second-bet-introduces}}</p>
+      <div class="callout">{{r-1-2-2}}</div>
+      <p>{{x-now-splits-his}}</p>
+      <p>{{y-raise-bluffs-from}}</p>
+      <p>{{as-before-x1-y1}}</p>
+    </section>
+  </div>
+
+  <p class="foot">{{model-amp-closed-form}}</p>
+</div>
+
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
+(function(){
+  var potEl=document.getElementById('pot');
+  var potVal=document.getElementById('potVal');
+  var a1Val=document.getElementById('a1Val');
+  var a2Val=document.getElementById('a2Val');
+  var rVal=document.getElementById('rVal');
+  var ruler=document.getElementById('ruler');
+  var grid=document.getElementById('gridlines');
+  var tbody=document.getElementById('tbody');
+  var chips=document.querySelectorAll('.chip');
+  var gValEl=document.getElementById('gVal');
+  var cv=document.getElementById('gvchart'),ctx=cv.getContext('2d');
+  var INF=false;
+
+  function solve(P){
+    var inf = !isFinite(P);
+    var a  = inf ? 0 : 1/(P+1);
+    var a2 = inf ? 0 : 1/(P+3);
+    var R  = (1 - a2)/2;
+    var x1  = Math.pow(1-a,2) / (1 + a + (2-a)*(1-a2)*R);
+    var y2  = R * x1;
+    var x2s = 2*y2;                       // x2* = (1-a2)x1
+    var y2h = 1 - a;                      // y2#
+    var y1s = (1-a) - a2*y2;              // y1*
+    var y1  = ((1-a) + (1+a)*x1) / (2 + a - a*a);
+    var y0  = 1 - a*y1;
+    var x1s = 2*y1 - x1;                  // x1*
+    var x0  = 1 - a*x1;
+    return {a:a,a2:a2,R:R,x1:x1,y2:y2,x2s:x2s,y2h:y2h,y1s:y1s,y1:y1,y0:y0,x1s:x1s,x0:x0};
+  }
+
+  function pct(v){return (v*100).toFixed(4)+'%';}
+
+  function region(s){
+    var d=document.createElement('div');
+    d.className='region '+s.cls;
+    d.style.left=pct(s.a); d.style.width=pct(s.b-s.a);
+    var w=(s.b-s.a);
+    d.innerHTML='<div class="act">'+s.act+'</div><div class="frq">'+(w*100).toFixed(1)+'%</div>';
+    if(w<0.085) d.classList.add('narrow');
+    d.title=s.act+' — hands '+s.a.toFixed(3)+' to '+s.b.toFixed(3)+'  ('+(w*100).toFixed(1)+'% of range)';
+    return d;
+  }
+  function fill(track,segs){
+    Array.prototype.slice.call(track.querySelectorAll('.region')).forEach(function(n){n.remove();});
+    segs.forEach(function(s){track.appendChild(region(s));});
+  }
+
+  var trackX=document.getElementById('trackX');
+  var trackYb=document.getElementById('trackYb');
+  var trackYc=document.getElementById('trackYc');
+
+  var THRESH=[
+    {k:'y2', sym:'y₂',     hue:'var(--value)', mean:'Y: value-raise ↔ call',                 frm:'R·x₁,  R=(1−α₂)/2'},
+    {k:'x2s',sym:'x₂*',    hue:'var(--value)', mean:'X: bet & call-raise ↔ bet & fold-raise', frm:'(1−α₂)·x₁'},
+    {k:'x1', sym:'x₁',     hue:'var(--value)', mean:'X: value-bet ↔ check-call',              frm:'(1−α)²/[1+α+(2−α)(1−α₂)R]'},
+    {k:'y1', sym:'y₁',     hue:'var(--value)', mean:'Y: value-bet ↔ check (if checked to)',   frm:'(x₁*+x₁)/2'},
+    {k:'x1s',sym:'x₁*=y₁*',hue:'var(--call)',  mean:'X check-call cutoff · Y call cutoff',     frm:'2y₁−x₁'},
+    {k:'y2h',sym:'y₂#',    hue:'var(--bluff)', mean:'Y: raise-bluff ↔ fold',                  frm:'1−α'},
+    {k:'y0', sym:'y₀',     hue:'var(--bluff)', mean:'Y: check ↔ bluff (if checked to)',       frm:'1−α·y₁'},
+    {k:'x0', sym:'x₀',     hue:'var(--bluff)', mean:'X: check-fold ↔ bluff',                  frm:'1−α·x₁'}
+  ];
+
+  function gameValue(y1,y2,y0,a,a2){
+    var G0=y1*(1-a)/2, G1=(1-a)*y1, G2=y2-a*y1, G3=(1-a2)*y2-(1-a);
+    return y2*G3+(y1-y2)*G2+(y0-y1)*G1+(1-y0)*G0;
+  }
+  function gvAt(P){ var s=solve(P); return gameValue(s.y1,s.y2,s.y0,s.a,s.a2); }
+  function drawChart(curP){
+    var dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+    cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+    var padL=44,padR=14,padT=14,padB=30,gw=W-padL-padR,gh=H-padT-padB,PMAX=30,GMAX=0.14;
+    function X(P){return padL+(P/PMAX)*gw;}
+    function Y(g){return padT+gh-(g/GMAX)*gh;}
+    ctx.strokeStyle='#8A857A44';ctx.fillStyle='#8A857A';ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    [0,0.04,0.08,0.12].forEach(function(g){var y=Y(g);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();ctx.globalAlpha=1;ctx.fillText(g.toFixed(2),padL-6,y);});
+    ctx.textAlign='center';ctx.textBaseline='top';
+    [0,10,20,30].forEach(function(p){ctx.fillText(p,X(p),H-padB+8);});
+    ctx.textBaseline='alphabetic';
+    ctx.strokeStyle='#8A857A';ctx.setLineDash([4,4]);ctx.globalAlpha=.7;
+    ctx.beginPath();ctx.moveTo(padL,Y(0.125));ctx.lineTo(W-padR,Y(0.125));ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle='#8A857A';ctx.textAlign='left';
+    ctx.fillText('⅛  (no-fold Game #5)',padL+6,Y(0.125)-5);
+    ctx.strokeStyle=MOP.blue;ctx.lineWidth=2.4;ctx.beginPath();
+    for(var i=0;i<=240;i++){var P=(i/240)*PMAX;if(P<0.01)P=0.01;var g=gvAt(P);var px=X(P),py=Y(g);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
+    ctx.stroke();
+    var cg=gvAt(curP),cx=X(curP),cy=Y(cg);
+    ctx.strokeStyle=(MOP.blue+'55');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
+    ctx.fillStyle=MOP.blue;ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#8A857A22';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#8A857A';ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
+    var lx=Math.min(cx+9,W-padR-70);ctx.fillText('G = '+cg.toFixed(3),lx,cy-8);
+  }
+
+  function render(){
+    var P = INF ? Infinity : parseFloat(potEl.value);
+    var s = solve(P);
+
+    potVal.textContent = INF ? '∞' : P.toFixed(1);
+    a1Val.textContent = s.a.toFixed(3);
+    a2Val.textContent = s.a2.toFixed(3);
+    rVal.textContent  = s.R.toFixed(3);
+    gValEl.textContent = gameValue(s.y1,s.y2,s.y0,s.a,s.a2).toFixed(3);
+    drawChart(INF?30:P);
+
+    // X: value-bet/call-raise, value-bet/fold-raise, check-call, check-fold, bluff
+    fill(trackX,[
+      {a:0,      b:s.x2s, cls:'r-value',  act:'Value bet · call raise'},
+      {a:s.x2s,  b:s.x1,  cls:'r-value2', act:'Value bet · fold raise'},
+      {a:s.x1,   b:s.x1s, cls:'r-call',   act:'Check-call'},
+      {a:s.x1s,  b:s.x0,  cls:'r-fold',   act:'Check-fold'},
+      {a:s.x0,   b:1,     cls:'r-bluff',  act:'Bluff'}
+    ]);
+    // Y | X bets: value-raise, call, raise-bluff, fold
+    fill(trackYb,[
+      {a:0,      b:s.y2,  cls:'r-value',  act:'Value raise'},
+      {a:s.y2,   b:s.y1s, cls:'r-call',   act:'Call'},
+      {a:s.y1s,  b:s.y2h, cls:'r-bluff',  act:'Raise-bluff'},
+      {a:s.y2h,  b:1,     cls:'r-fold',   act:'Fold'}
+    ]);
+    // Y | X checks: value-bet, check, bluff
+    fill(trackYc,[
+      {a:0,      b:s.y1,  cls:'r-value',  act:'Value bet'},
+      {a:s.y1,   b:s.y0,  cls:'r-check',  act:'Check'},
+      {a:s.y0,   b:1,     cls:'r-bluff',  act:'Bluff'}
+    ]);
+
+    // ruler + gridlines (symbol only, alternating height)
+    var ticks=THRESH.map(function(t){return {sym:t.sym,val:s[t.k]};})
+                    .sort(function(a,b){return a.val-b.val;});
+    ruler.innerHTML=''; grid.innerHTML='';
+    ticks.forEach(function(t,i){
+      var lo=(i%2===1);
+      var d=document.createElement('div');
+      d.className='tick';
+      d.style.left=pct(t.val);
+      d.innerHTML = lo
+        ? '<div class="stem"></div><div class="lab">'+t.sym+'</div>'
+        : '<div class="lab">'+t.sym+'</div><div class="stem"></div>';
+      ruler.appendChild(d);
+      var g=document.createElement('div');
+      g.className='gl'; g.style.left=pct(t.val);
+      grid.appendChild(g);
+    });
+
+    // table
+    tbody.innerHTML='';
+    THRESH.forEach(function(t){
+      var tr=document.createElement('tr');
+      tr.setAttribute('data-hue','');
+      tr.style.setProperty('--h',t.hue);
+      tr.innerHTML='<td class="sym">'+t.sym+'</td><td>'+t.mean+'</td>'+
+        '<td class="frm">'+t.frm+'</td><td class="num">'+s[t.k].toFixed(4)+'</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  function syncChips(){
+    chips.forEach(function(c){
+      var match = INF ? c.dataset.p==='inf'
+                      : (c.dataset.p!=='inf' && Math.abs(parseFloat(c.dataset.p)-parseFloat(potEl.value))<1e-9);
+      c.classList.toggle('active',match);
+    });
+  }
+
+  potEl.addEventListener('input',function(){ INF=false; syncChips(); render(); });
+  chips.forEach(function(c){
+    c.addEventListener('click',function(){
+      if(c.dataset.p==='inf'){ INF=true; potEl.value=30; }
+      else { INF=false; potEl.value=c.dataset.p; }
+      syncChips(); render();
+    });
+  });
+
+  window.addEventListener('resize',function(){ drawChart(INF?30:parseFloat(potEl.value)); });
+  syncChips();
+  render();
+})();
+</script>
