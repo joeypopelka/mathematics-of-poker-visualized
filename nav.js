@@ -46,7 +46,7 @@
       'font-family:var(--sans);line-height:1.5}',
     '.mnav-header *{box-sizing:border-box}',
     '.mnav-bar{max-width:1200px;margin:0 auto;padding:0 1.4rem;display:flex;align-items:center;gap:1.2rem;min-height:3.1rem;flex-wrap:wrap}',
-    '.mnav-title{font-size:.78rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap}',
+    '.mnav-title{font-size:.78rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);text-decoration:none;white-space:nowrap;padding:1.05rem 0 .95rem}',
     '.mnav-title:hover{text-decoration:none;color:var(--ink)}',
     '.mnav-tabs{display:flex;flex-wrap:wrap;gap:.1rem;align-items:center;margin-left:auto}',
     '.mnav-tab{position:relative}',
