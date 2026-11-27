@@ -2,21 +2,21 @@
 <html lang="en">
 <meta charset="utf-8">
 <title>The No-Limit AKQ Game: What Position Is Worth at Every Depth</title>
-<script defer src="../../nav.js?v=2"></script>
+<script defer src="../../nav.js?v=3"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../../site.css?v=2">
+<link rel="stylesheet" href="../../site.css?v=3">
 <style>
   :root{
     --line2:#1B2431;
-    --gold:#E4B551;
+    --gold:#E8B50C;
     /* value / money */
-    --A:#EC7A4E;
-    --K:#67B8CE;
-    --Q:#B58BD0;
-    --r1:#3A2E1E;
-    --r2:#1F3330;
-    --r3:#33222E;
-    --r4:#182231;
+    --A:#C3362B;
+    --K:#E8B50C;
+    --Q:#27489B;
+    --r1:#C3362B1F;
+    --r2:#E8B50C24;
+    --r3:#27489B1F;
+    --r4:#8A857A26;
   }
   html { background:var(--bg); -webkit-text-size-adjust:100%; }
   body{padding:0 0 6rem}
@@ -28,7 +28,7 @@
 
   section { margin-top:3.2rem; }
   .panel { background:var(--panel); border:1px solid var(--line);
-    border-radius:8px; padding:1.5rem 1.6rem; }
+     padding:1.5rem 1.6rem; }
 
   /* readouts */
   .readouts { display:flex; gap:2.4rem; flex-wrap:wrap; align-items:baseline; }
@@ -40,7 +40,7 @@
   .readout .v small { font-size:.72rem; color:var(--dim); }
   #stackVal { color:var(--gold); }
   #regimeVal { font-size:1.15rem; }
-  .rpill { display:inline-block; padding:.12em .6em; border-radius:999px;
+  .rpill { display:inline-block; padding:.12em .6em; 
     font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.9rem;
     border:1px solid var(--line); }
 
@@ -55,7 +55,7 @@
   .jumps { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:1rem; }
   .jumps button { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:.71rem; background:var(--panel2); color:var(--ink);
-    border:1px solid var(--line); border-radius:5px; padding:.35rem .7rem;
+    border:1px solid var(--line);  padding:.35rem .7rem;
     cursor:pointer; }
   .jumps button:hover { border-color:var(--gold); color:var(--gold); }
   .jumps button:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
@@ -73,16 +73,16 @@
     margin:.9rem 0 .5rem; }
   .row { display:flex; align-items:center; gap:.7rem; margin:.42rem 0; }
   .rank { width:1.5rem; text-align:center; font-family:ui-monospace,'SF Mono',Menlo,monospace;
-    font-weight:600; font-size:.92rem; border-radius:4px; padding:.05rem 0; }
+    font-weight:600; font-size:.92rem;  padding:.05rem 0; }
   .rank.A { color:var(--A); } .rank.K { color:var(--K); } .rank.Q { color:var(--Q); }
-  .bar { flex:1; height:1.15rem; border-radius:3px; overflow:hidden;
+  .bar { flex:1; height:1.15rem;  overflow:hidden;
     display:flex; background:var(--line2); border:1px solid var(--line); }
   .seg { height:100%; display:flex; align-items:center; justify-content:center;
     font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.6rem;
     color:#0A0D13aa; overflow:hidden; white-space:nowrap;
     transition:width 90ms linear; }
-  .seg.fold { background:#4A5262; color:#0A0D13; }
-  .seg.check{ background:#5C6B7A; color:#0A0D13; }
+  .seg.fold { background:#4A5262; color:#8A857A22; }
+  .seg.check{ background:#5C6B7A; color:#8A857A22; }
   .seg.call { background:var(--K); }
   .seg.bet  { background:var(--gold); }
   .seg.raise{ background:var(--A); }
@@ -93,7 +93,7 @@
     font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.68rem;
     color:var(--dim); }
   .legend span { display:inline-flex; align-items:center; gap:.35rem; }
-  .sw { width:.75rem; height:.75rem; border-radius:2px; display:inline-block; }
+  .sw { width:.75rem; height:.75rem;  display:inline-block; }
 
   /* charts */
   .canvasbox { position:relative; overflow-x:auto; }
@@ -104,7 +104,7 @@
   .tabs { display:flex; gap:.5rem; margin:.2rem 0 1rem; }
   .tabs button { font-family:ui-monospace,'SF Mono',Menlo,monospace;
     font-size:.72rem; letter-spacing:.06em; background:none; color:var(--dim);
-    border:1px solid var(--line); border-radius:5px; padding:.35rem .8rem;
+    border:1px solid var(--line);  padding:.35rem .8rem;
     cursor:pointer; }
   .tabs button[aria-pressed=true]{ color:var(--ink); background:var(--panel2);
     border-color:var(--dim); }
@@ -113,7 +113,7 @@
   /* regimes */
   .regimes { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
     gap:1rem; margin-top:1.2rem; }
-  .reg { border:1px solid var(--line); border-radius:8px; padding:1.1rem 1.2rem;
+  .reg { border:1px solid var(--line);  padding:1.1rem 1.2rem;
     background:var(--panel); border-top:3px solid var(--line); }
   .reg.r1 { border-top-color:var(--gold); }
   .reg.r2 { border-top-color:#5FB98F; }
@@ -134,9 +134,9 @@
   .note { font-size:.92rem; color:var(--dim); max-width:74ch; }
   .note b { color:var(--ink); font-weight:500; }
   code { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.85em;
-    background:var(--panel2); padding:.08em .4em; border-radius:4px; }
+    background:var(--panel2); padding:.08em .4em;  }
   #tip { position:fixed; pointer-events:none; z-index:20; display:none;
-    background:#1B2431F5; border:1px solid var(--line); border-radius:5px;
+    background:#1B2431F5; border:1px solid var(--line); 
     font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.71rem;
     padding:.4rem .6rem; color:var(--ink); white-space:pre; }
   @media (prefers-reduced-motion:reduce){ .seg { transition:none; } }
@@ -377,7 +377,7 @@ function drawV(){
   const L=DATA.landmarks;
   const bands=[[DATA.S[0],L.S_A,cssv('--r1')],[L.S_A,L.S_K,cssv('--r2')],
     [L.S_K,L.S_star,cssv('--r3')],[L.S_star,DATA.S[nS-1],cssv('--r4')]];
-  for(const [a,b,col] of bands){ ctx.fillStyle=col+'99';
+  for(const [a,b,col] of bands){ ctx.fillStyle=col;
     ctx.fillRect(xOf(a,w),PADT,xOf(b,w)-xOf(a,w),h-PADT-PADB); }
   // grid + y labels
   ctx.strokeStyle=cssv('--line'); ctx.fillStyle=COL.muted;

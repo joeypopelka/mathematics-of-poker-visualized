@@ -3,26 +3,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chen ch. 26–28 · Tournaments</title>
-<script defer src="../nav.js?v=2"></script>
-<link rel="stylesheet" href="../site.css?v=2">
+<script defer src="../nav.js?v=3"></script>
+<link rel="stylesheet" href="../site.css?v=3">
 <style>
   :root{
-    --a:#5cc8ff;
-    --b:#ffb454;
-    --c:#9d7bff;
-    --d:#5be6a6;
-    --warn:#ff6b6b;
+    --a:#27489B;
+    --b:#E8B50C;
+    --c:#C3362B;
+    --d:#27489B;
+    --warn:#C3362B;
   }
   
   header{padding:2.2rem 22px 10px;max-width:1100px;margin:0 auto}
   .tabs{display:flex;gap:6px;padding:14px 22px 0;max-width:1100px;margin:0 auto;
     flex-wrap:wrap;border-bottom:1px solid var(--line)}
   .tab{padding:9px 15px;border:1px solid var(--line);border-bottom:none;
-    border-radius:8px 8px 0 0;cursor:pointer;color:var(--dim);background:#151B27}
+    cursor:pointer;color:var(--dim);background:#151B27}
   .tab.on{color:var(--ink);background:var(--panel);border-color:var(--line)}
   main{max-width:1100px;margin:0 auto;padding:20px 22px 60px}
   .view{display:none} .view.on{display:block}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  .panel{background:var(--panel);border:1px solid var(--line);
     padding:18px;margin:0 0 18px}
   .panel p{color:var(--dim);margin:4px 0 14px;max-width:74ch}
   canvas{width:100%;max-width:100%;display:block}
@@ -30,12 +30,12 @@
   label{color:var(--dim);font-size:13px;display:flex;gap:8px;align-items:center}
   input[type=range]{accent-color:var(--a)}
   .val{color:var(--ink);font-variant-numeric:tabular-nums;
-    background:#0A0D13;padding:2px 7px;border-radius:6px;border:1px solid var(--line)}
+    background:#8A857A22;padding:2px 7px;border:1px solid var(--line)}
   table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
   th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right}
   th:first-child,td:first-child{text-align:left;color:var(--dim)}
   thead th{color:var(--dim);font-weight:600;border-bottom:1px solid var(--line)}
-  .chip{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;
+  .chip{display:inline-block;width:11px;height:11px;margin-right:6px;
     vertical-align:middle}
   .legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:13px;margin:8px 0}
   .note{font-size:13px;color:var(--dim);border-left:3px solid var(--b);
@@ -216,7 +216,7 @@ function plot(cv, opts){
   const m={l:56,r:16,t:14,b:40}, iw=W-m.l-m.r, ih=H-m.t-m.b;
   const {xmin,xmax,ymin,ymax}=opts;
   const X=x=>m.l+(x-xmin)/(xmax-xmin)*iw, Y=y=>m.t+ih-(y-ymin)/(ymax-ymin)*ih;
-  g.strokeStyle='#232B3A'; g.fillStyle='#8B93A3'; g.font='12px sans-serif'; g.lineWidth=1;
+  g.strokeStyle='#8A857A44'; g.fillStyle='#8A857A'; g.font='12px sans-serif'; g.lineWidth=1;
   const yt=opts.yticks||5;
   for(let i=0;i<=yt;i++){const v=ymin+(ymax-ymin)*i/yt;
     g.beginPath();g.moveTo(m.l,Y(v));g.lineTo(W-m.r,Y(v));g.stroke();
@@ -226,7 +226,7 @@ function plot(cv, opts){
   for(let i=0;i<=xt;i++){const v=xmin+(xmax-xmin)*i/xt;
     g.textAlign='center';g.textBaseline='top';
     g.fillText(opts.xfmt?opts.xfmt(v):v.toFixed(2),X(v),H-m.b+8);}
-  g.fillStyle='#8B93A3';
+  g.fillStyle='#8A857A';
   if(opts.xlab){g.textAlign='center';g.fillText(opts.xlab,m.l+iw/2,H-12);}
   (opts.series||[]).forEach(s=>{
     g.strokeStyle=s.color; g.lineWidth=s.w||2; g.setLineDash(s.dash||[]);
@@ -250,13 +250,13 @@ function drawCurve(){
   plot(document.getElementById('curveCv'),{
     xmin:0,xmax:1,ymin:0,ymax:1,xlab:'stack fraction  S',
     series:[...fam,
-      {pts:lin,color:'#8B93A3',w:1,dash:[5,4]},
-      {pts:sel,color:'#5cc8ff',w:2.5}]});
+      {pts:lin,color:'#8A857A',w:1,dash:[5,4]},
+      {pts:sel,color:'#27489B',w:2.5}]});
 }
 
 /* ---------- Tab 1: rebuy ---------- */
 function drawRebuy(){
-  const R=DATA.doubling.rebuy, cols=['#5be6a6','#5cc8ff','#ffb454'];
+  const R=DATA.doubling.rebuy, cols=['#27489B','#27489B','#E8B50C'];
   const series=R.series.map((s,i)=>({color:cols[i%3],w:2.2,
     pts:s.stack.map((x,j)=>[x/1000,s.addon_value[j]])}));
   const ymax=Math.max(...R.series.flatMap(s=>s.addon_value))*1.05;
@@ -265,12 +265,12 @@ function drawRebuy(){
     xmin:0,xmax,ymin:0,ymax,xlab:'current stack (000s of chips)',
     yfmt:v=>'$'+v.toFixed(0),
     series:[...series,
-      {pts:[[0,R.discount_cost],[xmax,R.discount_cost]],color:'#8B93A3',w:1,dash:[5,4]},
-      {pts:[[0,R.par_cost],[xmax,R.par_cost]],color:'#ff6b6b',w:1,dash:[5,4]}]});
+      {pts:[[0,R.discount_cost],[xmax,R.discount_cost]],color:'#8A857A',w:1,dash:[5,4]},
+      {pts:[[0,R.par_cost],[xmax,R.par_cost]],color:'#C3362B',w:1,dash:[5,4]}]});
   document.getElementById('rebuyLeg').innerHTML=
     R.series.map((s,i)=>`<span><span class="chip" style="background:${cols[i%3]}"></span>C = ${s.C}</span>`).join('')
-    +`<span><span class="chip" style="background:#8B93A3"></span>$${R.discount_cost} discounted cost</span>`
-    +`<span><span class="chip" style="background:#ff6b6b"></span>$${R.par_cost} at-par cost</span>`;
+    +`<span><span class="chip" style="background:#8A857A"></span>$${R.discount_cost} discounted cost</span>`
+    +`<span><span class="chip" style="background:#C3362B"></span>$${R.par_cost} at-par cost</span>`;
 }
 
 /* ---------- Tab 2: table + spread ---------- */
@@ -279,11 +279,11 @@ function drawICM(){
     ['Malmuth-Harville','mh'],['Malmuth-Weitzman','mw']];
   document.querySelector('#icmTable tbody').innerHTML=models.map(([n,k])=>
     `<tr><td>${n}</td>`+ex[k].map(v=>`<td>$${v.toFixed(2)}</td>`).join('')+`</tr>`).join('');
-  const sw=DATA.icm.sweep, keys=[['prop','#5cc8ff'],['lb','#ffb454'],
-    ['mh','#9d7bff'],['mw','#5be6a6']];
+  const sw=DATA.icm.sweep, keys=[['prop','#27489B'],['lb','#E8B50C'],
+    ['mh','#C3362B'],['mw','#27489B']];
   const series=keys.map(([k,c])=>({color:c,w:2,
     pts:sw.map(r=>[r.lead/1000,r[k][0]])}));
-  series.push({pts:[[15,2000],[48,2000]],color:'#ff6b6b',w:1,dash:[5,4]});
+  series.push({pts:[[15,2000],[48,2000]],color:'#C3362B',w:1,dash:[5,4]});
   plot(document.getElementById('spreadCv'),{
     xmin:15,xmax:48,ymin:1400,ymax:2600,xlab:'chip leader stack (000s)',
     yfmt:v=>'$'+v.toFixed(0),series});
@@ -301,9 +301,9 @@ function drawStr(){
     xmin:sw[0].hero_stack/1000,xmax:sw[sw.length-1].hero_stack/1000,
     ymin:0.8,ymax:1.4,xlab:'hero stack (000s of chips)',
     series:[
-      {pts:sw.map(r=>[r.hero_stack/1000,r.bubble_factor]),color:'#5cc8ff',w:2.5},
+      {pts:sw.map(r=>[r.hero_stack/1000,r.bubble_factor]),color:'#27489B',w:2.5},
       {pts:[[sw[0].hero_stack/1000,1],[sw[sw.length-1].hero_stack/1000,1]],
-        color:'#8B93A3',w:1,dash:[5,4]}]});
+        color:'#8A857A',w:1,dash:[5,4]}]});
 }
 
 function draw(){

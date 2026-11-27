@@ -3,24 +3,82 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mathematics of Poker, Visualized</title>
-<script defer src="nav.js?v=2"></script>
-<link rel="stylesheet" href="site.css?v=2">
+<script defer src="nav.js?v=3"></script>
+<link rel="stylesheet" href="site.css?v=3">
 <style>
-  *{margin:0;padding:0}
-  
-  a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
-  main{max-width:980px;margin:0 auto;padding:2.5rem 1.4rem 4rem}
   .panel-page{display:none}
   .panel-page.active{display:block}
-  .placeholder{color:var(--faint);font-size:.95rem}
-  .foot{max-width:980px;margin:0 auto;padding:1.2rem 1.4rem 2rem;color:var(--faint);
-    font-size:.85rem;border-top:1px solid var(--line)}
+  .placeholder{color:var(--faint);font-size:.9rem;font-weight:300}
+
+  .hero{padding:1.2rem 0 2rem;border-bottom:1px solid var(--hair)}
+  .hero h1{max-width:22ch}
+  .hero .lede{max-width:56ch}
+
+  .cells{display:grid;grid-template-columns:repeat(3,1fr);margin-top:0}
+  @media(max-width:880px){.cells{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.cells{grid-template-columns:1fr}}
+  .cell{display:block;border-bottom:1px solid var(--hair);border-right:1px solid var(--hair);
+    padding:1.4rem 1.3rem 1.5rem;color:var(--ink);text-decoration:none}
+  .cell:nth-child(3n){border-right:none}
+  .cell:hover{background:var(--panel);text-decoration:none}
+  .cell .mark{display:block;margin-bottom:.8rem}
+  .mk-sq{width:.75rem;height:.75rem;background:var(--blue)}
+  .mk-ci{width:.78rem;height:.78rem;border-radius:50%;background:var(--red)}
+  .mk-tr{width:0;height:0;border-left:.46rem solid transparent;border-right:.46rem solid transparent;
+    border-bottom:.8rem solid var(--yellow)}
+  .cell .n{display:block;font-weight:700;font-size:.82rem;letter-spacing:.12em;text-transform:uppercase}
+  .cell .c{display:block;font-family:var(--mono);font-size:.66rem;color:var(--dim);margin-top:.3rem}
+  .cell .d{display:block;font-weight:300;font-size:.82rem;color:var(--dim);margin-top:.55rem;line-height:1.5}
+
+  .foot{max-width:1100px;margin:0 auto;padding:1.2rem 1.4rem 2rem;color:var(--faint);
+    font-size:.72rem;font-weight:300;letter-spacing:.04em;border-top:1px solid var(--hair)}
 </style>
 <body>
 
-<main>
+<main class="wrap">
   <section id="page-home" class="panel-page active">
-    <p class="placeholder"><!-- Home content coming soon --></p>
+    <div class="hero">
+      <p class="eyebrow">Chen &amp; Ankenman · 2006</p>
+      <h1>Eight families. Exact methods. <i>Seven errata.</i></h1>
+      <p class="lede">Every game in <b>The Mathematics of Poker</b>, re-solved from
+      scratch — full enumeration, sequence-form LP, strict EV-margin verification.
+      Every printed number reproduced or flagged. The exhaustive analyses the book
+      alludes to, actually run.</p>
+    </div>
+    <div class="cells">
+      <a class="cell" href="zero-one/"><span class="mark mk-sq"></span>
+        <span class="n">The [0,1] Games</span>
+        <span class="c">ch 11 · 16–18 · 6 pages</span>
+        <span class="d">Hands as a continuum — von Neumann's 1944 model to the infinite raising ladder, settled by exact LP.</span></a>
+      <a class="cell" href="akq/limit/"><span class="mark mk-ci"></span>
+        <span class="n">AKQ · Limit</span>
+        <span class="c">ch 13</span>
+        <span class="d">Three cards, one bet: α = 1/(P+1) in its purest form.</span></a>
+      <a class="cell" href="akq/nl/"><span class="mark mk-ci"></span>
+        <span class="n">AKQ · No-Limit</span>
+        <span class="c">ch 15 + appendix</span>
+        <span class="d">Position's value freezes at S* = 0.5254 pots — three exact regime laws.</span></a>
+      <a class="cell" href="jam-or-fold/"><span class="mark mk-tr"></span>
+        <span class="n">Jam-or-Fold</span>
+        <span class="c">ch 12 · 1,379 stacks</span>
+        <span class="d">The book's promised "exhaustive analysis" of shove/fold NLHE, actually carried out.</span></a>
+      <a class="cell" href="multi-street/"><span class="mark mk-tr"></span>
+        <span class="n">Multi-Street</span>
+        <span class="c">ch 14 · 19</span>
+        <span class="d">The geometric growth of pot, and the $185 case-study sign flip.</span></a>
+      <a class="cell" href="risk/"><span class="mark mk-tr"></span>
+        <span class="n">Risk</span>
+        <span class="c">ch 22–25</span>
+        <span class="d">Ruin as an exponential law; Kelly; backing agreements priced as options.</span></a>
+      <a class="cell" href="tournaments/"><span class="mark mk-tr"></span>
+        <span class="n">Tournaments</span>
+        <span class="c">ch 26–28 · 46/46</span>
+        <span class="d">A tournament chip is not a dollar: four ICM models, bubble factors.</span></a>
+      <a class="cell" href="multiway/"><span class="mark mk-tr"></span>
+        <span class="n">Multiplayer</span>
+        <span class="c">ch 29</span>
+        <span class="d">Why "optimal" stops meaning anything with three players — plus a new erratum.</span></a>
+    </div>
   </section>
   <section id="page-about" class="panel-page">
     <p class="placeholder"><!-- About content coming soon --></p>

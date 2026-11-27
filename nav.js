@@ -1,14 +1,14 @@
-/* Shared site navigation — injected on every page.
+/* Shared site navigation + theme switch — injected on every page.
    Include with: <script defer src="PATH/TO/nav.js"></script>
-   The repo root is inferred from this script's own src, so it works at any
-   depth, locally and on GitHub Pages. */
+   Colors come from site.css variables, so the bar follows the theme.
+   Sets html[data-theme] (persisted) and html[data-family] (section color). */
 (function () {
   'use strict';
 
   var script = document.currentScript;
   var root = script.src.replace(/nav\.js(\?.*)?$/, '');
 
-  // first path segment under the repo root → which tab is active
+  // first path segment under the repo root → which tab / family is active
   var SECTION_TAB = {
     'zero-one': 'zo',
     'akq': 'akq',
@@ -26,27 +26,62 @@
     return location.hash === '#about' ? 'about' : 'home';
   }
 
-  /* Every rule is explicit (margins, padding, fonts) so page CSS for bare
-     elements (header, button, a, nav) can't leak into the injected bar. */
+  /* ---- theme ---- */
+  function storedTheme() { try { return localStorage.getItem('mop-theme'); } catch (e) { return null; } }
+  function osDark() { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
+  function currentDark() {
+    var t = document.documentElement.getAttribute('data-theme');
+    if (t) return t === 'dark';
+    return osDark();
+  }
+  var saved = storedTheme();
+  if (saved === 'dark' || saved === 'light') {
+    document.documentElement.setAttribute('data-theme', saved);
+  }
+
   var css = [
-    '.mnav-header{display:block;margin:0;padding:0;border:0;border-bottom:1px solid #232B3A;max-width:none;width:auto;background:#10141D;font-family:Charter,Georgia,"Times New Roman",serif;line-height:1.55;text-align:left}',
+    '.mnav-header{display:block;margin:0;padding:0;border:0;max-width:none;width:auto;text-align:left;',
+      'background:var(--bg);border-bottom:1px solid var(--strong);',
+      'font-family:var(--sans);line-height:1.5}',
     '.mnav-header *{box-sizing:border-box}',
-    '.mnav-mast{max-width:1100px;margin:0 auto;padding:1.1rem 1.4rem .6rem}',
-    '.mnav-mast a:hover{text-decoration:none;color:#E8E4DC}',
-    '.mnav-mast a{font-size:1.25rem;font-weight:600;letter-spacing:-.01em;color:#E8E4DC;text-decoration:none}',
-    '.mnav-mast a i{color:#F0A44E}',
-    '.mnav-tabs{max-width:1100px;margin:0 auto;padding:0 1.4rem;display:flex;flex-wrap:wrap;gap:.2rem}',
+    '.mnav-band{display:flex;height:4px}',
+    '.mnav-band i{flex:1}',
+    '.mnav-band i:nth-child(1){background:var(--red)}',
+    '.mnav-band i:nth-child(2){background:var(--blue)}',
+    '.mnav-band i:nth-child(3){background:var(--yellow)}',
+    '.mnav-mast{max-width:1100px;margin:0 auto;padding:1.15rem 1.4rem .4rem;display:flex;align-items:center;gap:.8rem}',
+    '.mnav-mast a{font-size:.95rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);text-decoration:none}',
+    '.mnav-mast a:hover{text-decoration:none;color:var(--ink)}',
+    '.mnav-glyphs{display:flex;gap:.45rem;align-items:center}',
+    '.mnav-glyphs i{display:block}',
+    '.mnav-gc{width:.65rem;height:.65rem;border-radius:50%;background:var(--red)}',
+    '.mnav-gs{width:.6rem;height:.6rem;background:var(--blue)}',
+    '.mnav-gt{width:0;height:0;border-left:.4rem solid transparent;border-right:.4rem solid transparent;border-bottom:.68rem solid var(--yellow)}',
+    '.mnav-tabs{max-width:1100px;margin:0 auto;padding:0 1.4rem;display:flex;flex-wrap:wrap;gap:.2rem;align-items:center}',
     '.mnav-tab{position:relative}',
-    '.mnav-tab>button,.mnav-tab>a{display:block;margin:0;background:none;border:none;border-radius:0;box-shadow:none;text-transform:none;letter-spacing:normal;cursor:pointer;font:600 .95rem Charter,Georgia,serif;color:#8B93A3;padding:.6rem .9rem;border-bottom:2px solid transparent;text-decoration:none}',
-    '.mnav-tab>button:hover,.mnav-tab>a:hover{color:#E8E4DC;text-decoration:none}',
-    '.mnav-tab.mnav-active>a,.mnav-tab.mnav-active>button{color:#F0A44E;border-bottom-color:#F0A44E}',
-    '.mnav-tab>button .mnav-caret{font-size:.7em;color:#5A6274;margin-left:.3em}',
-    '.mnav-tab.mnav-open>button{color:#E8E4DC}',
-    '.mnav-menu{display:none;position:absolute;left:0;top:100%;z-index:1000;min-width:16rem;background:#151B27;border:1px solid #232B3A;border-radius:0 0 10px 10px;padding:.35rem 0;box-shadow:0 10px 24px rgba(0,0,0,.45)}',
+    '.mnav-tab>button,.mnav-tab>a{display:block;margin:0;background:none;border:none;border-radius:0;box-shadow:none;cursor:pointer;',
+      'font-family:var(--sans);font-size:.62rem;font-weight:500;letter-spacing:.28em;text-transform:uppercase;',
+      'color:var(--dim);padding:.65rem .8rem;border-bottom:2px solid transparent;text-decoration:none}',
+    '.mnav-tab>button:hover,.mnav-tab>a:hover{color:var(--ink);text-decoration:none}',
+    '.mnav-tab.mnav-active>a,.mnav-tab.mnav-active>button{color:var(--ink);border-bottom-color:var(--fam)}',
+    '.mnav-tab>button .mnav-caret{font-size:.8em;color:var(--faint);margin-left:.3em}',
+    '.mnav-tab.mnav-open>button{color:var(--ink)}',
+    '.mnav-menu{display:none;position:absolute;left:0;top:100%;z-index:1000;min-width:17rem;',
+      'background:var(--panel);border:1px solid var(--strong);padding:.3rem 0}',
     '.mnav-tab.mnav-open .mnav-menu{display:block}',
-    '.mnav-menu a{display:block;padding:.45rem .95rem;color:#E8E4DC;font-size:.92rem;text-decoration:none}',
-    '.mnav-menu a:hover{background:#10141D;color:#F0A44E}',
-    '.mnav-menu a .mnav-sub{display:block;font-size:.78rem;color:#5A6274}'
+    '.mnav-menu a{display:block;padding:.5rem 1rem;color:var(--ink);font-size:.78rem;font-weight:500;',
+      'letter-spacing:.06em;text-decoration:none}',
+    '.mnav-menu a:hover{background:var(--panel2);color:var(--ink);text-decoration:none}',
+    '.mnav-menu a .mnav-sub{display:block;font-family:var(--mono);font-size:.62rem;font-weight:400;',
+      'letter-spacing:.04em;color:var(--dim);margin-top:.1rem}',
+    '.mnav-mode{margin-left:auto;display:flex;align-items:center;gap:.5rem;background:none;border:1px solid var(--strong);',
+      'cursor:pointer;color:var(--ink);font-family:var(--sans);font-size:.56rem;font-weight:700;',
+      'letter-spacing:.26em;text-transform:uppercase;padding:.42rem .7rem;border-radius:0}',
+    '.mnav-mode:hover{background:var(--panel2)}',
+    '.mnav-mode:focus-visible{outline:2px solid var(--blue);outline-offset:2px}',
+    '.mnav-mode i{display:block;width:.6rem;height:.6rem;background:var(--ink)}',
+    'html[data-theme="dark"] .mnav-mode i{border-radius:50%}',
+    '@media (prefers-color-scheme: dark){html:not([data-theme="light"]) .mnav-mode i{border-radius:50%}}'
   ].join('\n');
 
   function item(href, label, sub) {
@@ -55,7 +90,9 @@
   }
 
   var html =
-    '<div class="mnav-mast"><a href="' + root + '">Mathematics of Poker, <i>Visualized</i></a></div>' +
+    '<div class="mnav-band"><i></i><i></i><i></i></div>' +
+    '<div class="mnav-mast"><a href="' + root + '">Mathematics of Poker</a>' +
+      '<span class="mnav-glyphs"><i class="mnav-gs"></i><i class="mnav-gc"></i><i class="mnav-gt"></i></span></div>' +
     '<nav class="mnav-tabs" aria-label="Site">' +
       '<div class="mnav-tab" data-key="home"><a href="' + root + '#home">Home</a></div>' +
       '<div class="mnav-tab" data-key="zo"><button type="button" aria-haspopup="true" aria-expanded="false">[0,1] Games <span class="mnav-caret">▾</span></button><div class="mnav-menu">' +
@@ -78,6 +115,7 @@
         item('multiway/', 'Multiplayer Games', 'ch. 29 — alliances and equilibria') +
       '</div></div>' +
       '<div class="mnav-tab" data-key="about"><a href="' + root + '#about">About</a></div>' +
+      '<button type="button" class="mnav-mode" aria-label="Switch color theme"><i></i><span class="mnav-mode-label"></span></button>' +
     '</nav>';
 
   function build() {
@@ -124,9 +162,27 @@
       tabs.forEach(function (t) {
         t.classList.toggle('mnav-active', t.getAttribute('data-key') === key);
       });
+      if (key === 'zo' || key === 'akq' || key === 'more') {
+        document.documentElement.setAttribute('data-family', key);
+      } else {
+        document.documentElement.removeAttribute('data-family');
+      }
     }
     window.addEventListener('hashchange', markActive);
     markActive();
+
+    /* theme switch */
+    var modeBtn = header.querySelector('.mnav-mode');
+    var modeLabel = header.querySelector('.mnav-mode-label');
+    function syncLabel() { modeLabel.textContent = currentDark() ? 'Light' : 'Dark'; }
+    modeBtn.addEventListener('click', function () {
+      var next = currentDark() ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('mop-theme', next); } catch (e) {}
+      syncLabel();
+      window.dispatchEvent(new CustomEvent('mop-theme-change', { detail: { theme: next } }));
+    });
+    syncLabel();
   }
 
   if (document.readyState === 'loading') {

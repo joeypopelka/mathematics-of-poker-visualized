@@ -3,19 +3,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Limit AKQ Game — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../../site.css?v=2">
+<link rel="stylesheet" href="../../site.css?v=3">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none}
   a:hover{text-decoration:underline}
   p{margin:.6rem 0;max-width:46rem}
   .cardrow{display:flex;gap:.9rem;margin:1.2rem 0}
-  .pcard{width:64px;height:88px;border-radius:8px;background:#F4EFE6;color:#1A1A20;
+  .pcard{width:64px;height:88px;background:#F4EFE6;color:#1A1A20;
     display:flex;align-items:center;justify-content:center;font:700 2rem var(--serif);
-    box-shadow:0 3px 14px rgba(0,0,0,.5)}
+    }
   .pcard.red{color:#B33E30}
   code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  .panel{background:var(--panel);border:1px solid var(--line);
     padding:1.1rem 1.3rem;margin:1rem 0}
   table{border-collapse:collapse;font-size:.92rem;margin:.8rem 0}
   td,th{border:1px solid var(--line);padding:.35rem .7rem;text-align:center}
@@ -26,13 +26,13 @@
   .readout{display:flex;flex-wrap:wrap;gap:1.6rem;margin:.9rem 0 .4rem}
   .readout .r{min-width:120px}
   .readout .v{font:600 1.5rem var(--mono)}
-  .bar{height:26px;border-radius:6px;background:var(--panel2);overflow:hidden;
+  .bar{height:26px;background:var(--panel2);overflow:hidden;
     display:flex;margin:.3rem 0 .8rem;border:1px solid var(--line)}
   .seg{height:100%}
-  canvas{width:100%;height:auto;display:block;border-radius:10px;background:var(--panel2)}
+  canvas{width:100%;height:auto;display:block;background:var(--panel2)}
   .note{font-size:.88rem;color:var(--dim)}
   .hand{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.6rem 0}
-  .hcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  .hcard{background:var(--panel);border:1px solid var(--line);
     padding:1rem 1.2rem}
   .hcard b{color:var(--heat)}
   .big{font-size:1.1rem}
@@ -40,7 +40,7 @@
   @media(max-width:640px){.hand{grid-template-columns:1fr}}
 </style>
 <body>
-<script defer src="../../nav.js?v=2"></script>
+<script defer src="../../nav.js?v=3"></script>
 <div class="wrap">
   <p class="eyebrow">Chapter 13 · Examples 13.1–13.2</p>
   <h1>The Limit AKQ Game</h1>
@@ -167,15 +167,15 @@
     var Pmax=20;
     function x(P){ return L+(W-L-R)*(P/Pmax); }
     function y(v){ return T+(H-T-B)*(1-v); }       // v in [0,1]
-    ctx.strokeStyle='#232B3A'; ctx.lineWidth=1; ctx.font='22px ui-monospace,monospace';
-    ctx.fillStyle='#5A6274'; ctx.textAlign='center';
+    ctx.strokeStyle='#8A857A44'; ctx.lineWidth=1; ctx.font='22px ui-monospace,monospace';
+    ctx.fillStyle='#8A857A'; ctx.textAlign='center';
     for(var g=0;g<=20;g+=4){ ctx.beginPath(); ctx.moveTo(x(g),T); ctx.lineTo(x(g),H-B); ctx.stroke(); ctx.fillText(g,x(g),H-B+30); }
     for(var v=0;v<=1.0001;v+=0.25){ ctx.beginPath(); ctx.moveTo(L,y(v)); ctx.lineTo(W-R,y(v)); ctx.stroke(); ctx.textAlign='right'; ctx.fillText(v.toFixed(2),L-8,y(v)+7); ctx.textAlign='center'; }
     ctx.fillText('pot size P (bets)',(L+W-R)/2,H-8);
     // P=1 kink marker
     ctx.strokeStyle='rgba(224,122,107,.55)'; ctx.setLineDash([6,5]);
     ctx.beginPath(); ctx.moveTo(x(1),T); ctx.lineTo(x(1),H-B); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle='#E07A6B'; ctx.fillText('P=1',x(1),T-6);
+    ctx.fillStyle='#C3362B'; ctx.fillText('P=1',x(1),T-6);
     // 1/6 asymptote
     ctx.strokeStyle='rgba(143,214,148,.35)'; ctx.setLineDash([3,6]);
     ctx.beginPath(); ctx.moveTo(L,y(1/6)); ctx.lineTo(W-R,y(1/6)); ctx.stroke(); ctx.setLineDash([]);
@@ -185,13 +185,13 @@
         if(i===0) ctx.moveTo(x(P),y(v)); else ctx.lineTo(x(P),y(v)); }
       ctx.stroke();
     }
-    curve(function(s){return s.b;},'#F0A44E');
-    curve(function(s){return s.c;},'#6FD3E8');
-    curve(function(s){return s.g*6;},'#8FD694'); // scale x6 so limit->1
+    curve(function(s){return s.b;},'#C3362B');
+    curve(function(s){return s.c;},'#27489B');
+    curve(function(s){return s.g*6;},'#E8B50C'); // scale x6 so limit->1
     ctx.textAlign='left'; ctx.font='21px ui-monospace,monospace';
-    ctx.fillStyle='#F0A44E'; ctx.fillText('b* bluff freq',x(14.5),y(solve(14.5).b)-12);
-    ctx.fillStyle='#6FD3E8'; ctx.fillText('c* call freq',x(10),y(solve(10).c)-12);
-    ctx.fillStyle='#8FD694'; ctx.fillText('6·G(Y)  (→1 ⇔ G→1/6)',x(9),y(solve(9).g*6)+32);
+    ctx.fillStyle='#C3362B'; ctx.fillText('b* bluff freq',x(14.5),y(solve(14.5).b)-12);
+    ctx.fillStyle='#27489B'; ctx.fillText('c* call freq',x(10),y(solve(10).c)-12);
+    ctx.fillStyle='#E8B50C'; ctx.fillText('6·G(Y)  (→1 ⇔ G→1/6)',x(9),y(solve(9).g*6)+32);
     // current P marker
     ctx.strokeStyle='rgba(232,228,220,.5)'; ctx.lineWidth=1.5;
     ctx.beginPath(); ctx.moveTo(x(Math.min(Pcur,Pmax)),T); ctx.lineTo(x(Math.min(Pcur,Pmax)),H-B); ctx.stroke();

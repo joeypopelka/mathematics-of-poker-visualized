@@ -3,13 +3,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Risk — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../site.css?v=2">
+<link rel="stylesheet" href="../site.css?v=3">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
   p{margin:.6rem 0;max-width:50rem}
   code,.m{font-family:var(--mono);font-size:.92em;color:var(--ice)}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.3rem;margin:1rem 0}
+  .panel{background:var(--panel);border:1px solid var(--line);padding:1.1rem 1.3rem;margin:1rem 0}
   .lbl{font-size:.8rem;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
   input[type=range]{width:100%;accent-color:var(--heat)}
   .row{display:flex;gap:1.4rem;flex-wrap:wrap}
@@ -17,7 +17,7 @@
   .readout{display:flex;flex-wrap:wrap;gap:1.4rem;margin:.7rem 0}
   .readout .r{min-width:120px}
   .readout .v{font:600 1.3rem var(--mono)}
-  canvas{width:100%;height:auto;display:block;border-radius:10px;background:var(--panel2)}
+  canvas{width:100%;height:auto;display:block;background:var(--panel2)}
   table{border-collapse:collapse;font-size:.9rem;margin:.8rem 0}
   td,th{border:1px solid var(--line);padding:.32rem .66rem;text-align:center}
   th{color:var(--dim);font-weight:600}
@@ -26,7 +26,7 @@
   @media(max-width:640px){.row{flex-direction:column}}
 </style>
 <body>
-<script defer src="../nav.js?v=2"></script>
+<script defer src="../nav.js?v=3"></script>
 <div class="wrap">
   <p class="eyebrow">Chapters 22–25</p>
   <h1>Risk</h1>
@@ -163,15 +163,15 @@
   }
   function grid(ctx,W,H,L,R,T,B,xmax,ymax,xstep,ystep,xlab,pct){
     ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='#232B3A'; ctx.lineWidth=1; ctx.font='21px ui-monospace,monospace';
+    ctx.strokeStyle='#8A857A44'; ctx.lineWidth=1; ctx.font='21px ui-monospace,monospace';
     for(var gx=0;gx<=xmax+1e-9;gx+=xstep){ var X=L+(W-L-R)*gx/xmax;
       ctx.beginPath();ctx.moveTo(X,T);ctx.lineTo(X,H-B);ctx.stroke();
-      ctx.fillStyle='#5A6274';ctx.textAlign='center';ctx.fillText(Math.round(gx),X,H-B+28);}
+      ctx.fillStyle='#8A857A';ctx.textAlign='center';ctx.fillText(Math.round(gx),X,H-B+28);}
     for(var gy=0;gy<=ymax+1e-9;gy+=ystep){ var Y=T+(H-T-B)*(1-gy/ymax);
       ctx.beginPath();ctx.moveTo(L,Y);ctx.lineTo(W-R,Y);ctx.stroke();
-      ctx.fillStyle='#5A6274';ctx.textAlign='right';
+      ctx.fillStyle='#8A857A';ctx.textAlign='right';
       ctx.fillText(pct?Math.round(gy*100)+'%':gy.toPrecision(2),L-8,Y+7);}
-    ctx.textAlign='center';ctx.fillStyle='#5A6274';ctx.fillText(xlab,(L+W-R)/2,H-8);
+    ctx.textAlign='center';ctx.fillStyle='#8A857A';ctx.fillText(xlab,(L+W-R)/2,H-8);
   }
 
   // ---- ch22 ----
@@ -187,13 +187,13 @@
     document.getElementById('r1v').textContent=(100*Math.exp(-300*a)).toFixed(2)+'%';
     var W=c22.width,H=c22.height,L=86,R=30,T=24,B=56,bmax=1200;
     grid(x22,W,H,L,R,T,B,bmax,1,200,0.25,'bankroll (bets)',true);
-    x22.strokeStyle='#F0A44E'; x22.lineWidth=3.5; x22.beginPath();
+    x22.strokeStyle='#C3362B'; x22.lineWidth=3.5; x22.beginPath();
     for(var i=0;i<=600;i++){ var b=i*bmax/600, r=Math.exp(-a*b);
       var X=L+(W-L-R)*b/bmax, Y=T+(H-T-B)*(1-r);
       if(i===0)x22.moveTo(X,Y);else x22.lineTo(X,Y);}
     x22.stroke();
     var hb=Math.log(2)/a;
-    x22.fillStyle='#6FD3E8';
+    x22.fillStyle='#27489B';
     for(var k=1;k*hb<bmax&&k<=8;k++){
       var X=L+(W-L-R)*k*hb/bmax, Y=T+(H-T-B)*(1-Math.pow(0.5,k));
       x22.beginPath(); x22.arc(X,Y,7,0,7); x22.fill();
@@ -232,12 +232,12 @@
         if(i===0)x23.moveTo(X,Y);else x23.lineTo(X,Y);}
       x23.stroke();
     }
-    curve(function(ww){return ww>0?Math.exp(-2*ww*b/(SIG*SIG)):1;},'#6FD3E8');
-    curve(function(ww){return roru(ww,b,SIG,sw);},'#F0A44E');
+    curve(function(ww){return ww>0?Math.exp(-2*ww*b/(SIG*SIG)):1;},'#27489B');
+    curve(function(ww){return roru(ww,b,SIG,sw);},'#C3362B');
     // book case-study dots (N=40000, b=300)
     if(Math.abs(b-300)<1){
       var swb=18/Math.sqrt(400);
-      [[2.5,'#F0A44E'],[1.5,'#E07A6B']].forEach(function(t){
+      [[2.5,'#C3362B'],[1.5,'#C3362B']].forEach(function(t){
         var v=roru(t[0],300,18,swb);
         var X=L+(W-L-R)*t[0]/wmax, Y=T+(H-T-B)*(1-v);
         x23.fillStyle=t[1]; x23.beginPath(); x23.arc(X,Y,8,0,7); x23.fill();
@@ -279,17 +279,17 @@
         if(!started){x24.moveTo(X,Y);started=true;}else x24.lineTo(X,Y);}
       x24.stroke();
     }
-    curve(mu1,sg1,'#F0A44E'); curve(mu2,sg2,'#6FD3E8');
+    curve(mu1,sg1,'#C3362B'); curve(mu2,sg2,'#27489B');
     if(c&&c>0&&c<bmax){
       x24.strokeStyle='rgba(224,122,107,.65)';x24.setLineDash([6,5]);
       var X=L+(W-L-R)*c/bmax;
       x24.beginPath();x24.moveTo(X,T);x24.lineTo(X,H-B);x24.stroke();x24.setLineDash([]);
-      x24.fillStyle='#E07A6B';x24.textAlign='center';x24.font='21px ui-monospace,monospace';
+      x24.fillStyle='#C3362B';x24.textAlign='center';x24.font='21px ui-monospace,monospace';
       x24.fillText('c = $'+Math.round(c).toLocaleString(),X,T-4);
     }
     x24.textAlign='left';x24.font='21px ui-monospace,monospace';
-    x24.fillStyle='#F0A44E';x24.fillText('game 1 (bigger)',W-330,T+30);
-    x24.fillStyle='#6FD3E8';x24.fillText('game 2 (smaller)',W-330,T+62);
+    x24.fillStyle='#C3362B';x24.fillText('game 1 (bigger)',W-330,T+30);
+    x24.fillStyle='#27489B';x24.fillText('game 2 (smaller)',W-330,T+62);
   }
   [k1m,k1s,k2m,k2s].forEach(function(e){e.addEventListener('input',upd24);});
 

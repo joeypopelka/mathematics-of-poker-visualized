@@ -2,9 +2,9 @@
 <html lang="en">
 <meta charset="utf-8">
 <title>Jam-or-Fold: The Phase Diagram</title>
-<script defer src="../nav.js?v=2"></script>
+<script defer src="../nav.js?v=3"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../site.css?v=2">
+<link rel="stylesheet" href="../site.css?v=3">
 <style>
   
   html { background: var(--bg); }
@@ -12,7 +12,7 @@
   .mono { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
   header { padding: 0 0 1.6rem; border-bottom: 1px solid var(--line); }
   section { margin-top: 3rem; }
-  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1.4rem 1.5rem; }
+  .panel { background: var(--panel); border: 1px solid var(--line);  padding: 1.4rem 1.5rem; }
 
   /* ---- explorer ---- */
   .readouts { display: flex; gap: 2.2rem; flex-wrap: wrap; align-items: baseline; margin: 1rem 0 .4rem; }
@@ -29,7 +29,7 @@
   .jumpbtns button {
     font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .72rem;
     background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
-    border-radius: 4px; padding: .3rem .6rem; cursor: pointer;
+     padding: .3rem .6rem; cursor: pointer;
   }
   .jumpbtns button:hover { border-color: var(--heat); color: var(--heat); }
   .jumpbtns button:focus-visible { outline: 2px solid var(--heat); outline-offset: 2px; }
@@ -43,7 +43,7 @@
   .cell {
     aspect-ratio: 1.18; display: flex; align-items: center; justify-content: center;
     font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: clamp(6px, .8vw, 9.5px);
-    color: #56607555; background: #0D111A; border-radius: 2px; position: relative; cursor: default;
+    color: #56607555; background: #0D111A;  position: relative; cursor: default;
   }
   .cell.on { color: #000000CC; font-weight: 600; }
   .gridpct { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .75rem;
@@ -56,7 +56,7 @@
   .tabs button {
     font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .75rem; letter-spacing: .08em;
     background: none; color: var(--dim); border: 1px solid var(--line);
-    border-radius: 4px; padding: .35rem .9rem; cursor: pointer;
+     padding: .35rem .9rem; cursor: pointer;
   }
   .tabs button[aria-pressed=true] { color: var(--ink); background: var(--panel2); border-color: var(--dim); }
   .tabs button:focus-visible { outline: 2px solid var(--heat); outline-offset: 2px; }
@@ -64,7 +64,7 @@
   canvas { display: block; }
   #tip {
     position: fixed; pointer-events: none; z-index: 10; display: none;
-    background: #1A2030F2; border: 1px solid var(--line); border-radius: 4px;
+    background: #1A2030F2; border: 1px solid var(--line); 
     font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .72rem;
     padding: .35rem .55rem; color: var(--ink); white-space: pre;
   }
@@ -86,14 +86,14 @@
   td.hand { font-weight: 600; }
   .enter { color: var(--heat); } .exit { color: var(--ice); }
   .oddcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
-  .odd { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1rem 1.2rem; }
+  .odd { background: var(--panel); border: 1px solid var(--line);  padding: 1rem 1.2rem; }
   .odd h4 { margin: 0 0 .4rem; font-size: .95rem; font-weight: 600; }
   .odd p { margin: 0; font-size: .86rem; color: var(--dim); }
   .odd p b { color: var(--ink); font-weight: 500; }
   .note { font-size: .9rem; color: var(--dim); max-width: 72ch; }
   .note b { color: var(--ink); font-weight: 500; }
   code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: .85em;
-         background: var(--panel2); padding: .08em .35em; border-radius: 3px; }
+         background: var(--panel2); padding: .08em .35em;  }
   a { color: var(--ice); }
   @media (prefers-reduced-motion: no-preference) {
     .cell { transition: background-color 120ms linear; }
@@ -451,9 +451,9 @@ function drawCurve(cv, series, colors, names, title, yFmt) {
 }
 function drawCurves() {
   drawCurve(document.getElementById('curveV'), [DATA.value],
-    ['#F0A44E'], ['game value (attacker, bb/hand)'], '', v => v.toFixed(2));
+    ['#C3362B'], ['game value (attacker, bb/hand)'], '', v => v.toFixed(2));
   drawCurve(document.getElementById('curvePct'), [DATA.jamPct, DATA.callPct],
-    ['#F0A44E','#6FD3E8'], ['jam %','call %'], '', v => v.toFixed(0)+'%');
+    ['#C3362B','#27489B'], ['jam %','call %'], '', v => v.toFixed(0)+'%');
 }
 
 /* ---------- catalog ---------- */
