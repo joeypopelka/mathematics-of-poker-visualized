@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{page-title}}</title>
-<link rel="stylesheet" href="../site.css?v=9">
+<link rel="stylesheet" href="../site.css?v=10">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
@@ -26,7 +26,7 @@
   @media(max-width:640px){.row{flex-direction:column}}
 </style>
 <body>
-<script defer src="../nav.js?v=9"></script>
+<script defer src="../nav.js?v=10"></script>
 <div class="wrap">
   <p class="eyebrow">{{eyebrow}}</p>
   <h1>{{title}}</h1>
@@ -134,15 +134,15 @@
   }
   function grid(ctx,W,H,L,R,T,B,xmax,ymax,xstep,ystep,xlab,pct){
     ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='#8A857A44'; ctx.lineWidth=1; ctx.font='21px ui-monospace,monospace';
+    ctx.strokeStyle=(MOP.chartneutral+'44'); ctx.lineWidth=1; ctx.font='21px ui-monospace,monospace';
     for(var gx=0;gx<=xmax+1e-9;gx+=xstep){ var X=L+(W-L-R)*gx/xmax;
       ctx.beginPath();ctx.moveTo(X,T);ctx.lineTo(X,H-B);ctx.stroke();
-      ctx.fillStyle='#8A857A';ctx.textAlign='center';ctx.fillText(Math.round(gx),X,H-B+28);}
+      ctx.fillStyle=MOP.chartneutral;ctx.textAlign='center';ctx.fillText(Math.round(gx),X,H-B+28);}
     for(var gy=0;gy<=ymax+1e-9;gy+=ystep){ var Y=T+(H-T-B)*(1-gy/ymax);
       ctx.beginPath();ctx.moveTo(L,Y);ctx.lineTo(W-R,Y);ctx.stroke();
-      ctx.fillStyle='#8A857A';ctx.textAlign='right';
+      ctx.fillStyle=MOP.chartneutral;ctx.textAlign='right';
       ctx.fillText(pct?Math.round(gy*100)+'%':gy.toPrecision(2),L-8,Y+7);}
-    ctx.textAlign='center';ctx.fillStyle='#8A857A';ctx.fillText(xlab,(L+W-R)/2,H-8);
+    ctx.textAlign='center';ctx.fillStyle=MOP.chartneutral;ctx.fillText(xlab,(L+W-R)/2,H-8);
   }
 
   // ---- ch22 ----

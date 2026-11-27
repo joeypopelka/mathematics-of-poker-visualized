@@ -3,12 +3,12 @@
 <html lang="en">
 <meta charset="utf-8">
 <title>The No-Limit AKQ Game: What Position Is Worth at Every Depth</title>
-<script defer src="../../nav.js?v=9"></script>
+<script defer src="../../nav.js?v=10"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../../site.css?v=9">
+<link rel="stylesheet" href="../../site.css?v=10">
 <style>
   :root{
-    --line2:#1B2431;
+    --line2:var(--screengrid);
     --gold:var(--blue);
     /* value / money */
     --A:var(--red);
@@ -21,7 +21,7 @@
   }
   html { background:var(--bg); -webkit-text-size-adjust:100%; }
   body{padding:0 0 6rem}
-  .mono { font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace; }
+  .mono { font-family:var(--mono); }
   .tnum { font-variant-numeric:tabular-nums; }
   a { color:var(--gold); }
 
@@ -33,16 +33,16 @@
 
   /* readouts */
   .readouts { display:flex; gap:2.4rem; flex-wrap:wrap; align-items:baseline; }
-  .readout .k { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .readout .k { font-family:var(--mono);
     font-size:.66rem; letter-spacing:.15em; text-transform:uppercase;
     color:var(--dim); margin-bottom:.2rem; }
-  .readout .v { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .readout .v { font-family:var(--mono);
     font-size:1.7rem; font-variant-numeric:tabular-nums; line-height:1; }
   .readout .v small { font-size:.72rem; color:var(--dim); }
   #stackVal { color:var(--gold); }
   #regimeVal { font-size:1.15rem; }
   .rpill { display:inline-block; padding:.12em .6em; 
-    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.9rem;
+    font-family:var(--mono); font-size:.9rem;
     border:1px solid var(--line); }
 
   /* slider */
@@ -52,9 +52,9 @@
   input[type=range]:focus-visible{ outline:2px solid var(--gold);
     outline-offset:4px; }
   .scale { display:flex; justify-content:space-between; color:var(--dim);
-    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.66rem; }
+    font-family:var(--mono); font-size:.66rem; }
   .jumps { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:1rem; }
-  .jumps button { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .jumps button { font-family:var(--mono);
     font-size:.71rem; background:var(--panel2); color:var(--ink);
     border:1px solid var(--line);  padding:.35rem .7rem;
     cursor:pointer; }
@@ -65,33 +65,33 @@
   .strat { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;
     margin-top:1.6rem; }
   @media (max-width:720px){ .strat { grid-template-columns:1fr; } }
-  .stratcol h3 { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .stratcol h3 { font-family:var(--mono);
     font-weight:400; font-size:.74rem; letter-spacing:.1em;
     text-transform:uppercase; color:var(--dim); margin:0 0 .2rem; }
   .stratcol h3 b { color:var(--ink); font-weight:600; }
-  .substage { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .substage { font-family:var(--mono);
     font-size:.66rem; letter-spacing:.06em; color:var(--dim);
     margin:.9rem 0 .5rem; }
   .row { display:flex; align-items:center; gap:.7rem; margin:.42rem 0; }
-  .rank { width:1.5rem; text-align:center; font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .rank { width:1.5rem; text-align:center; font-family:var(--mono);
     font-weight:600; font-size:.92rem;  padding:.05rem 0; }
   .rank.A { color:var(--A); } .rank.K { color:var(--K); } .rank.Q { color:var(--Q); }
   .bar { flex:1; height:1.15rem;  overflow:hidden;
     display:flex; background:var(--line2); border:1px solid var(--line); }
   .seg { height:100%; display:flex; align-items:center; justify-content:center;
-    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.6rem;
-    color:#0A0D13aa; overflow:hidden; white-space:nowrap;
+    font-family:var(--mono); font-size:.6rem;
+    color:color-mix(in srgb, var(--call-ink) 67%, transparent); overflow:hidden; white-space:nowrap;
     transition:width 90ms linear; }
-  .seg.fold { background:#4A5262; color:#8A857A22; }
-  .seg.check{ background:#5C6B7A; color:#8A857A22; }
+  .seg.fold { background:var(--fold); color:color-mix(in srgb, var(--chartneutral) 13%, transparent); }
+  .seg.check{ background:var(--check); color:color-mix(in srgb, var(--chartneutral) 13%, transparent); }
   .seg.call { background:var(--K); }
   .seg.bet  { background:var(--gold); }
   .seg.raise{ background:var(--A); }
   .sizetag { width:5.2rem; text-align:right; color:var(--dim);
-    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.68rem; }
+    font-family:var(--mono); font-size:.68rem; }
   .sizetag b { color:var(--gold); font-weight:500; }
   .legend { display:flex; gap:1rem; flex-wrap:wrap; margin-top:1.3rem;
-    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.68rem;
+    font-family:var(--mono); font-size:.68rem;
     color:var(--dim); }
   .legend span { display:inline-flex; align-items:center; gap:.35rem; }
   .sw { width:.75rem; height:.75rem;  display:inline-block; }
@@ -103,7 +103,7 @@
     margin-top:.9rem; }
   .caption b { color:var(--ink); font-weight:500; }
   .tabs { display:flex; gap:.5rem; margin:.2rem 0 1rem; }
-  .tabs button { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .tabs button { font-family:var(--mono);
     font-size:.72rem; letter-spacing:.06em; background:none; color:var(--dim);
     border:1px solid var(--line);  padding:.35rem .8rem;
     cursor:pointer; }
@@ -117,28 +117,28 @@
   .reg { border:1px solid var(--line);  padding:1.1rem 1.2rem;
     background:var(--panel); border-top:3px solid var(--line); }
   .reg.r1 { border-top-color:var(--gold); }
-  .reg.r2 { border-top-color:#5FB98F; }
+  .reg.r2 { border-top-color:var(--yellow); }
   .reg.r3 { border-top-color:var(--A); }
   .reg.r4 { border-top-color:var(--K); }
-  .reg .tag { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .reg .tag { font-family:var(--mono);
     font-size:.64rem; letter-spacing:.12em; text-transform:uppercase;
     color:var(--dim); }
   .reg h4 { margin:.25rem 0 .3rem; font-size:1rem; font-weight:600; }
-  .reg .rng { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .reg .rng { font-family:var(--mono);
     font-size:.75rem; color:var(--gold); margin-bottom:.55rem; }
   .reg p { margin:0; font-size:.86rem; color:var(--dim); }
   .reg p b { color:var(--ink); font-weight:500; }
-  .reg .law { font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  .reg .law { font-family:var(--mono);
     font-size:.78rem; color:var(--ink); margin-top:.55rem;
     padding-top:.5rem; border-top:1px solid var(--line2); }
 
   .note { font-size:.92rem; color:var(--dim); max-width:74ch; }
   .note b { color:var(--ink); font-weight:500; }
-  code { font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.85em;
+  code { font-family:var(--mono); font-size:.85em;
     background:var(--panel2); padding:.08em .4em;  }
   #tip { position:fixed; pointer-events:none; z-index:20; display:none;
-    background:#1B2431F5; border:1px solid var(--line); 
-    font-family:ui-monospace,'SF Mono',Menlo,monospace; font-size:.71rem;
+    background:color-mix(in srgb, var(--screen) 96%, transparent); border:1px solid var(--line); 
+    font-family:var(--mono); font-size:.71rem;
     padding:.4rem .6rem; color:var(--ink); white-space:pre; }
   @media (prefers-reduced-motion:reduce){ .seg { transition:none; } }
 </style>
@@ -152,6 +152,7 @@
   <b>climbs only until the stack is about half a pot</b>, then freezes at
   <b>+0.0272 pots</b> and never moves again. Drag the stack to watch the
   equilibrium reorganize.</p>
+  <div class="cardrow"><div class="pcard">A</div><div class="pcard red">K</div><div class="pcard">Q</div></div>
 </header>
 
 <section>
@@ -191,8 +192,8 @@
       <span><i class="sw" style="background:var(--gold)"></i>bet</span>
       <span><i class="sw" style="background:var(--A)"></i>raise</span>
       <span><i class="sw" style="background:var(--K)"></i>call</span>
-      <span><i class="sw" style="background:#5C6B7A"></i>check</span>
-      <span><i class="sw" style="background:#4A5262"></i>fold</span>
+      <span><i class="sw" style="background:var(--check)"></i>check</span>
+      <span><i class="sw" style="background:var(--fold)"></i>fold</span>
       <span class="tnum">bet/raise sizes shown in pots</span>
     </div>
   </div>
@@ -308,7 +309,7 @@ function idxForS(s){ let best=0,bd=1e9;
 /* ---------- regime label ---------- */
 function regime(s){ const L=DATA.landmarks;
   if(s<=L.S_A) return ['I','jam-or-fold',cssv('--gold')];
-  if(s<=L.S_K) return ['II','polar bet','#5FB98F'];
+  if(s<=L.S_K) return ['II','polar bet',cssv('--yellow')];
   if(s<L.S_star-1e-6) return ['III','King blocker',cssv('--A')];
   return ['IV','plateau',cssv('--K')]; }
 
@@ -424,7 +425,7 @@ function drawV(){
 
 /* ---------- line-frequency area ---------- */
 let lineScale='log';
-const LINECOLS=['#5C6B7A',cssv('--gold')+'cc',cssv('--gold'),
+const LINECOLS=[cssv('--check'),cssv('--gold')+'cc',cssv('--gold'),
   cssv('--A')+'aa',cssv('--A'),cssv('--K')+'aa',cssv('--K')];
 const LINELABEL=['check-check','bet-fold','bet-call','bet-raise-fold',
   'bet-raise-call','check-bet-fold','check-bet-call'];

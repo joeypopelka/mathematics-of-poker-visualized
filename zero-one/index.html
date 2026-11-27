@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The [0,1] Games — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../site.css?v=9">
+<link rel="stylesheet" href="../site.css?v=10">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
@@ -25,7 +25,7 @@
   th{color:var(--dim);font-weight:600}
 </style>
 <body>
-<script defer src="../nav.js?v=9"></script>
+<script defer src="../nav.js?v=10"></script>
 <div class="wrap">
   <p class="eyebrow">Chapters 11 &amp; 16–18</p>
   <h1>The [0,1] Games</h1>
@@ -101,12 +101,12 @@
   function y(v){ return T+(H-T-B)*(1-v/Vmax); }
   ctx.font='21px ui-monospace,monospace'; ctx.lineWidth=1;
   [0.25,0.5,1,2,4,8,16,32,64,128].forEach(function(g){
-    ctx.strokeStyle='#8A857A44'; ctx.beginPath(); ctx.moveTo(x(g),T); ctx.lineTo(x(g),H-B); ctx.stroke();
-    ctx.fillStyle='#8A857A'; ctx.textAlign='center'; ctx.fillText(g,x(g),H-B+28);
+    ctx.strokeStyle=(MOP.chartneutral+'44'); ctx.beginPath(); ctx.moveTo(x(g),T); ctx.lineTo(x(g),H-B); ctx.stroke();
+    ctx.fillStyle=MOP.chartneutral; ctx.textAlign='center'; ctx.fillText(g,x(g),H-B+28);
   });
   for(var v=0;v<=0.14001;v+=0.02){
-    ctx.strokeStyle='#8A857A44'; ctx.beginPath(); ctx.moveTo(L,y(v)); ctx.lineTo(W-R,y(v)); ctx.stroke();
-    ctx.fillStyle='#8A857A'; ctx.textAlign='right'; ctx.fillText(v.toFixed(2),L-8,y(v)+7);
+    ctx.strokeStyle=(MOP.chartneutral+'44'); ctx.beginPath(); ctx.moveTo(L,y(v)); ctx.lineTo(W-R,y(v)); ctx.stroke();
+    ctx.fillStyle=MOP.chartneutral; ctx.textAlign='right'; ctx.fillText(v.toFixed(2),L-8,y(v)+7);
   }
   ctx.textAlign='center'; ctx.fillText('pot size P (log)',(L+W-R)/2,H-8);
   var r=Math.SQRT2-1;

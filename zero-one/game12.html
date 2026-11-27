@@ -1,23 +1,12 @@
 <!-- GENERATED FILE — do not edit. Source: templates/zero-one/game12.html + content/zero-one/game12.md ; rebuild with: python3 build.py -->
 <meta charset="utf-8">
 <title>[0,1] Game #12 — the infinite raising ladder</title>
-<script defer src="../nav.js?v=9"></script>
-<link rel="stylesheet" href="../site.css?v=9">
+<script defer src="../nav.js?v=10"></script>
+<link rel="stylesheet" href="../site.css?v=10">
 <style>
   :root{
-    --value:var(--blue);
-    --value-ink:#EEF2FB;
-    --bluff:var(--red);
-    --bluff-ink:#FBEFE9;
-    --call:var(--yellow);
-    --call-ink:#1A1915;
-    --fold:#4E4A42;
-    --fold-ink:#E6E1D5;
-    --check:#67635A;
-    --check-ink:#E6E1D5;
     --lad:var(--yellow);
-    --r:#8A857A;
-    --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --r:var(--chartneutral);
   }
   .rule{height:1px;background:var(--line);border:0;margin:32px 0}
   .deck{background:var(--panel);border:1px solid var(--line);padding:22px clamp(18px,3vw,26px);}
@@ -40,7 +29,7 @@
   .presets .pk{font-family:var(--sans);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-right:2px}
   .chip{font-family:var(--mono);font-size:13px;color:var(--ink);cursor:pointer;background:var(--panel2);border:1px solid var(--line);padding:5px 13px;transition:border-color .15s,color .15s,background .15s}
   .chip:hover{border-color:var(--r);color:var(--r)}
-  .chip.active{background:var(--r);color:#04191c;border-color:var(--r);font-weight:600}
+  .chip.active{background:var(--r);color:var(--screen);border-color:var(--r);font-weight:600}
   .diagram{margin-top:30px}
   .axishead{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
   .axishead .best{color:var(--value)} .axishead .worst{color:var(--bluff)}
@@ -65,7 +54,7 @@
   .r-fold{background:var(--fold);color:var(--fold-ink)}
   .r-check{background:var(--check);color:var(--check-ink)}
   .casc-ov{position:absolute;top:0;bottom:0;pointer-events:none;z-index:4}
-  .casc-ov .ct{position:absolute;top:0;bottom:0;width:1px;background:#8A857A22;opacity:.55}
+  .casc-ov .ct{position:absolute;top:0;bottom:0;width:1px;background:color-mix(in srgb, var(--chartneutral) 13%, transparent);opacity:.55}
   .baseline{position:relative;height:24px;font-family:var(--mono);font-size:12px;color:var(--faint)}
   .baseline .z{position:absolute;left:0} .baseline .o{position:absolute;right:0}
   .legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:16px}
@@ -244,6 +233,8 @@
 </div>
 
 <script>
+const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   var r=Math.SQRT2-1;
   function Rp(P){ var K=300,R=r,p=P+2*K; for(var i=0;i<K;i++){p-=2;R=((p+2)/(p+3))/(2+R*(p+4)/(p+5));} return R; }
@@ -308,21 +299,21 @@
     var padL=42,padR=14,padT=14,padB=30,gw=W-padL-padR,gh=H-padT-padB,PMAX=20,YMAX=0.45;
     function X(P){return padL+(P/PMAX)*gw;}
     function Y(g){return padT+gh-(g/YMAX)*gh;}
-    ctx.strokeStyle='#8A857A44';ctx.fillStyle='#8A857A';ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
+    ctx.strokeStyle=(MOP.chartneutral+'44');ctx.fillStyle=MOP.chartneutral;ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
     ctx.textAlign='right';ctx.textBaseline='middle';
     [0,0.1,0.2,0.3,0.4].forEach(function(g){var y=Y(g);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();ctx.globalAlpha=1;ctx.fillText(g.toFixed(1),padL-6,y);});
     ctx.textAlign='center';ctx.textBaseline='top';[0,5,10,15,20].forEach(function(p){ctx.fillText(p,X(p),H-padB+8);});
     ctx.textBaseline='alphabetic';
-    ctx.strokeStyle='#8A857A';ctx.setLineDash([4,4]);ctx.globalAlpha=.7;
+    ctx.strokeStyle=MOP.chartneutral;ctx.setLineDash([4,4]);ctx.globalAlpha=.7;
     ctx.beginPath();ctx.moveTo(padL,Y(r));ctx.lineTo(W-padR,Y(r));ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
-    ctx.fillStyle='#8A857A';ctx.textAlign='left';ctx.fillText('r = √2−1  (Game #6)',padL+6,Y(r)-5);
-    ctx.strokeStyle='#8A857A';ctx.lineWidth=2.4;ctx.beginPath();
+    ctx.fillStyle=MOP.chartneutral;ctx.textAlign='left';ctx.fillText('r = √2−1  (Game #6)',padL+6,Y(r)-5);
+    ctx.strokeStyle=MOP.chartneutral;ctx.lineWidth=2.4;ctx.beginPath();
     for(var i=0;i<=240;i++){var P=0.3+(i/240)*(PMAX-0.3);var g=Rp(P);var px=X(P),py=Y(g);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
     ctx.stroke();
     var cg=Rp(curP),cx=X(curP),cy=Y(cg);
-    ctx.strokeStyle='#7ea6a055';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
-    ctx.fillStyle='#8A857A';ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#8A857A22';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#8A857A';ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
+    ctx.strokeStyle=MOP.chartneutral+'55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
+    ctx.fillStyle=MOP.chartneutral;ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle=(MOP.chartneutral+'22');ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=MOP.chartneutral;ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
     var lx=Math.min(cx+9,W-padR-74);ctx.fillText('Rₚ = '+cg.toFixed(3),lx,cy+14);
   }
 

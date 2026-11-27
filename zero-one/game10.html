@@ -1,25 +1,12 @@
 <!-- GENERATED FILE — do not edit. Source: templates/zero-one/game10.html + content/zero-one/game10.md ; rebuild with: python3 build.py -->
 <meta charset="utf-8">
 <title>[0,1] Game #10 — Live Figure 17.2</title>
-<script defer src="../nav.js?v=9"></script>
-<link rel="stylesheet" href="../site.css?v=9">
+<script defer src="../nav.js?v=10"></script>
+<link rel="stylesheet" href="../site.css?v=10">
 <style>
   :root{
     /* semantic region hues */
-    --value:var(--blue);
-    --value-ink:#EEF2FB;
-    --value2:#7E99D6;
-    --value2-ink:#10131F;
     /* value bet that folds to a raise */
-    --bluff:var(--red);
-    --bluff-ink:#FBEFE9;
-    --call:var(--yellow);
-    --call-ink:#1A1915;
-    --fold:#4E4A42;
-    --fold-ink:#E6E1D5;
-    --check:#67635A;
-    --check-ink:#E6E1D5;
-    --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
   }
 
 
@@ -340,23 +327,23 @@
     var padL=44,padR=14,padT=14,padB=30,gw=W-padL-padR,gh=H-padT-padB,PMAX=30,GMAX=0.14;
     function X(P){return padL+(P/PMAX)*gw;}
     function Y(g){return padT+gh-(g/GMAX)*gh;}
-    ctx.strokeStyle='#8A857A44';ctx.fillStyle='#8A857A';ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
+    ctx.strokeStyle=(MOP.chartneutral+'44');ctx.fillStyle=MOP.chartneutral;ctx.font='11px ui-sans-serif,-apple-system,sans-serif';ctx.lineWidth=1;
     ctx.textAlign='right';ctx.textBaseline='middle';
     [0,0.04,0.08,0.12].forEach(function(g){var y=Y(g);ctx.globalAlpha=.5;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();ctx.globalAlpha=1;ctx.fillText(g.toFixed(2),padL-6,y);});
     ctx.textAlign='center';ctx.textBaseline='top';
     [0,10,20,30].forEach(function(p){ctx.fillText(p,X(p),H-padB+8);});
     ctx.textBaseline='alphabetic';
-    ctx.strokeStyle='#8A857A';ctx.setLineDash([4,4]);ctx.globalAlpha=.7;
+    ctx.strokeStyle=MOP.chartneutral;ctx.setLineDash([4,4]);ctx.globalAlpha=.7;
     ctx.beginPath();ctx.moveTo(padL,Y(0.125));ctx.lineTo(W-padR,Y(0.125));ctx.stroke();
-    ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle='#8A857A';ctx.textAlign='left';
+    ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle=MOP.chartneutral;ctx.textAlign='left';
     ctx.fillText('⅛  (no-fold Game #5)',padL+6,Y(0.125)-5);
     ctx.strokeStyle=MOP.blue;ctx.lineWidth=2.4;ctx.beginPath();
     for(var i=0;i<=240;i++){var P=(i/240)*PMAX;if(P<0.01)P=0.01;var g=gvAt(P);var px=X(P),py=Y(g);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
     ctx.stroke();
     var cg=gvAt(curP),cx=X(curP),cy=Y(cg);
     ctx.strokeStyle=(MOP.blue+'55');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
-    ctx.fillStyle=MOP.blue;ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#8A857A22';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#8A857A';ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
+    ctx.fillStyle=MOP.blue;ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle=(MOP.chartneutral+'22');ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=MOP.chartneutral;ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
     var lx=Math.min(cx+9,W-padR-70);ctx.fillText('G = '+cg.toFixed(3),lx,cy-8);
   }
 

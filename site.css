@@ -22,8 +22,25 @@
   /* family color (set by data-family below) + readable-text variant */
   --fam:#1A1915; --famtext:#1A1915;
   --sans:'Jost',Futura,'Avenir Next','Century Gothic',sans-serif;
-  --serif:'Jost',Futura,'Avenir Next','Century Gothic',sans-serif;
+  --serif:var(--sans); /* legacy alias — same face everywhere */
   --mono:ui-monospace,'SF Mono',Menlo,monospace;
+
+  /* ---- chart constants: same in both themes (drawn surfaces keep their
+     own contrast). Strategy-region palette + the cross-theme neutral. ---- */
+  --value:var(--blue);      --value-ink:#EEF2FB;
+  --value2:#7E99D6;         --value2-ink:#10131F;
+  --bluff:var(--red);       --bluff-ink:#FBEFE9;
+  --call:var(--yellow);     --call-ink:#1A1915;
+  --fold:#4E4A42;           --fold-ink:#E6E1D5;
+  --check:#67635A;          --check-ink:#E6E1D5;
+  --gv:var(--blue);
+  --chartneutral:#8A857A;
+  /* ---- the "instrument screen": deliberately dark in both themes ---- */
+  --screen:#10141D; --screencell:#0D111A; --screencellline:#1A202D;
+  --screengrid:#1B2231; --screengrid2:#161C29; --screendim:#5A6478;
+  --screenink:#B9C0CE; --screenlabel:#8A92A4; --screencursor:#E6E2D8;
+  /* ---- playing-card faces (AKQ pages): cross-theme constants ---- */
+  --cardface:#F4EFE6; --cardink:#1A1A20; --cardred:#B33E30;
 }
 /* dark theme (softened warm black, never pure) */
 html[data-theme="dark"]{
@@ -97,3 +114,10 @@ h2 .sub{display:block;font-family:var(--mono);font-size:.68rem;font-weight:400;
 h3{font-family:var(--sans);font-size:.85rem;font-weight:700;color:var(--ink);
   text-transform:uppercase;letter-spacing:.12em;margin:1.6rem 0 .5rem}
 p{max-width:70ch}
+
+/* playing-card trio used on the AKQ pages */
+.cardrow{display:flex;gap:.9rem;margin:1.2rem 0}
+.pcard{width:64px;height:88px;background:var(--cardface);color:var(--cardink);
+  display:flex;align-items:center;justify-content:center;font:700 2rem var(--sans);
+  border:1px solid var(--hair)}
+.pcard.red{color:var(--cardred)}
