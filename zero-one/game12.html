@@ -1,20 +1,20 @@
 <meta charset="utf-8">
 <title>[0,1] Game #12 — the infinite raising ladder</title>
-<script defer src="../nav.js?v=4"></script>
-<link rel="stylesheet" href="../site.css?v=4">
+<script defer src="../nav.js?v=5"></script>
+<link rel="stylesheet" href="../site.css?v=5">
 <style>
   :root{
-    --value:#E8B50C;
-    --value-ink:#1A1915;
-    --bluff:#C3362B;
+    --value:var(--blue);
+    --value-ink:#EEF2FB;
+    --bluff:var(--red);
     --bluff-ink:#FBEFE9;
-    --call:#27489B;
-    --call-ink:#EEF2FB;
+    --call:var(--yellow);
+    --call-ink:#1A1915;
     --fold:#4E4A42;
     --fold-ink:#E6E1D5;
     --check:#67635A;
     --check-ink:#E6E1D5;
-    --lad:#E8B50C;
+    --lad:var(--yellow);
     --r:#8A857A;
     --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
   }
@@ -28,7 +28,7 @@
   .readout.rbox .v{color:var(--r)}
   .ratios{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:150px}
   .ratios .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:var(--faint);margin-bottom:1px}
-  .ratios b{color:var(--call);font-weight:600}
+  .ratios b{color:var(--blue);font-weight:600}
   .sliderbox{flex:1 1 280px;min-width:240px}
   .sliderbox label{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint);display:block;margin-bottom:10px}
   input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:linear-gradient(90deg,var(--fold),var(--r));outline:none}
@@ -97,7 +97,7 @@
   .ladlist .more{color:var(--faint);font-style:italic;font-family:var(--serif)}
   .notes p{color:var(--dim);font-size:14.5px;max-width:62ch}
   .notes p b{color:var(--ink)}
-  .notes .mono{font-family:var(--mono);color:var(--call);font-size:.92em}
+  .notes .mono{font-family:var(--mono);color:var(--blue);font-size:.92em}
   .callout{border-left:2px solid var(--r);padding:2px 0 2px 16px;margin:18px 0;font-style:italic;color:var(--ink)}
   .gvnote{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--lad);padding:16px 20px;margin-top:24px;font-size:14px;color:var(--dim);max-width:80ch}
   .gvnote b{color:var(--ink)} .gvnote .big{font-family:var(--mono);color:var(--lad);font-size:18px}

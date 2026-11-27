@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Risk — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../site.css?v=4">
+<link rel="stylesheet" href="../site.css?v=5">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
@@ -26,7 +26,7 @@
   @media(max-width:640px){.row{flex-direction:column}}
 </style>
 <body>
-<script defer src="../nav.js?v=4"></script>
+<script defer src="../nav.js?v=5"></script>
 <div class="wrap">
   <p class="eyebrow">Chapters 22–25</p>
   <h1>Risk</h1>
@@ -153,7 +153,8 @@
     <p class="note">All verified in <code>solve.py</code> (stdlib only, sub-second).</p>
   </div>
 </div>
-<script>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   function phi(z){ // standard normal CDF via erf approximation (A&S 7.1.26)
     var s=z<0?-1:1; z=Math.abs(z)/Math.SQRT2;
@@ -187,13 +188,13 @@
     document.getElementById('r1v').textContent=(100*Math.exp(-300*a)).toFixed(2)+'%';
     var W=c22.width,H=c22.height,L=86,R=30,T=24,B=56,bmax=1200;
     grid(x22,W,H,L,R,T,B,bmax,1,200,0.25,'bankroll (bets)',true);
-    x22.strokeStyle='#C3362B'; x22.lineWidth=3.5; x22.beginPath();
+    x22.strokeStyle=MOP.red; x22.lineWidth=3.5; x22.beginPath();
     for(var i=0;i<=600;i++){ var b=i*bmax/600, r=Math.exp(-a*b);
       var X=L+(W-L-R)*b/bmax, Y=T+(H-T-B)*(1-r);
       if(i===0)x22.moveTo(X,Y);else x22.lineTo(X,Y);}
     x22.stroke();
     var hb=Math.log(2)/a;
-    x22.fillStyle='#27489B';
+    x22.fillStyle=MOP.blue;
     for(var k=1;k*hb<bmax&&k<=8;k++){
       var X=L+(W-L-R)*k*hb/bmax, Y=T+(H-T-B)*(1-Math.pow(0.5,k));
       x22.beginPath(); x22.arc(X,Y,7,0,7); x22.fill();
@@ -232,12 +233,12 @@
         if(i===0)x23.moveTo(X,Y);else x23.lineTo(X,Y);}
       x23.stroke();
     }
-    curve(function(ww){return ww>0?Math.exp(-2*ww*b/(SIG*SIG)):1;},'#27489B');
-    curve(function(ww){return roru(ww,b,SIG,sw);},'#C3362B');
+    curve(function(ww){return ww>0?Math.exp(-2*ww*b/(SIG*SIG)):1;},MOP.blue);
+    curve(function(ww){return roru(ww,b,SIG,sw);},MOP.red);
     // book case-study dots (N=40000, b=300)
     if(Math.abs(b-300)<1){
       var swb=18/Math.sqrt(400);
-      [[2.5,'#C3362B'],[1.5,'#C3362B']].forEach(function(t){
+      [[2.5,MOP.red],[1.5,MOP.red]].forEach(function(t){
         var v=roru(t[0],300,18,swb);
         var X=L+(W-L-R)*t[0]/wmax, Y=T+(H-T-B)*(1-v);
         x23.fillStyle=t[1]; x23.beginPath(); x23.arc(X,Y,8,0,7); x23.fill();
@@ -279,17 +280,17 @@
         if(!started){x24.moveTo(X,Y);started=true;}else x24.lineTo(X,Y);}
       x24.stroke();
     }
-    curve(mu1,sg1,'#C3362B'); curve(mu2,sg2,'#27489B');
+    curve(mu1,sg1,MOP.red); curve(mu2,sg2,MOP.blue);
     if(c&&c>0&&c<bmax){
       x24.strokeStyle='rgba(224,122,107,.65)';x24.setLineDash([6,5]);
       var X=L+(W-L-R)*c/bmax;
       x24.beginPath();x24.moveTo(X,T);x24.lineTo(X,H-B);x24.stroke();x24.setLineDash([]);
-      x24.fillStyle='#C3362B';x24.textAlign='center';x24.font='21px ui-monospace,monospace';
+      x24.fillStyle=MOP.red;x24.textAlign='center';x24.font='21px ui-monospace,monospace';
       x24.fillText('c = $'+Math.round(c).toLocaleString(),X,T-4);
     }
     x24.textAlign='left';x24.font='21px ui-monospace,monospace';
-    x24.fillStyle='#C3362B';x24.fillText('game 1 (bigger)',W-330,T+30);
-    x24.fillStyle='#27489B';x24.fillText('game 2 (smaller)',W-330,T+62);
+    x24.fillStyle=MOP.red;x24.fillText('game 1 (bigger)',W-330,T+30);
+    x24.fillStyle=MOP.blue;x24.fillText('game 2 (smaller)',W-330,T+62);
   }
   [k1m,k1s,k2m,k2s].forEach(function(e){e.addEventListener('input',upd24);});
 

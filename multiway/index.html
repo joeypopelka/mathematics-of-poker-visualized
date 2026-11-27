@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Multiplayer Games — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../site.css?v=4">
+<link rel="stylesheet" href="../site.css?v=5">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
@@ -25,7 +25,7 @@
   .readout .v{font:600 1.3rem var(--mono)}
 </style>
 <body>
-<script defer src="../nav.js?v=4"></script>
+<script defer src="../nav.js?v=5"></script>
 <div class="wrap">
   <p class="eyebrow">Chapter 29</p>
   <h1>Multiplayer Games</h1>
@@ -126,7 +126,8 @@
   a different alliance, and a pointer toward cooperative game theory (Shapley values) for
   readers who want the deep end. Verified numbers: <code>verify.py</code>.</p>
 </div>
-<script>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   var beta=document.getElementById('beta');
   function zEV(b){
@@ -150,14 +151,14 @@
     function px(b){return L+(W-L-R)*b/bmax;}
     function py(v){return T+(H-T-B)*(1-v/vmax);}
     // segments with jumps
-    ctx.strokeStyle='#C3362B';ctx.lineWidth=4;
+    ctx.strokeStyle=MOP.red;ctx.lineWidth=4;
     ctx.beginPath();ctx.moveTo(px(0),py(0.9));ctx.lineTo(px(0.1),py(0.9));ctx.stroke();
     ctx.beginPath();ctx.moveTo(px(0.1),py(0.9));ctx.lineTo(px(0.2),py(0.8));ctx.stroke();
     ctx.beginPath();ctx.moveTo(px(0.2),py(1.8));ctx.lineTo(px(0.5),py(1.5));ctx.stroke();
     ctx.setLineDash([3,5]);ctx.strokeStyle='rgba(240,164,78,.5)';ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(px(0.2),py(0.8));ctx.lineTo(px(0.2),py(1.8));ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle='#E8B50C';
+    ctx.fillStyle=MOP.yellow;
     ctx.beginPath();ctx.arc(px(0.3),py(1.7),8,0,7);ctx.fill();
     ctx.textAlign='left';ctx.fillText('β=0.3 → 17/10',px(0.3)+14,py(1.7)+7);
     // current marker

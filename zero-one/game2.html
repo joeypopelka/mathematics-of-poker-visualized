@@ -1,20 +1,20 @@
 <meta charset="utf-8">
 <title>[0,1] Game #2 — von Neumann's half-street game</title>
-<script defer src="../nav.js?v=4"></script>
-<link rel="stylesheet" href="../site.css?v=4">
+<script defer src="../nav.js?v=5"></script>
+<link rel="stylesheet" href="../site.css?v=5">
 <style>
   :root{
-    --value:#E8B50C;
-    --value-ink:#1A1915;
-    --bluff:#C3362B;
+    --value:var(--blue);
+    --value-ink:#EEF2FB;
+    --bluff:var(--red);
     --bluff-ink:#FBEFE9;
-    --call:#27489B;
-    --call-ink:#EEF2FB;
+    --call:var(--yellow);
+    --call-ink:#1A1915;
     --fold:#4E4A42;
     --fold-ink:#E6E1D5;
     --check:#67635A;
     --check-ink:#E6E1D5;
-    --gv:#E8B50C;
+    --gv:var(--blue);
     --sans:ui-sans-serif,-apple-system,"Helvetica Neue",Arial,sans-serif;
   }
   .vn{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--value);
@@ -30,7 +30,7 @@
   .readout.gvbox .v{color:var(--gv)}
   .readout.gvbox .v small{color:var(--dim)}
   .alpha{font-family:var(--mono);font-size:14px;color:var(--dim);font-variant-numeric:tabular-nums}
-  .alpha b{color:var(--call);font-weight:600}
+  .alpha b{color:var(--blue);font-weight:600}
   .sliderbox{flex:1 1 300px;min-width:250px}
   .sliderbox label{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint);display:block;margin-bottom:10px}
   input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:linear-gradient(90deg,var(--fold),var(--value));outline:none}
@@ -86,7 +86,7 @@
   .gvcaption b{color:var(--gv)}
   .notes p{color:var(--dim);font-size:15px;max-width:60ch}
   .notes p b{color:var(--ink)}
-  .notes .mono{font-family:var(--mono);color:var(--call);font-size:.92em}
+  .notes .mono{font-family:var(--mono);color:var(--blue);font-size:.92em}
   .callout{border-left:2px solid var(--value);padding:2px 0 2px 16px;margin:18px 0;font-style:italic;color:var(--ink)}
   .foot{margin-top:36px;color:var(--faint);font-size:12.5px;font-family:var(--sans);max-width:74ch}
   .foot code{font-family:var(--mono);color:var(--dim)}
@@ -203,7 +203,8 @@
     Companion to <code>game9.html</code>, <code>game10.html</code>, <code>game11.html</code>.</p>
 </div>
 
-<script>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   var potEl=document.getElementById('pot'),potVal=document.getElementById('potVal');
   var gValEl=document.getElementById('gVal'),alphaVal=document.getElementById('alphaVal');
@@ -267,14 +268,14 @@
     ctx.fillStyle='#8A857A'; ctx.textAlign='left'; ctx.font='11px ui-sans-serif,sans-serif';
     ctx.fillText('¼  (no-fold limit)', padL+6, Y(0.25)-5);
     // curve
-    ctx.strokeStyle='#E8B50C'; ctx.lineWidth=2.4; ctx.beginPath();
+    ctx.strokeStyle=MOP.blue; ctx.lineWidth=2.4; ctx.beginPath();
     for(var i=0;i<=240;i++){ var P=(i/240)*PMAX; if(P<0.01)P=0.01; var g=solve(P).G;
       var px=X(P),py=Y(g); if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py); }
     ctx.stroke();
     // current point
     var cg=solve(curP).G, cx=X(curP), cy=Y(cg);
-    ctx.strokeStyle='#E8B50C55'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(cx,Y(0)); ctx.lineTo(cx,cy); ctx.stroke();
-    ctx.fillStyle='#E8B50C'; ctx.beginPath(); ctx.arc(cx,cy,4.5,0,7); ctx.fill();
+    ctx.strokeStyle=(MOP.blue+'55'); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(cx,Y(0)); ctx.lineTo(cx,cy); ctx.stroke();
+    ctx.fillStyle=MOP.blue; ctx.beginPath(); ctx.arc(cx,cy,4.5,0,7); ctx.fill();
     ctx.strokeStyle='#8A857A22'; ctx.lineWidth=2; ctx.stroke();
     // label
     ctx.fillStyle='#8A857A'; ctx.font='600 12px '+'ui-monospace,SFMono-Regular,Menlo,monospace';

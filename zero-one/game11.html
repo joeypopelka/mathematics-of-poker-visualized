@@ -1,17 +1,17 @@
 <meta charset="utf-8">
 <title>[0,1] Game #11 — Live Figure (check-raise)</title>
-<script defer src="../nav.js?v=4"></script>
-<link rel="stylesheet" href="../site.css?v=4">
+<script defer src="../nav.js?v=5"></script>
+<link rel="stylesheet" href="../site.css?v=5">
 <style>
   :root{
-    --value:#E8B50C;
-    --value-ink:#1A1915;
-    --value2:#F0D27A;
-    --value2-ink:#1A1915;
-    --bluff:#C3362B;
+    --value:var(--blue);
+    --value-ink:#EEF2FB;
+    --value2:#7E99D6;
+    --value2-ink:#10131F;
+    --bluff:var(--red);
     --bluff-ink:#FBEFE9;
-    --call:#27489B;
-    --call-ink:#EEF2FB;
+    --call:var(--yellow);
+    --call-ink:#1A1915;
     --fold:#4E4A42;
     --fold-ink:#E6E1D5;
     --check:#67635A;
@@ -29,7 +29,7 @@
   .pot-readout .v small{font-size:15px;color:var(--dim);margin-left:4px}
   .ratios{display:flex;flex-direction:column;gap:5px;font-family:var(--mono);font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:150px}
   .ratios .k{font-family:var(--sans);text-transform:uppercase;letter-spacing:.14em;font-size:10px;color:var(--faint);margin-bottom:1px}
-  .ratios b{color:var(--call);font-weight:600}
+  .ratios b{color:var(--blue);font-weight:600}
   .sliderbox{flex:1 1 300px;min-width:250px}
   .sliderbox label{font-family:var(--sans);text-transform:uppercase;letter-spacing:.16em;font-size:10.5px;color:var(--faint);display:block;margin-bottom:10px}
   input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:linear-gradient(90deg,var(--fold),var(--value));outline:none}
@@ -82,22 +82,22 @@
   thead th{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);font-weight:600}
   td.sym{font-family:var(--mono);color:var(--ink);white-space:nowrap}
   td.src{font-family:var(--sans);font-size:10px;letter-spacing:.06em;text-transform:uppercase}
-  td.src.exact{color:var(--call)} td.src.cfr{color:var(--xr)} td.src.approx{color:var(--bluff)}
+  td.src.exact{color:var(--blue)} td.src.cfr{color:var(--xr)} td.src.approx{color:var(--bluff)}
   td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
   tr[data-hue] td.sym::before{content:"";display:inline-block;width:9px;height:9px;margin-right:8px;vertical-align:middle;background:var(--h)}
   .notes p{color:var(--dim);font-size:14.5px;max-width:60ch}
   .notes p b{color:var(--ink)}
-  .notes .mono{font-family:var(--mono);color:var(--call);font-size:.92em}
+  .notes .mono{font-family:var(--mono);color:var(--blue);font-size:.92em}
   .callout{border-left:2px solid var(--xr);padding:2px 0 2px 16px;margin:18px 0;font-style:italic;color:var(--ink)}
   .foot{margin-top:36px;color:var(--faint);font-size:12.5px;font-family:var(--sans);max-width:76ch}
   .foot code{font-family:var(--mono);color:var(--dim)}
   .method{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--xr);padding:16px 20px;margin-top:24px;font-size:13.5px;color:var(--dim);max-width:78ch}
   .method b{color:var(--ink)}
-  .pot-readout.gvbox .v{color:#E8B50C}
+  .pot-readout.gvbox .v{color:var(--blue)}
   .gvcard{background:var(--panel);border:1px solid var(--line);padding:18px 20px;margin-top:24px}
   .gvcard canvas{width:100%;height:200px;display:block}
   .gvcaption{font-family:var(--sans);font-size:12px;color:var(--dim);margin-top:8px;max-width:74ch}
-  .gvcaption b{color:#E8B50C}
+  .gvcaption b{color:var(--blue)}
   @media (prefers-reduced-motion: reduce){ .region,.gl,.tick{transition:none} }
 </style>
 
@@ -245,7 +245,8 @@
     numerically here. Companion to <code>game9.html</code>, <code>game10.html</code>.</p>
 </div>
 
-<script>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   // ---- exact sequence-form LP grid (monotone-selection X-side + Y give-up);
   //      Y value thresholds computed live from Eq 17.13 (exact closed forms) ----
@@ -339,12 +340,12 @@
     ctx.beginPath();ctx.moveTo(padL,Y(ASY));ctx.lineTo(W-padR,Y(ASY));ctx.stroke();
     ctx.setLineDash([]);ctx.globalAlpha=1;ctx.fillStyle='#8A857A';ctx.textAlign='left';
     ctx.fillText('1/9  (no-fold Game #7)',padL+6,Y(ASY)-5);
-    ctx.strokeStyle='#E8B50C';ctx.lineWidth=2.4;ctx.beginPath();
+    ctx.strokeStyle=MOP.blue;ctx.lineWidth=2.4;ctx.beginPath();
     for(var i=0;i<=240;i++){var P=(i/240)*PMAX;if(P<0.05)P=0.05;var g=gvAt(P);var px=X(P),py=Y(g);if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}
     ctx.stroke();
     var cg=gvAt(curP),cx=X(curP),cy=Y(cg);
-    ctx.strokeStyle='#E8B50C55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
-    ctx.fillStyle='#E8B50C';ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#8A857A22';ctx.lineWidth=2;ctx.stroke();
+    ctx.strokeStyle=(MOP.blue+'55');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,Y(0));ctx.lineTo(cx,cy);ctx.stroke();
+    ctx.fillStyle=MOP.blue;ctx.beginPath();ctx.arc(cx,cy,4.5,0,7);ctx.fill();ctx.strokeStyle='#8A857A22';ctx.lineWidth=2;ctx.stroke();
     ctx.fillStyle='#8A857A';ctx.font='600 12px ui-monospace,Menlo,monospace';ctx.textAlign='left';
     var lx=Math.min(cx+9,W-padR-70);ctx.fillText('G = '+cg.toFixed(3),lx,cy-8);
   }

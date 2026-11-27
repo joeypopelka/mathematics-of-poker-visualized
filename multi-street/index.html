@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Multi-Street Games — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../site.css?v=4">
+<link rel="stylesheet" href="../site.css?v=5">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none} a:hover{text-decoration:underline}
@@ -31,7 +31,7 @@
   @media(max-width:640px){.row{flex-direction:column}}
 </style>
 <body>
-<script defer src="../nav.js?v=4"></script>
+<script defer src="../nav.js?v=5"></script>
 <div class="wrap">
   <p class="eyebrow">Chapters 14 &amp; 19</p>
   <h1>Multi-Street Games</h1>
@@ -135,7 +135,8 @@
     </table>
   </div>
 </div>
-<script>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   var W,H,L=74,Rm=26,T=26,B=56;
   function setup(cv){ W=cv.width; H=cv.height; }
@@ -167,18 +168,18 @@
   var c14=document.getElementById('c14'),x14=c14.getContext('2d');
   (function(){
     setup(c14); grid(x14,2,0.5,0.25,0.1,'bet size s (pots)');
-    curve(x14,function(s){return 0.5*s/(1+s);},2,0.5,'#C3362B');
-    curve(x14,function(s){return 10*s*(1-s)/(6*(1+s)) < 0 ? 0 : 10*s*(1-s)/(6*(1+s));},2,0.5,'#27489B');
-    curve(x14,function(s){return 3/(7*(1+s)*(1+s));},2,0.5,'#27489B');
+    curve(x14,function(s){return 0.5*s/(1+s);},2,0.5,MOP.red);
+    curve(x14,function(s){return 10*s*(1-s)/(6*(1+s)) < 0 ? 0 : 10*s*(1-s)/(6*(1+s));},2,0.5,MOP.blue);
+    curve(x14,function(s){return 3/(7*(1+s)*(1+s));},2,0.5,MOP.blue);
     var r=Math.SQRT2-1;
     x14.strokeStyle='rgba(224,122,107,.6)'; x14.setLineDash([6,5]);
     x14.beginPath(); x14.moveTo(px(r,2),T); x14.lineTo(px(r,2),H-B); x14.stroke(); x14.setLineDash([]);
-    x14.fillStyle='#C3362B'; x14.textAlign='center'; x14.font='21px ui-monospace,monospace';
+    x14.fillStyle=MOP.red; x14.textAlign='center'; x14.font='21px ui-monospace,monospace';
     x14.fillText('s* = √2−1',px(r,2),T-6);
     x14.textAlign='left';
-    x14.fillStyle='#C3362B'; x14.fillText('clairvoyance f(s)=½·s/(1+s) → jam',px(1.05,2),py(0.5*1.05/2.05,0.5)-14);
-    x14.fillStyle='#27489B'; x14.fillText('AKQ 10·f(s) (scaled)',px(0.62,2),py(10*0.62*0.38/(6*1.62),0.5)-14);
-    x14.fillStyle='#27489B'; x14.fillText('[0,1] value fn y(s)=3/(7(1+s)²)',px(0.8,2),py(3/(7*1.8*1.8),0.5)+30);
+    x14.fillStyle=MOP.red; x14.fillText('clairvoyance f(s)=½·s/(1+s) → jam',px(1.05,2),py(0.5*1.05/2.05,0.5)-14);
+    x14.fillStyle=MOP.blue; x14.fillText('AKQ 10·f(s) (scaled)',px(0.62,2),py(10*0.62*0.38/(6*1.62),0.5)-14);
+    x14.fillStyle=MOP.blue; x14.fillText('[0,1] value fn y(s)=3/(7(1+s)²)',px(0.8,2),py(3/(7*1.8*1.8),0.5)+30);
   })();
 
   // ---- geometric ladder ----
@@ -220,7 +221,7 @@
   var c19=document.getElementById('c19'),x19=c19.getContext('2d');
   (function(){
     setup(c19); grid(x19,30,6,5,1,'stack size S (pots)');
-    var cols={2:'#C3362B',3:'#27489B',4:'#E8B50C',5:'#27489B'};
+    var cols={2:MOP.red,3:MOP.blue,4:MOP.yellow,5:MOP.blue};
     for(var m=2;m<=5;m++){
       (function(m){ curve(x19,function(Sv){return Math.pow(1+2*Sv,1/m);},30,6,cols[m]); })(m);
     }
@@ -244,11 +245,11 @@
     document.getElementById('asv').textContent=Sv.toFixed(2);
     document.getElementById('ayv').textContent=yv.toFixed(2);
     setup(ca); grid(xa,Sv,1,Sv/5,0.25,'commitment s (pots)');
-    curve(xa,function(s){return 1/Math.sqrt(1+2*s);},Sv,1,'#27489B');
-    curve(xa,function(s){return Math.min(1,yv*Math.sqrt((1+2*Sv)/(1+2*s)));},Sv,1,'#C3362B');
+    curve(xa,function(s){return 1/Math.sqrt(1+2*s);},Sv,1,MOP.blue);
+    curve(xa,function(s){return Math.min(1,yv*Math.sqrt((1+2*Sv)/(1+2*s)));},Sv,1,MOP.red);
     xa.font='21px ui-monospace,monospace'; xa.textAlign='left';
-    xa.fillStyle='#27489B'; xa.fillText('x(s) caller',px(Sv*0.55,Sv),py(1/Math.sqrt(1+2*Sv*0.55),1)-12);
-    xa.fillStyle='#C3362B'; xa.fillText('y(s) clairvoyant',px(Sv*0.25,Sv),py(Math.min(1,yv*Math.sqrt((1+2*Sv)/(1+2*Sv*0.25))),1)-12);
+    xa.fillStyle=MOP.blue; xa.fillText('x(s) caller',px(Sv*0.55,Sv),py(1/Math.sqrt(1+2*Sv*0.55),1)-12);
+    xa.fillStyle=MOP.red; xa.fillText('y(s) clairvoyant',px(Sv*0.25,Sv),py(Math.min(1,yv*Math.sqrt((1+2*Sv)/(1+2*Sv*0.25))),1)-12);
   }
   aS.addEventListener('input',updA); ay.addEventListener('input',updA); updA();
 })();

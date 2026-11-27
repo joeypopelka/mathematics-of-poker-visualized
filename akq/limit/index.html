@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Limit AKQ Game — Mathematics of Poker, Visualized</title>
-<link rel="stylesheet" href="../../site.css?v=4">
+<link rel="stylesheet" href="../../site.css?v=5">
 <style>
   *{margin:0;padding:0}
   a{color:var(--ice);text-decoration:none}
@@ -40,7 +40,7 @@
   @media(max-width:640px){.hand{grid-template-columns:1fr}}
 </style>
 <body>
-<script defer src="../../nav.js?v=4"></script>
+<script defer src="../../nav.js?v=5"></script>
 <div class="wrap">
   <p class="eyebrow">Chapter 13 · Examples 13.1–13.2</p>
   <h1>The Limit AKQ Game</h1>
@@ -137,7 +137,8 @@
       <a href="../../zero-one/">the [0,1] games&nbsp;→</a></p></div>
   </div>
 </div>
-<script>
+<script>const MOP=new Proxy({},{get:(_,k)=>getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()});
+
 (function(){
   var pot=document.getElementById('pot');
   function pFromSlider(s){ return 0.25*Math.pow(80,s/1000); } // 0.25 .. 20
@@ -175,7 +176,7 @@
     // P=1 kink marker
     ctx.strokeStyle='rgba(224,122,107,.55)'; ctx.setLineDash([6,5]);
     ctx.beginPath(); ctx.moveTo(x(1),T); ctx.lineTo(x(1),H-B); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle='#C3362B'; ctx.fillText('P=1',x(1),T-6);
+    ctx.fillStyle=MOP.red; ctx.fillText('P=1',x(1),T-6);
     // 1/6 asymptote
     ctx.strokeStyle='rgba(143,214,148,.35)'; ctx.setLineDash([3,6]);
     ctx.beginPath(); ctx.moveTo(L,y(1/6)); ctx.lineTo(W-R,y(1/6)); ctx.stroke(); ctx.setLineDash([]);
@@ -185,13 +186,13 @@
         if(i===0) ctx.moveTo(x(P),y(v)); else ctx.lineTo(x(P),y(v)); }
       ctx.stroke();
     }
-    curve(function(s){return s.b;},'#C3362B');
-    curve(function(s){return s.c;},'#27489B');
-    curve(function(s){return s.g*6;},'#E8B50C'); // scale x6 so limit->1
+    curve(function(s){return s.b;},MOP.red);
+    curve(function(s){return s.c;},MOP.blue);
+    curve(function(s){return s.g*6;},MOP.yellow); // scale x6 so limit->1
     ctx.textAlign='left'; ctx.font='21px ui-monospace,monospace';
-    ctx.fillStyle='#C3362B'; ctx.fillText('b* bluff freq',x(14.5),y(solve(14.5).b)-12);
-    ctx.fillStyle='#27489B'; ctx.fillText('c* call freq',x(10),y(solve(10).c)-12);
-    ctx.fillStyle='#E8B50C'; ctx.fillText('6·G(Y)  (→1 ⇔ G→1/6)',x(9),y(solve(9).g*6)+32);
+    ctx.fillStyle=MOP.red; ctx.fillText('b* bluff freq',x(14.5),y(solve(14.5).b)-12);
+    ctx.fillStyle=MOP.blue; ctx.fillText('c* call freq',x(10),y(solve(10).c)-12);
+    ctx.fillStyle=MOP.yellow; ctx.fillText('6·G(Y)  (→1 ⇔ G→1/6)',x(9),y(solve(9).g*6)+32);
     // current P marker
     ctx.strokeStyle='rgba(232,228,220,.5)'; ctx.lineWidth=1.5;
     ctx.beginPath(); ctx.moveTo(x(Math.min(Pcur,Pmax)),T); ctx.lineTo(x(Math.min(Pcur,Pmax)),H-B); ctx.stroke();

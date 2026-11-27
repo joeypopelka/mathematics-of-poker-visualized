@@ -77,10 +77,11 @@
     '.mnav-rail{position:fixed;left:0;top:0;bottom:0;width:2.2rem;z-index:900;',
       'background:var(--bg);border-right:1px solid var(--hair);',
       'display:flex;flex-direction:column;align-items:center;padding-top:1rem;gap:.85rem}',
-    '.mnav-rail i{display:block}',
-    '.mnav-rail .mnav-gs{width:.62rem;height:.62rem;background:var(--blue)}',
-    '.mnav-rail .mnav-gc{width:.66rem;height:.66rem;border-radius:50%;background:var(--red)}',
-    '.mnav-rail .mnav-gt{width:0;height:0;border-left:.4rem solid transparent;border-right:.4rem solid transparent;border-bottom:.7rem solid var(--yellow)}',
+    '.mnav-rail i{display:block;width:.8rem;height:.8rem;border-radius:50%;',
+      'background:radial-gradient(circle at 50% 50%, var(--c) 0 34%, transparent 36% 52%, var(--c) 54% 100%)}',
+    '.mnav-rail .mnav-gs{--c:var(--blue)}',
+    '.mnav-rail .mnav-gc{--c:var(--red)}',
+    '.mnav-rail .mnav-gt{--c:var(--yellow)}',
     '@media (max-width:1259px){.mnav-rail{display:none}}'
   ].join('\n');
 
