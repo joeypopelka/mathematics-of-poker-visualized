@@ -1,7 +1,3 @@
-# akq/nl/index.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 The No-Limit AKQ Game: What Position Is Worth at Every Depth
 
@@ -63,8 +59,6 @@ The book&rsquo;s move switches on: X&rsquo;s **King makes a small
 Value freezes at **+0.0272 pots** and every strategy locks. Onset =
       Y&rsquo;s largest bet size: once chips cover that, more stack is dead
       weight. Flat to 10&#8315;&sup1;&#8310;.
-
-# -- recovered in audit pass --
 
 <!-- block: caption -->
 Four regimes, shaded. Two have **exact closed-form

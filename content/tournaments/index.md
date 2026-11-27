@@ -1,7 +1,3 @@
-# tournaments/index.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 Chen ch. 26–28 · Tournaments
 
@@ -89,8 +85,6 @@ A 5-3-2 sit-and-go, hero facing a jam as his own stack varies (others
         the factor by which your ch. 12 shove/call ranges must tighten. It peaks
         for a middling stack and drops below 1 for a dominant leader, who can
         call *lighter* than chip-EV.
-
-# -- recovered in audit pass --
 
 <!-- block: note -->
 Folding (0.009269) beats calling (0.008857): passing up a

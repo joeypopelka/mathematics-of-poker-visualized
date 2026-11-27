@@ -1,7 +1,3 @@
-# zero-one/game12.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 [0,1] Game #12 — the infinite raising ladder
 
@@ -58,8 +54,6 @@ Every equation from Game&nbsp;#10 survives <em>except</em> the one at y₂ — b
 <!-- block: as-p-rp-r -->
 As <span class="mono">P → ∞</span>, Rₚ → r and x₁ → 1/(1+2r) ≈ 0.547: the exact solution of
         the no-fold Game&nbsp;#6, with its r-geometric threshold ladder.
-
-# -- recovered in audit pass --
 
 <!-- block: cap -->
 Rₚ is the ratio between each value threshold and the next in the raising ladder

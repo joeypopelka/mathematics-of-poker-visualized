@@ -1,7 +1,3 @@
-# index.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 Mathematics of Poker, Visualized
 

@@ -1,7 +1,3 @@
-# zero-one/game11.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 [0,1] Game #11 — Live Figure (check-raise)
 
@@ -70,8 +66,6 @@ The value regions are what move; everything else cascades off them. The book sol
 **The x₁\* = y₁\* symmetry breaks.** In #9 and #10 those cutoffs coincided; here they
         separate, because X's post-check decision is no longer a clean call/fold — he can
         check-raise. That's the structural signature of this game.
-
-# -- recovered in audit pass --
 
 <!-- block: method -->
 **How these numbers are computed — the sequence-form LP, and what it found.** The Y-side

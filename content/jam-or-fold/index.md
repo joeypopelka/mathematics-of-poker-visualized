@@ -1,7 +1,3 @@
-# jam-or-fold/index.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 Jam-or-Fold: The Phase Diagram
 
@@ -44,8 +40,6 @@ Catalog of oddities
 
 <!-- block: method-amp-fidelity-to -->
 Method &amp; fidelity to the book <span class="sub">how this was computed</span>
-
-# -- recovered in audit pass --
 
 <!-- block: caption -->
 Each row is one starting hand, ordered by the stack size at which it first

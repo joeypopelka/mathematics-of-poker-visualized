@@ -1,7 +1,3 @@
-# zero-one/index.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 The [0,1] Games — Mathematics of Poker, Visualized
 
@@ -36,8 +32,6 @@ One chart: what each strategic option is worth
 
 <!-- block: the-catalog -->
 The α catalog
-
-# -- recovered in audit pass --
 
 <!-- block: card -->
 Von Neumann's poker model — the first solved poker game. One bet, X checks dark.

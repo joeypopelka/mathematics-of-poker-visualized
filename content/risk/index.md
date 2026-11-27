@@ -1,8 +1,3 @@
-# Risk — page text
-# Edit this file, then run `python3 build.py` (or just push — the
-# GitHub Action rebuilds automatically). Markdown: **bold**, *italic*,
-# `math` for mono styling; raw HTML like <sub>/<span class="m"> also works.
-
 <!-- block: page-title -->
 Risk — Mathematics of Poker, Visualized
 
@@ -77,8 +72,6 @@ A standard backing deal — backer eats all losses, profits split — is a **cal
 
 <!-- block: fid-h -->
 Fidelity to the book
-
-# -- recovered in audit pass --
 
 <!-- block: fid -->
 **0.000606** (book's own equation; g(0.000632)=1.0009 — solver slip; its RoR table follows the high α; also prints "0.00632" once)

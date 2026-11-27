@@ -1,7 +1,3 @@
-# zero-one/game2.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 [0,1] Game #2 — von Neumann's half-street game
 
@@ -17,7 +13,6 @@ Half a street, one bet. **X must check in the dark**; then **Y** may bet or
       check, and if Y bets, X may **call or fold**. Hands are uniform on **[0, 1]** (0 = the
       nuts). Because X can now fold, Y starts to **bluff** — and the whole betting/bluffing/calling
       balance is governed by one number, the pot size **P**. This is the ancestor of Games
-      #9–#11.
 
 <!-- block: ex-showdown-expectation-to -->
 Ex-showdown expectation to Y: **G = (1−α)² / [2(2−α)(1+α)]**.
@@ -60,8 +55,6 @@ Y bets his best hands for **value** [0, y₁], **checks** the middle [y₁, y₀
 **The value of position.** Being the player who gets to bet is worth
       <span class="mono">G</span> per hand — from 0 in a vanishing pot up to **¼ of a bet** in an
       enormous one. That ¼ is the pure value of the betting lead when folding no longer matters.
-
-# -- recovered in audit pass --
 
 <!-- block: histnote -->
 **Historical note.** This is essentially the poker model John von Neumann

@@ -1,7 +1,3 @@
-# zero-one/game10.html — page text
-# Edit here, then run `python3 build.py` (or push — the GitHub Action
-# rebuilds). **bold**, *italic*, `math`; raw HTML passes through; \* = literal *.
-
 <!-- block: page-title -->
 [0,1] Game #10 — Live Figure 17.2
 
