@@ -188,6 +188,29 @@
     window.addEventListener('hashchange', markActive);
     markActive();
 
+    /* ---- favicon: the family chip; Home/About draw one at random ----
+       (tab icon is per-load; Chrome shortcuts cache the PNG at creation) */
+    var CHIP = { zo: ['blue', '#27489B'], akq: ['red', '#C3362B'], more: ['yellow', '#E8B50C'] };
+    function chipSvg(color) {
+      var marks = '';
+      for (var k = 0; k < 8; k++)
+        marks += '<rect x="45" y="8" width="10" height="16" fill="#fff" transform="rotate(' + (k * 45) + ' 50 50)"/>';
+      return 'data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+        '<circle cx="50" cy="50" r="48" fill="' + color + '"/>' + marks + '</svg>');
+    }
+    (function setFavicon() {
+      var fams = Object.keys(CHIP);
+      var pick = CHIP[activeKey()] || CHIP[fams[Math.floor(Math.random() * fams.length)]];
+      function link(rel) {
+        var el = document.querySelector('link[rel="' + rel + '"]');
+        if (!el) { el = document.createElement('link'); el.rel = rel; document.head.appendChild(el); }
+        return el;
+      }
+      link('icon').href = chipSvg(pick[1]);
+      link('apple-touch-icon').href = root + 'icons/chip-' + pick[0] + '-180.png';
+    })();
+
     /* theme switch */
     var modeBtn = header.querySelector('.mnav-mode');
     var modeLabel = header.querySelector('.mnav-mode-label');
